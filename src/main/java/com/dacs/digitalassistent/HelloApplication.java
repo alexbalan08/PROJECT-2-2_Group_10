@@ -1,41 +1,81 @@
 package com.dacs.digitalassistent;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Scale;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import java.awt.*;
+//import com.sun.javafx.tk.Toolkit;
 
 import java.io.IOException;
 
 public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        BorderPane root = new BorderPane();
-        Scene scene = new Scene(root, 304, 428, Color.rgb(5, 5, 15)/*Color.color(0.05, 0.05, 0.06)*/);
+        HBox root = new HBox();
+        VBox paneLeft = new VBox(10);
+        VBox paneCenter = new VBox();
+        VBox paneRight = new VBox();
+        root.getChildren().addAll(paneLeft, paneCenter, paneRight);
+        stage.setFullScreen(false);
+        /*Dimension resolution = Toolkit.getDefaultToolkit().getScreenSize();
+        Scale scale = new Scale(resolution.getWidth()/1280, resolution.getHeight()/720);
+        root.getTransforms().add(scale);*/
+        Scene scene = new Scene(root, 650, 650, Color.rgb(5, 5, 15));
         // FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
         // Scene scene = new Scene(fxmlLoader.load(), 320, 240);
         stage.setTitle("DAC°Search");
-        Image icon = new Image("C:\\Users\\vales\\Documents\\Java Projects\\DigitalAssistent\\src\\main\\java\\com\\dacs\\digitalassistent\\blue-eye-icon.png");
+
+        Image icon = new Image("C:\\Users\\vales\\Documents\\Java Projects\\DigitalAssistent\\src\\main\\java\\com\\dacs\\digitalassistent\\blue-eye-original-icon.png");
+        ImageView iconView = new ImageView(icon);
+        iconView.setFitWidth(icon.getWidth() * 0.2);
+        iconView.setFitHeight(icon.getHeight() * 0.2);
+        ImageView iconTextView = new ImageView(icon);
+        iconTextView.setFitWidth(icon.getWidth() * 0.05);
+        iconTextView.setFitHeight(icon.getHeight() * 0.05);
+        Image restartIcon = new Image("C:\\Users\\vales\\Documents\\Java Projects\\DigitalAssistent\\src\\main\\java\\com\\dacs\\digitalassistent\\restart-icon.png");
+        ImageView restartIconView = new ImageView(restartIcon);
+        restartIconView.setFitWidth(restartIcon.getWidth() * 0.1);
+        restartIconView.setFitHeight(restartIcon.getHeight() * 0.1);
         Image backgroundImage = new Image("C:\\Users\\vales\\Documents\\Java Projects\\DigitalAssistent\\src\\main\\java\\com\\dacs\\digitalassistent\\fog-dark.png");
-        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, new BackgroundSize(304, 428, true, true, true, false));
+        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, new BackgroundSize(1, 1, true, true, false, false));
         Text textInit = new Text();
         textInit.setText("Hello, how can I help you?");
-        textInit.setX(350);
-        textInit.setY(150);
         textInit.setFill(Color.WHITE);
-        textInit.setFont(Font.font("Courier New", 20));
+        textInit.setFont(Font.font("Courier New", 15));
+        HBox initIconText = new HBox(iconTextView, textInit);
+        VBox conversation = new VBox(initIconText);
+        VBox iconTop = new VBox(iconView);
+        iconTop.setAlignment(Pos.CENTER);
+        VBox iconTopTextBottom = new VBox(iconTop, conversation);
+        iconTopTextBottom.setMargin(conversation, new Insets(15, 10, 10, 10));
+        iconTopTextBottom.setMargin(iconTop, new Insets(5, 0, 0, 0));
+        paneLeft.setMargin(restartIconView, new Insets(15, 0, 0, 0));
+        initIconText.setMargin(textInit, new Insets(0, 0, 0, 5));
 
         stage.getIcons().add(icon);
-        root.setBackground(new Background(background));
-        root.getChildren().add(textInit);
-        stage.setFullScreen(true);
+        paneLeft.setMinWidth(scene.getWidth() * 0.1);
+        paneLeft.setAlignment(Pos.TOP_CENTER);
+        paneCenter.setMinWidth(scene.getWidth() * 0.8);
+        paneCenter.setBackground(new Background(background));
+        paneCenter.getChildren().add(iconTopTextBottom);
+        paneLeft.getChildren().add(restartIconView);
+        stage.setFullScreenExitHint("");
         stage.setScene(scene);
+
         stage.show();
     }
 
