@@ -55,9 +55,11 @@ public class HelloApplication extends Application {
         restartIconView.setFitHeight(restartIcon.getHeight() * 0.1);
 
         Image backgroundImage = new Image("C:\\Users\\vales\\Documents\\Java Projects\\DigitalAssistent\\src\\main\\java\\com\\dacs\\digitalassistent\\fog-dark.png");
-        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, new BackgroundSize(1, 1, true, true, false, false));
+        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, new BackgroundSize(1, 650, true, false, false, false));
 
         TextField textUser = new TextField();
+        textUser.setStyle("-fx-background-color: rgba(115, 188, 224, 0.2); -fx-text-fill: white; -fx-font: Courier New");
+        textUser.setFont(new Font("Courier New", 15));
         textUser.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent ke) {
@@ -68,16 +70,23 @@ public class HelloApplication extends Application {
             }
         });
 
+        Image sendIcon = new Image("C:\\Users\\vales\\Documents\\Java Projects\\DigitalAssistent\\src\\main\\java\\com\\dacs\\digitalassistent\\send-icon.png");
+        ImageView sendIconView = new ImageView(sendIcon);
+        sendIconView.setFitWidth(sendIcon.getWidth() * 0.7);
+        sendIconView.setFitHeight(sendIcon.getHeight() * 0.7);
+
+        HBox textUserSend = new HBox(textUser, sendIconView);
+
         VBox iconTop = new VBox(iconView);
         iconTop.setAlignment(Pos.CENTER);
         VBox iconTopTextBottom = new VBox(iconTop, conversation);
         iconTopTextBottom.setMargin(conversation, new Insets(10, 0, 10, 0));
         iconTopTextBottom.setMargin(iconTop, new Insets(0, 0, 0, 0));
         paneLeft.setMargin(restartIconView, new Insets(15, 0, 0, 0));
-        VBox iconChatTextUser = new VBox(iconTopTextBottom, textUser);
+        VBox iconChatTextUser = new VBox(iconTopTextBottom, textUserSend);
         paneCenter.setMargin(iconChatTextUser, new Insets(0, 5, 5, 5));
         iconChatTextUser.setMargin(textUser, new Insets(5, 5, 5, 5));
-        iconTopTextBottom.setMinHeight(scene.getHeight() * 0.94);
+        iconTopTextBottom.setMinHeight(scene.getHeight() - 45);
 
         outputMessage("Hello, how can I help you?");
 
@@ -90,6 +99,8 @@ public class HelloApplication extends Application {
         paneLeft.getChildren().add(restartIconView);
         stage.setFullScreenExitHint("");
         stage.setScene(scene);
+
+        textUser.setPrefWidth(paneCenter.getMinWidth() - sendIcon.getWidth());
 
         stage.show();
     }
