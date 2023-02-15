@@ -9,6 +9,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -17,7 +19,7 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Scale;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import java.awt.*;
+import javafx.scene.control.TextField;
 //import com.sun.javafx.tk.Toolkit;
 
 import java.io.IOException;
@@ -55,12 +57,27 @@ public class HelloApplication extends Application {
         Image backgroundImage = new Image("C:\\Users\\vales\\Documents\\Java Projects\\DigitalAssistent\\src\\main\\java\\com\\dacs\\digitalassistent\\fog-dark.png");
         BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, new BackgroundSize(1, 1, true, true, false, false));
 
+        TextField textUser = new TextField();
+        textUser.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent ke) {
+                if (ke.getCode().equals(KeyCode.ENTER)) {
+                    outputMessage(textUser.getText());
+                    textUser.clear();
+                }
+            }
+        });
+
         VBox iconTop = new VBox(iconView);
         iconTop.setAlignment(Pos.CENTER);
         VBox iconTopTextBottom = new VBox(iconTop, conversation);
-        iconTopTextBottom.setMargin(conversation, new Insets(15, 10, 10, 10));
-        iconTopTextBottom.setMargin(iconTop, new Insets(5, 0, 0, 0));
+        iconTopTextBottom.setMargin(conversation, new Insets(10, 0, 10, 0));
+        iconTopTextBottom.setMargin(iconTop, new Insets(0, 0, 0, 0));
         paneLeft.setMargin(restartIconView, new Insets(15, 0, 0, 0));
+        VBox iconChatTextUser = new VBox(iconTopTextBottom, textUser);
+        paneCenter.setMargin(iconChatTextUser, new Insets(0, 5, 5, 5));
+        iconChatTextUser.setMargin(textUser, new Insets(5, 5, 5, 5));
+        iconTopTextBottom.setMinHeight(scene.getHeight() * 0.94);
 
         outputMessage("Hello, how can I help you?");
 
@@ -69,7 +86,7 @@ public class HelloApplication extends Application {
         paneLeft.setAlignment(Pos.TOP_CENTER);
         paneCenter.setMinWidth(scene.getWidth() * 0.8);
         paneCenter.setBackground(new Background(background));
-        paneCenter.getChildren().add(iconTopTextBottom);
+        paneCenter.getChildren().add(iconChatTextUser);
         paneLeft.getChildren().add(restartIconView);
         stage.setFullScreenExitHint("");
         stage.setScene(scene);
