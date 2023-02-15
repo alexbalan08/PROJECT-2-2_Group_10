@@ -1,4 +1,4 @@
-module com.dacs.digitalassistent {
+module UI {
     requires javafx.controls;
     requires javafx.fxml;
 
@@ -8,6 +8,6 @@ module com.dacs.digitalassistent {
     requires java.datatransfer;
     requires java.desktop;
 
-    opens com.dacs.digitalassistent to javafx.fxml;
-    exports com.dacs.digitalassistent;
+    opens UI to javafx.fxml;
+    exports UI;
 }

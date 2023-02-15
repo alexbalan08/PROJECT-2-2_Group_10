@@ -1,4 +1,4 @@
-package com.dacs.digitalassistent;
+package UI;
 
 import backend.DA;
 

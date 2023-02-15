@@ -1,4 +1,4 @@
-package com.dacs.digitalassistent;
+package UI;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -20,7 +20,7 @@ import java.io.IOException;
 
 public class HelloApplication extends Application {
 
-    private Image icon = new Image("file:src/main/java/com/dacs/digitalassistent/blue-eye-original-icon.png");
+    private Image icon = new Image("file:src/main/resources/UI/blue-eye-original-icon.png");
     private VBox conversation = new VBox();
 
     @Override
@@ -43,12 +43,12 @@ public class HelloApplication extends Application {
         iconView.setFitWidth(icon.getWidth() * 0.2);
         iconView.setFitHeight(icon.getHeight() * 0.2);
 
-        Image restartIcon = new Image("file:src/main/java/com/dacs/digitalassistent/restart-icon.png");
+        Image restartIcon = new Image("file:src/main/resources/UI/restart-icon.png");
         ImageView restartIconView = new ImageView(restartIcon);
         restartIconView.setFitWidth(restartIcon.getWidth() * 0.1);
         restartIconView.setFitHeight(restartIcon.getHeight() * 0.1);
 
-        Image backgroundImage = new Image("file:src/main/java/com/dacs/digitalassistent/fog-dark.png");
+        Image backgroundImage = new Image("file:src/main/resources/UI/fog-dark.png");
         BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, new BackgroundSize(1, 650, true, false, false, false));
 
         TextField textUser = new TextField();
@@ -64,7 +64,7 @@ public class HelloApplication extends Application {
             }
         });
 
-        Image sendIcon = new Image("file:src/main/java/com/dacs/digitalassistent/send-icon.png");
+        Image sendIcon = new Image("file:src/main/resources/UI/send-icon.png");
         ImageView sendIconView = new ImageView(sendIcon);
         sendIconView.setFitWidth(sendIcon.getWidth() * 0.7);
         sendIconView.setFitHeight(sendIcon.getHeight() * 0.7);

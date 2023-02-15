@@ -24,8 +24,8 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainModule = 'com.dacs.digitalassistent'
-    mainClass = 'com.dacs.digitalassistent.HelloApplication'
+    mainModule = 'UI'
+    mainClass = 'UI.HelloApplication'
 }
 
 javafx {
