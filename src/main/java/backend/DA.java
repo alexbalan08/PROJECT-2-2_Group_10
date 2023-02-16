@@ -20,15 +20,12 @@ public class DA {
 
     private void addSkill(SkillWrapper skill) {
         allMySkills.add(skill);
-        System.out.println(skill.getClass().getSimpleName()+" wrapper loaded successfully!");
     }
 
     public void startQuery(String query) {
-        double didIUnderstand = 0;
-        double understandingThreshhold = 0.6;
-        String matchedTemplate = null;
-        SkillWrapper bestMatch = null;
+        // TODO: PROCESS INPUT AND BREAK IT DOWN USING CFG
         for (SkillWrapper skill : allMySkills) {
+<<<<<<< HEAD
         // TODO: PROCESS INPUT AND BREAK IT DOWN USING CFG AND FIND OUT WHICH SKILL WE WANT TO USE
             // HARDCODE (needs changing)
             if(skill.getClass().getSimpleName().equals("Spotify")){
@@ -41,13 +38,10 @@ public class DA {
             }
             // END OF HARDCODE
         }
+=======
+>>>>>>> parent of 13a986a (Abstraction of backend)
 
-        // Reality check
-        if(didIUnderstand>=understandingThreshhold){
-            bestMatch.start(matchedTemplate);
         }
-        else {
-            System.out.println("Sorry, didn't understand you!");
-        }
+        // TODO:
     }
 }

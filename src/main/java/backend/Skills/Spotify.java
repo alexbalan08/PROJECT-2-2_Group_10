@@ -20,6 +20,7 @@ import java.util.concurrent.Future;
 // S = "6e25829074f54e10a4811b5cb39e5622";
 // Getting tokens: https://alecchen.dev/spotify-refresh-token/
 public class Spotify extends SkillWrapper {
+<<<<<<< HEAD
 
     public Spotify(){
         pause();
@@ -102,3 +103,6 @@ public class Spotify extends SkillWrapper {
 
 
 }
+=======
+}
+>>>>>>> parent of 13a986a (Abstraction of backend)
