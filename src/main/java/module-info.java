@@ -1,4 +1,4 @@
-module UI {
+module module {
     requires javafx.controls;
     requires javafx.fxml;
 
@@ -8,6 +8,11 @@ module UI {
     requires java.datatransfer;
     requires java.desktop;
 
+    requires org.apache.httpcomponents.core5.httpcore5;
+    requires com.google.gson;
+    requires se.michaelthelin.spotify;
+
     opens UI to javafx.fxml;
     exports UI;
+
 }

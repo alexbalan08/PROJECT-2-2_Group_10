@@ -25,6 +25,7 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+
         HBox root = new HBox();
         VBox paneLeft = new VBox(10);
         VBox paneCenter = new VBox();
@@ -35,6 +36,7 @@ public class HelloApplication extends Application {
         Scale scale = new Scale(resolution.getWidth()/1280, resolution.getHeight()/720);
         root.getTransforms().add(scale);*/
         Scene scene = new Scene(root, 650, 650, Color.rgb(5, 5, 15));
+
         // FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
         // Scene scene = new Scene(fxmlLoader.load(), 320, 240);
         stage.setTitle("DAC°Search");
