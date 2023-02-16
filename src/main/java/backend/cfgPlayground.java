@@ -26,7 +26,7 @@ package backend;
 
 
 
-
+// THIS CLASS IS JUST A SCRATCH. IGNORE IT
 public class cfgPlayground {
     public static void main(String[] args) {
         String input = "play classical music";
