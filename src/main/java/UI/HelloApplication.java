@@ -21,16 +21,13 @@ import java.io.IOException;
 public class HelloApplication extends Application {
 
     private Image icon = new Image("file:src/main/resources/UI/blue-eye-original-icon.png");
-    private VBox conversation = new VBox();
+    private VBox conversation = new VBox(10);
     TextField textUser;
 
     @Override
     public void start(Stage stage) throws IOException {
-
         HBox root = new HBox();
-        VBox paneLeft = new VBox(10);
-        VBox paneCenter = new VBox();
-        VBox paneRight = new VBox();
+        StackPane paneCenter = new StackPane();
         //root.getChildren().addAll(paneLeft, paneCenter, paneRight);
         stage.setFullScreen(false);
         /*Dimension resolution = Toolkit.getDefaultToolkit().getScreenSize();
@@ -53,13 +50,10 @@ public class HelloApplication extends Application {
         textUser.setStyle("-fx-background-color: rgba(115, 188, 224, 0.2); -fx-text-fill: white; -fx-font: Courier New");
         textUser.setFont(new Font("Courier New", 15));
         textUser.setMinHeight(40);
-        textUser.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent ke) {
-                if (ke.getCode().equals(KeyCode.ENTER)) {
-                    outputMessage(textUser.getText());
-                    textUser.clear();
-                }
+        textUser.setOnKeyPressed(ke -> {
+            if (ke.getCode().equals(KeyCode.ENTER)) {
+                outputUserMessage(textUser.getText());
+                textUser.clear();
             }
         });
 
@@ -68,29 +62,26 @@ public class HelloApplication extends Application {
         sendIconView.setFitWidth(sendIcon.getWidth() * 0.6);
         sendIconView.setFitHeight(sendIcon.getHeight() * 0.6);
 
-        sendIconView.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent me) {
-
-                outputMessage(textUser.getText());
-                textUser.clear();
-            }
+        sendIconView.setOnMouseClicked(me -> {
+            outputUserMessage(textUser.getText());
+            textUser.clear();
         });
 
         HBox textUserSend = new HBox(5);
         textUserSend.getChildren().addAll(textUser, sendIconView);
-        textUserSend.setAlignment(Pos.CENTER);
+        textUserSend.setAlignment(Pos.BOTTOM_CENTER);
 
-        VBox iconTop = new VBox(iconView);
-        iconTop.setAlignment(Pos.CENTER);
-        VBox iconTopTextBottom = new VBox(iconTop, conversation);
-        iconTopTextBottom.setMargin(conversation, new Insets(10, 0, 10, 0));
-        iconTopTextBottom.setMargin(iconTop, new Insets(0, 0, 0, 0));
-        VBox iconChatTextUser = new VBox(iconTopTextBottom, textUserSend);
-        paneCenter.setMargin(iconChatTextUser, new Insets(0, 5, 5, 5));
-        iconChatTextUser.setMargin(textUser, new Insets(5, 5, 5, 5));
-        iconChatTextUser.setMargin(textUserSend, new Insets(2, 2, 4, 2));
-        iconTopTextBottom.setMinHeight(scene.getHeight() - 48);
+        StackPane eyeIcon = new StackPane(iconView);
+        eyeIcon.setAlignment(Pos.TOP_CENTER);
+        VBox eyeAndConversation = new VBox(eyeIcon, conversation);
+        eyeAndConversation.setMargin(conversation, new Insets(10, 0, 10, 0));
+        eyeAndConversation.setMargin(eyeIcon, new Insets(0, 0, 0, 0));
+
+        //VBox iconChatTextUser = new VBox(eyeAndConversation, textUserSend);
+        //paneCenter.setMargin(iconChatTextUser, new Insets(0, 5, 5, 5));
+        //iconChatTextUser.setMargin(textUser, new Insets(5, 5, 5, 5));
+        //iconChatTextUser.setMargin(textUserSend, new Insets(2, 2, 4, 2));
+        // eyeAndConversation.setMinHeight(scene.getHeight() - 48);
 
         outputMessage("Hello, how can I help you?");
 
@@ -101,35 +92,49 @@ public class HelloApplication extends Application {
         StackPane stackPane = new StackPane(pane, paneCenter);
         paneCenter.setMinWidth(scene.getWidth() * 1);
         paneCenter.setMaxWidth(scene.getWidth() * 1);
+        //paneCenter.setMinHeight(scene.getHeight());
+
         root.getChildren().add(stackPane);
         root.setAlignment(Pos.CENTER);
-        //paneLeft.setMinWidth(scene.getWidth() * 0.1);
-        paneLeft.setBackground(new Background(new BackgroundFill(Color.rgb(5, 5, 15), null, null)));
-        paneLeft.setAlignment(Pos.TOP_CENTER);
-        paneCenter.setMinWidth(scene.getWidth() * 1);
-        // stackPane.setBackground(new Background(background));
-        paneCenter.getChildren().add(iconChatTextUser);
-        //paneRight.setMinWidth(scene.getWidth() * 0.1);
-        paneRight.setBackground(new Background(new BackgroundFill(Color.rgb(5, 5, 15), null, null)));
+        paneCenter.getChildren().addAll(eyeAndConversation, textUserSend);
         stage.setFullScreenExitHint("");
         stage.setScene(scene);
+
         textUser.setPrefWidth(paneCenter.getMinWidth() - sendIcon.getWidth());
 
         stage.show();
     }
 
     public void outputMessage(String message) {
+        createMessage(message, false);
+    }
+
+    public void outputUserMessage(String message) {
+        createMessage(message, true);
+    }
+
+    public void createMessage(String message, boolean userMessage) {
         Text text = new Text();
         text.setText(message);
         text.setFill(Color.WHITE);
         text.setFont(Font.font("Courier New", 16));
-        ImageView iconView = new ImageView(icon);
-        iconView.setFitWidth(icon.getWidth() * 0.05);
-        iconView.setFitHeight(icon.getHeight() * 0.05);
-        HBox iconText = new HBox(iconView, text);
-        iconText.setMargin(text, new Insets(0, 0, 0, 5));
+        ImageView iconView;
+        HBox iconText = new HBox(5);
+        if (userMessage) {
+            Image accountIcon = new Image("file:src/main/resources/UI/account-icon.png");
+            iconView = new ImageView(accountIcon);
+            iconView.setFitWidth(16);
+            iconView.setFitHeight(16);
+            iconText.getChildren().addAll(text, iconView);
+            iconText.setAlignment(Pos.CENTER_RIGHT);
+        } else {
+            iconView = new ImageView(icon);
+            iconView.setFitWidth(icon.getWidth() * 0.05);
+            iconView.setFitHeight(icon.getHeight() * 0.05);
+            iconText.getChildren().addAll(iconView, text);
+            System.out.println("Small icon: " + iconView.getFitHeight());
+        }
         conversation.getChildren().add(iconText);
-        conversation.setMargin(iconText, new Insets(5, 0, 5, 0));
     }
 
     public static void main(String[] args) {
