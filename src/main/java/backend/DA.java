@@ -1,7 +1,7 @@
 package backend;
 
 import backend.Skills.Google;
-import backend.Skills.Spotify;
+//import backend.Skills.Spotify;
 import backend.Skills.Weather;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ public class DA {
     public DA() {
         allMySkills = new ArrayList<>();
         addSkill(new Google());
-        addSkill(new Spotify());
+//        addSkill(new Spotify());
         addSkill(new Weather());
     }
 

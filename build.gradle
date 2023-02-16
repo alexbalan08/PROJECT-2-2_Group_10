@@ -24,8 +24,9 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainModule = 'UI'
+    mainModule = 'java'
     mainClass = 'UI.HelloApplication'
+
 }
 
 javafx {
@@ -34,11 +35,8 @@ javafx {
 }
 
 dependencies {
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.6'
+
     implementation 'se.michaelthelin.spotify:spotify-web-api-java:7.3.0'
-    implementation('org.controlsfx:controlsfx:11.1.1')
-    implementation('org.kordamp.ikonli:ikonli-javafx:12.3.1')
-    implementation('org.kordamp.bootstrapfx:bootstrapfx-core:0.4.0')
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }

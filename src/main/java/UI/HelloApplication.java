@@ -1,5 +1,4 @@
 package UI;
-
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -21,7 +20,7 @@ import java.io.IOException;
 
 public class HelloApplication extends Application {
 
-    private Image icon = new Image("file:src/main/java/com/dacs/digitalassistent/blue-eye-original-icon.png");
+    private Image icon = new Image("file:src/main/resources/UI/blue-eye-original-icon.png");
     private VBox conversation = new VBox();
     TextField textUser;
 
@@ -64,7 +63,7 @@ public class HelloApplication extends Application {
             }
         });
 
-        Image sendIcon = new Image("file:src/main/java/com/dacs/digitalassistent/send-icon.png");
+        Image sendIcon = new Image("file:src/main/resources/UI/send-icon.png");
         ImageView sendIconView = new ImageView(sendIcon);
         sendIconView.setFitWidth(sendIcon.getWidth() * 0.6);
         sendIconView.setFitHeight(sendIcon.getHeight() * 0.6);
@@ -114,7 +113,6 @@ public class HelloApplication extends Application {
         paneRight.setBackground(new Background(new BackgroundFill(Color.rgb(5, 5, 15), null, null)));
         stage.setFullScreenExitHint("");
         stage.setScene(scene);
-
         textUser.setPrefWidth(paneCenter.getMinWidth() - sendIcon.getWidth());
 
         stage.show();
