@@ -16,17 +16,22 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+// I = "18942c9e84434efbb15ad08c82cd1ee3";
+// S = "6e25829074f54e10a4811b5cb39e5622";
+// TODO: REFRESH TOKENS OR AVAILABILITY FOR ALL DEVICES
 // Getting tokens: https://alecchen.dev/spotify-refresh-token/
 public class Spotify extends SkillWrapper {
 
-    public Spotify(){
-//        pause();
-        playSong(getSongID("Dancing Queen"));
+    // TODO: CFG
+    @Override
+    public void start(String matchedTemplate) {
+
+        playSong(getSongID("WESTERN UNION"));
     }
 
     private final SpotifyApi spotifyApi = new SpotifyApi.Builder()
             // .setRefreshToken("refreshtokenhere")
-            .setAccessToken("BQAAxsBrcxnGJWXUFwKjXV6mja2l-c6ot-l2AmBk3OKnPt21DdNJusY9tV7ntV4yW_JDtjqPnI2QWhGEmZT2urotjVVTqQkqijME-dd_-UhB7mWQ8Lc9wwgnVcMJAKFF2MooAu_YoTDfQZZ8OpehSUoOp41m0t0KwqEwjrM1uqfQH8K66igUJZuzDpcbvCjTSovGi94ZzoiYs_WWcWcp7sh-rStp_Vm7UoBl14pevX3vPBSsHH3nQc35yHHMrRls4EDlo0oP8mNcwgmhE7AjMiQbKLqJyPiBnVYjNFh9FaizuPtDiU69KiyHhQmKB9CL3oOhPYJsS1Tfx3GB-gnlNA")
+            .setAccessToken("BQBkiSygSYM5e7GgNI64oZmp0QbrU3zwFnX-cVOBZ5RJPYGu0ha1AD_ZJQ5KBdFGCb2CTybDUcRytc0bhqwfsrt7rSNuIHoYy84mUu7ZAwRFiXbQRhzLp1xVjH9vktyfTiySxs-phI4x4lFokIH96n1YyCRvFivAacxxaKfz2WokQp6EAkXc-g2OLEz9ZkGQvWgS79sr7JfNWAwFujTbaBRfnFFaw7-gOvvDDsCmLac7d_82kniSjwlZVnKFm3qb0EEAUCXGWectDI4yWnS94UuDmic4w1b8iU3A01cn0JG6djEBrVUrgV0HbIPTYrVMrgioCAkgUrEZBtq0Ciu7zA")
             .build();
     public void startResumeUsersPlayback_Sync(StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest) {
         try {
@@ -95,7 +100,8 @@ public class Spotify extends SkillWrapper {
     }
 
     public static void main(String[] args) {
-        new Spotify();
+        Spotify s = new Spotify();
+        s.start("TODO");
     }
 
 
