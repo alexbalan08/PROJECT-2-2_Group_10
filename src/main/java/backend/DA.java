@@ -20,28 +20,33 @@ public class DA {
 
     private void addSkill(SkillWrapper skill) {
         allMySkills.add(skill);
+        System.out.println(skill.getClass().getSimpleName()+" wrapper loaded successfully!");
     }
 
     public void startQuery(String query) {
-        // TODO: PROCESS INPUT AND BREAK IT DOWN USING CFG
+        double didIUnderstand = 0;
+        double understandingThreshhold = 0.6;
+        String matchedTemplate = null;
+        SkillWrapper bestMatch = null;
         for (SkillWrapper skill : allMySkills) {
-<<<<<<< HEAD
         // TODO: PROCESS INPUT AND BREAK IT DOWN USING CFG AND FIND OUT WHICH SKILL WE WANT TO USE
             // HARDCODE (needs changing)
             if(skill.getClass().getSimpleName().equals("Spotify")){
                 // Assumption at this point
                 didIUnderstand = 0.88;
                 bestMatch = skill;
-                // TODO: DEALING WITH THE PLACEHOLDERS USING CONTEXT-FREE GRAMMAR (CFG)
                 matchedTemplate = "play <song>";
                 ///////////////////////////
             }
             // END OF HARDCODE
         }
-=======
->>>>>>> parent of 13a986a (Abstraction of backend)
 
+        // Reality check
+        if(didIUnderstand>=understandingThreshhold){
+            bestMatch.start(matchedTemplate);
         }
-        // TODO:
+        else {
+            System.out.println("Sorry, didn't understand you!");
+        }
     }
 }

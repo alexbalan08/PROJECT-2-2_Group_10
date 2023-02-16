@@ -23,6 +23,6 @@ public class CUI {
     }
 
     public static void main(String[] args) {
-        CUI tester = new CUI();
+       new CUI();
     }
 }
