@@ -112,14 +112,9 @@ public class HelloApplication extends Application {
         conversation.getChildren().add(iconText);
     }
 
-    public void eventHandlers() {
-
-    }
-
     public static void main(String[] args) {
         launch();
     }
-
 
     private static class BuildImages {
         private Image eyeIcon;
