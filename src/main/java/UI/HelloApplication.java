@@ -18,9 +18,10 @@ import java.io.IOException;
 
 public class HelloApplication extends Application {
     private int textHeight = 16;
+    private String font = "Courier New";
     private BuildImages images = new BuildImages();
     private VBox conversation = new VBox(10);
-    TextField textUser;
+    TextField textField;
     DA assistant = new DA();
 
     @Override
@@ -30,65 +31,43 @@ public class HelloApplication extends Application {
         stage.setFullScreen(false);
         Scene scene = new Scene(root, 650, 650);
 
+        stage.getIcons().add(images.eyeIcon);
         stage.setTitle("DAC°Search");
-
-        textUser = new TextField();
-        textUser.setStyle("-fx-background-color: rgba(115, 188, 224, 0.2); -fx-text-fill: white; -fx-font: Courier New");
-        textUser.setFont(new Font("Courier New", textHeight));
-        textUser.setMinHeight(40);
-        textUser.setOnKeyPressed(ke -> {
-            if (ke.getCode().equals(KeyCode.ENTER)) {
-                if (textUser.getText() != "") {
-                    outputUserMessage(textUser.getText());
-                    outputMessage(assistant.startQuery(textUser.getText()));
-                    textUser.clear();
-                }
-            }
-        });
-
-        images.sendIconView().setOnMouseClicked(me -> {
-            if (textUser.getText() != "") {
-                outputUserMessage(textUser.getText());
-                outputMessage(assistant.startQuery(textUser.getText()));
-                textUser.clear();
-            }
-        });
-
-        HBox textUserSend = new HBox(10);
-        textUserSend.getChildren().addAll(textUser, images.sendIconView());
-        textUserSend.setAlignment(Pos.BOTTOM_CENTER);
 
         StackPane eyeIcon = new StackPane(images.eyeIconView(45));
         eyeIcon.setAlignment(Pos.TOP_CENTER);
+
         VBox eyeAndConversation = new VBox(eyeIcon, conversation);
+        eyeAndConversation.setMargin(eyeIcon, new Insets(25, 0, 15, 0));
         eyeAndConversation.setMargin(conversation, new Insets(10, 30, 10, 30));
-        eyeAndConversation.setMargin(eyeIcon, new Insets(20, 0, 10, 0));
 
-        paneCenter.setMargin(textUserSend, new Insets(20, 20, 20, 20));
+        HBox textFieldSend = createTextFieldSend();
+        textFieldSend.setAlignment(Pos.BOTTOM_CENTER);
 
-        outputMessage("Hello, how can I help you?");
+        paneCenter.setMinWidth(scene.getWidth());
+        paneCenter.setMaxWidth(scene.getWidth());
+        paneCenter.setMargin(textFieldSend, new Insets(20, 20, 20, 20));
 
-        stage.getIcons().add(images.eyeIcon);
+        outputBotMessage("Hello, how can I help you?");
+
         StackPane backgroundPane = new StackPane();
         backgroundPane.setBackground(new Background(images.background()));
         backgroundPane.setMinWidth(3000 * 0.4);
         StackPane stackPane = new StackPane(backgroundPane, paneCenter);
-        paneCenter.setMinWidth(scene.getWidth());
-        paneCenter.setMaxWidth(scene.getWidth());
 
         root.getChildren().add(stackPane);
         root.setAlignment(Pos.CENTER);
-        paneCenter.getChildren().addAll(eyeAndConversation, textUserSend);
+        paneCenter.getChildren().addAll(eyeAndConversation, textFieldSend);
         stage.setFullScreenExitHint("");
         stage.setScene(scene);
 
-        textUser.setPrefWidth(paneCenter.getMinWidth() - images.sendIcon.getWidth());
+        textField.setPrefWidth(paneCenter.getMinWidth() - images.sendIcon.getWidth());
 
         stage.show();
     }
 
-    public void outputMessage(String message) {
-        if(message!="") createMessage(message, false);
+    public void outputBotMessage(String message) {
+        if(message != "") createMessage(message, false);
     }
 
     public void outputUserMessage(String message) {
@@ -110,6 +89,31 @@ public class HelloApplication extends Application {
         }
 
         conversation.getChildren().add(iconText);
+    }
+
+    public void sendMessageEventHandler() {
+        if (textField.getText() != "") {
+            outputUserMessage(textField.getText());
+            outputBotMessage(assistant.startQuery(textField.getText()));
+            textField.clear();
+        }
+    }
+
+    public HBox createTextFieldSend() {
+        textField = new TextField();
+        textField.setStyle("-fx-background-color: rgba(115, 188, 224, 0.2); -fx-text-fill: white; -fx-font: " + font);
+        textField.setFont(new Font(font, textHeight));
+        textField.setMinHeight(textHeight + (textHeight * 1.5));
+        textField.setOnKeyPressed(ke -> {
+            if (ke.getCode().equals(KeyCode.ENTER)) sendMessageEventHandler();
+        });
+
+        ImageView sendIconView = images.sendIconView();
+        sendIconView.setOnMouseClicked(me -> sendMessageEventHandler());
+
+        HBox textFieldSend = new HBox(10);
+        textFieldSend.getChildren().addAll(textField, sendIconView);
+        return textFieldSend;
     }
 
     public static void main(String[] args) {
