@@ -1,8 +1,23 @@
 package backend;
 
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
 public abstract class SkillWrapper {
+
+    public Queue<String> outputs = new LinkedList<>();
     // Needs to be overwritten to work
     public void start(String matchedTemplate) {
-        System.out.println("This skill is not yet implemented");
+        outputs.add("Skill still in works.");
+    }
+
+    public String getResponse() {
+        String finalOut = "";
+        for (String out:outputs){
+            finalOut+=outputs.remove();
+        }
+        return finalOut;
     }
 }

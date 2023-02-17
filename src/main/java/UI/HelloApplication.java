@@ -1,4 +1,5 @@
 package UI;
+import backend.DA;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -20,6 +21,7 @@ public class HelloApplication extends Application {
     private Image eyeIcon = new Image("file:src/main/resources/UI/blue-eye-original-icon.png");
     private VBox conversation = new VBox(10);
     TextField textUser;
+    DA assistant = new DA();
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -51,6 +53,7 @@ public class HelloApplication extends Application {
             if (ke.getCode().equals(KeyCode.ENTER)) {
                 if (textUser.getText() != "") {
                     outputUserMessage(textUser.getText());
+                    outputMessage(assistant.startQuery(textUser.getText()));
                     textUser.clear();
                 }
             }
@@ -102,7 +105,7 @@ public class HelloApplication extends Application {
     }
 
     public void outputMessage(String message) {
-        createMessage(message, false);
+        if(message!="") createMessage(message, false);
     }
 
     public void outputUserMessage(String message) {

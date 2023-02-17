@@ -23,20 +23,21 @@ public class DA {
         System.out.println(skill.getClass().getSimpleName()+" wrapper loaded successfully!");
     }
 
-    public void startQuery(String query) {
+    public String startQuery(String query) {
         double didIUnderstand = 0;
         double understandingThreshhold = 0.6;
         String matchedTemplate = null;
         SkillWrapper bestMatch = null;
+        String output = "";
         for (SkillWrapper skill : allMySkills) {
         // TODO: PROCESS INPUT AND BREAK IT DOWN USING CFG AND FIND OUT WHICH SKILL WE WANT TO USE
             // HARDCODE (needs changing)
-            if(skill.getClass().getSimpleName().equals("Spotify")){
+            if(skill.getClass().getSimpleName().equals(query)){
                 // Assumption at this point
-                didIUnderstand = 0.88;
+                didIUnderstand = 0.89;
                 bestMatch = skill;
                 // TODO: DEALING WITH THE PLACEHOLDERS USING CONTEXT-FREE GRAMMAR (CFG)
-                matchedTemplate = "play <song>";
+//                matchedTemplate = "play <song>";
                 ///////////////////////////
             }
             // END OF HARDCODE
@@ -44,10 +45,12 @@ public class DA {
 
         // Reality check
         if(didIUnderstand>=understandingThreshhold){
-            bestMatch.start(matchedTemplate);
+            bestMatch.start(query);
+            output=bestMatch.getResponse();
         }
         else {
-            System.out.println("Sorry, didn't understand you!");
+            return ("Sorry, didn't understand you!");
         }
+        return output;
     }
 }

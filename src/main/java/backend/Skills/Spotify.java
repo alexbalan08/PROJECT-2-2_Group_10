@@ -26,12 +26,13 @@ public class Spotify extends SkillWrapper {
     @Override
     public void start(String matchedTemplate) {
 
-        playSong(getSongID("WESTERN UNION"));
+        playSong(getSongID("Корабль в бутылке"));
+        outputs.add("Playing Корабль в бутылке.");
     }
 
     private final SpotifyApi spotifyApi = new SpotifyApi.Builder()
             // .setRefreshToken("refreshtokenhere")
-            .setAccessToken("BQBkiSygSYM5e7GgNI64oZmp0QbrU3zwFnX-cVOBZ5RJPYGu0ha1AD_ZJQ5KBdFGCb2CTybDUcRytc0bhqwfsrt7rSNuIHoYy84mUu7ZAwRFiXbQRhzLp1xVjH9vktyfTiySxs-phI4x4lFokIH96n1YyCRvFivAacxxaKfz2WokQp6EAkXc-g2OLEz9ZkGQvWgS79sr7JfNWAwFujTbaBRfnFFaw7-gOvvDDsCmLac7d_82kniSjwlZVnKFm3qb0EEAUCXGWectDI4yWnS94UuDmic4w1b8iU3A01cn0JG6djEBrVUrgV0HbIPTYrVMrgioCAkgUrEZBtq0Ciu7zA")
+            .setAccessToken("BQBQMbLo3dh6MzESpW9UdmEujszrSJx8qlgxuK95uv-Rp5zCwP0B8F0Zctx3D997Y--j_CXRQjWNVWdKAcqYSyCR4DysoM0pjBJYz23m_8BJ6LoDl5Cx8l1j-ymXtezL6fsr3Aw9TOc2xz4aCttYY5-A0UV4SxyjGSccaakiuPeVzDq8Yicd6ZJIwlzE-Sz0ectK-FAmXjhnJhVVJITHyMkPd79S78T371VckJwgsVnpLXPnsHmCcEndppLid2VJJGx1haTfm1Td5CTYYv1z06WZejz0cuEzgp1LuC1EdsbtgYtmxDEJHskAM6jfswWZ4lU4WROg6Ole1gnCKmTGBg")
             .build();
     public void startResumeUsersPlayback_Sync(StartResumeUsersPlaybackRequest startResumeUsersPlaybackRequest) {
         try {

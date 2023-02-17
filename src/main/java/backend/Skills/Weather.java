@@ -18,6 +18,8 @@ public class Weather extends SkillWrapper {
 
     @Override
     public void start(String matchedTemplate) {
+        System.out.println("Start");
+        String output = "";
         try {
             URL url = new URL(API_URL);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -36,7 +38,7 @@ public class Weather extends SkillWrapper {
 
             ObjectMapper om = new ObjectMapper();
             WeatherData WD = om.readValue(response.toString(), WeatherData.class);
-            System.out.println("At the moment, in "+ city + ", it's "+ WD.getMain().getTemp()+ " °C. Feels like: "+WD.getMain().getFeels_like()+" °C.");
+            outputs.add("At the moment, in "+ city + ", it's "+ WD.getMain().getTemp()+ " °C.\nFeels like: "+WD.getMain().getFeels_like()+" °C.");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
