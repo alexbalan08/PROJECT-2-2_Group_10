@@ -12,6 +12,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -76,14 +77,19 @@ public class HelloApplication extends Application {
 
     public void createMessage(String message, boolean userMessage) {
         Text text = new Text();
+        text.setWrappingWidth(250);
         text.setText(message);
         text.setFill(Color.WHITE);
         text.setFont(Font.font("Courier New", textHeight));
         HBox iconText = new HBox(textHeight);
 
+
+
         if (userMessage) {
+            text.setTextAlignment(TextAlignment.RIGHT);
             iconText.setAlignment(Pos.CENTER_RIGHT);
             iconText.getChildren().addAll(text, images.accountIconView(textHeight));
+            iconText.setMargin(text, new Insets(0, 5, 0 ,0));
         } else {
             iconText.getChildren().addAll(images.eyeIconView(textHeight), text);
         }
