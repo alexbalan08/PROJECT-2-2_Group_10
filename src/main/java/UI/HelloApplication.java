@@ -47,7 +47,7 @@ public class HelloApplication extends Application {
 
         paneCenter.setMinWidth(scene.getWidth());
         paneCenter.setMaxWidth(scene.getWidth());
-        paneCenter.setMargin(textFieldSend, new Insets(20, 20, 20, 20));
+        paneCenter.setMargin(textFieldSend, new Insets(20, 20, 25, 20));
 
         outputBotMessage("Hello, how can I help you?");
 
