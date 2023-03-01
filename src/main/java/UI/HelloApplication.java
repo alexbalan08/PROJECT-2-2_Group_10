@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class HelloApplication extends Application {
+    private int sceneSize = 650;
     private int textHeight = 16;
     private String font = "Courier New";
     private BuildImages images = new BuildImages();
@@ -28,38 +29,25 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         HBox root = new HBox();
-        StackPane paneCenter = new StackPane();
-        stage.setFullScreen(false);
-        Scene scene = new Scene(root, 650, 650);
+        Scene scene = new Scene(root, sceneSize, sceneSize);
 
         stage.getIcons().add(images.eyeIcon);
         stage.setTitle("DAC°Search");
 
-        StackPane eyeIcon = new StackPane(images.eyeIconView(45));
-        eyeIcon.setAlignment(Pos.TOP_CENTER);
-
-        VBox eyeAndConversation = new VBox(eyeIcon, conversation);
-        eyeAndConversation.setMargin(eyeIcon, new Insets(25, 0, 15, 0));
-        eyeAndConversation.setMargin(conversation, new Insets(10, 30, 10, 30));
+        VBox eyeAndConversation = createEyeAndConversation();
 
         HBox textFieldSend = createTextFieldSend();
-        textFieldSend.setAlignment(Pos.BOTTOM_CENTER);
 
-        paneCenter.setMinWidth(scene.getWidth());
-        paneCenter.setMaxWidth(scene.getWidth());
-        paneCenter.setMargin(textFieldSend, new Insets(20, 20, 25, 20));
+        StackPane paneCenter = createPaneCenter(eyeAndConversation, textFieldSend);
 
-        outputBotMessage("Hello, how can I help you?");
+        outputBotMessage("Hello DACStudent, how can I help you?");
 
         StackPane backgroundPane = new StackPane();
         backgroundPane.setBackground(new Background(images.background()));
         backgroundPane.setMinWidth(3000 * 0.4);
-        StackPane stackPane = new StackPane(backgroundPane, paneCenter);
 
-        root.getChildren().add(stackPane);
+        root.getChildren().add(new StackPane(backgroundPane, paneCenter));
         root.setAlignment(Pos.CENTER);
-        paneCenter.getChildren().addAll(eyeAndConversation, textFieldSend);
-        stage.setFullScreenExitHint("");
         stage.setScene(scene);
 
         textField.setPrefWidth(paneCenter.getMinWidth() - images.sendIcon.getWidth());
@@ -77,7 +65,7 @@ public class HelloApplication extends Application {
 
     public void createMessage(String message, boolean userMessage) {
         Text text = new Text();
-        text.setWrappingWidth(350);
+        text.setWrappingWidth(sceneSize * 0.55);
         text.setText(message);
         text.setFill(Color.WHITE);
         text.setFont(Font.font("Courier New", textHeight));
@@ -108,6 +96,17 @@ public class HelloApplication extends Application {
         }
     }
 
+    public VBox createEyeAndConversation() {
+        StackPane eyeIcon = new StackPane(images.eyeIconView(45));
+        eyeIcon.setAlignment(Pos.TOP_CENTER);
+
+        VBox eyeAndConversation = new VBox(eyeIcon, conversation);
+        eyeAndConversation.setMargin(eyeIcon, new Insets(25, 0, 15, 0));
+        eyeAndConversation.setMargin(conversation, new Insets(10, 30, 10, 30));
+
+        return eyeAndConversation;
+    }
+
     public HBox createTextFieldSend() {
         textField = new TextField();
         textField.setStyle("-fx-background-color: rgba(115, 188, 224, 0.2); -fx-text-fill: white; -fx-font: " + font);
@@ -122,7 +121,19 @@ public class HelloApplication extends Application {
 
         HBox textFieldSend = new HBox(10);
         textFieldSend.getChildren().addAll(textField, sendIconView);
+        textFieldSend.setAlignment(Pos.BOTTOM_CENTER);
+
         return textFieldSend;
+    }
+
+    public StackPane createPaneCenter(VBox eyeAndConversation, HBox textFieldSend) {
+        StackPane paneCenter = new StackPane();
+        paneCenter.setMinWidth(sceneSize);
+        paneCenter.setMaxWidth(sceneSize);
+        paneCenter.setMargin(textFieldSend, new Insets(20, 20, 25, 20));
+        paneCenter.getChildren().addAll(eyeAndConversation, textFieldSend);
+
+        return paneCenter;
     }
 
     public static void main(String[] args) {
