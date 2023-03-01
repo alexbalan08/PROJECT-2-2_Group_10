@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class HelloApplication extends Stage {
     private int sceneSize = 650;
     private int textHeight = 16;
     private String font = "Courier New";
@@ -26,14 +26,16 @@ public class HelloApplication extends Application {
     private VBox conversation = new VBox(10);
     TextField textField;
     DA assistant = new DA();
+    private final Stage stage;
 
-    @Override
-    public void start(Stage stage) throws IOException {
+
+    public HelloApplication(Stage stage) {
+        this.stage = stage;
         HBox root = new HBox();
         Scene scene = new Scene(root, sceneSize, sceneSize);
 
-        stage.getIcons().add(images.eyeIcon);
-        stage.setTitle("DAC°Search");
+        this.getIcons().add(images.eyeIcon);
+        this.setTitle("DAC°Search");
 
         VBox eyeAndConversation = createEyeAndConversation();
 
@@ -49,11 +51,10 @@ public class HelloApplication extends Application {
 
         root.getChildren().add(new StackPane(backgroundPane, paneCenter));
         root.setAlignment(Pos.CENTER);
-        stage.setScene(scene);
+        this.setScene(scene);
 
         textField.setPrefWidth(paneCenter.getMinWidth() - images.sendIcon.getWidth());
 
-        stage.show();
     }
 
     public void outputBotMessage(String message) {
@@ -87,6 +88,9 @@ public class HelloApplication extends Application {
         iconPane.setAlignment(Pos.TOP_CENTER);
         conversation.getChildren().add(iconText);
         conversation.setMargin(iconText, new Insets(5, 0, 5 ,0));
+        if(conversation.getHeight() > 350) {
+            conversation.getChildren().remove(0);
+        }
     }
 
     public void sendMessageEventHandler() {
@@ -137,9 +141,10 @@ public class HelloApplication extends Application {
         return paneCenter;
     }
 
-    public static void main(String[] args) {
-        launch();
+    public void showMain() {
+        show();
     }
+
 
     protected static class BuildImages {
         private Image eyeIcon;
@@ -179,5 +184,8 @@ public class HelloApplication extends Application {
             accountIconView.setFitHeight(accountIconHeight);
             return accountIconView;
         }
+
+
+
     }
 }

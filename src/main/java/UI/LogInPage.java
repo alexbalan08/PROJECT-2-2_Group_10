@@ -17,6 +17,8 @@ import javafx.stage.Stage;
 
 public class LogInPage extends Application {
     private String font = "Courier New";
+    private HelloApplication main;
+
 
 
     public static void main(String[] args) {
@@ -25,6 +27,7 @@ public class LogInPage extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        main = new HelloApplication(primaryStage);
         primaryStage.setTitle("DAC° Assistant Login");
 
 
@@ -74,6 +77,9 @@ public class LogInPage extends Application {
             String passwordValue = pwBox.getText();
             if (userNameValue.equals("team10") && passwordValue.equals("dacs")) {
                 message.setText("Login successful!");
+                primaryStage.hide();
+                main.showMain();
+
             } else {
                 message.setText("Incorrect username or password.");
             }
@@ -92,7 +98,7 @@ public class LogInPage extends Application {
         StackPane eyePane = new StackPane(bum);
         eyePane.setAlignment(Pos.TOP_CENTER);
 
-        HelloApplication helloApplication = new HelloApplication();
+        HelloApplication helloApplication = new HelloApplication(primaryStage);
 
         StackPane backgroundPane = new StackPane();
         backgroundPane.setBackground(new Background(helloApplication.images.background()));
