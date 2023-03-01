@@ -10,7 +10,7 @@ public abstract class SkillWrapper {
     public Queue<String> outputs = new LinkedList<>();
     // Needs to be overwritten to work
     public void start(String matchedTemplate) {
-        outputs.add("Skill still in works.");
+        outputs.add("Skill still in work.");
     }
 
     public String getResponse() {

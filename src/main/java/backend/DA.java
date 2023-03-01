@@ -20,7 +20,7 @@ public class DA {
 
     private void addSkill(SkillWrapper skill) {
         allMySkills.add(skill);
-        System.out.println(skill.getClass().getSimpleName()+" wrapper loaded successfully!");
+        System.out.println(skill.getClass().getSimpleName() + " wrapper loaded successfully!");
     }
 
     public String startQuery(String query) {

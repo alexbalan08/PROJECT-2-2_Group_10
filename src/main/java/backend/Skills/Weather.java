@@ -38,7 +38,7 @@ public class Weather extends SkillWrapper {
 
             ObjectMapper om = new ObjectMapper();
             WeatherData WD = om.readValue(response.toString(), WeatherData.class);
-            outputs.add("At the moment, in "+ city + ", it's "+ WD.getMain().getTemp()+ " °C.\nFeels like: "+WD.getMain().getFeels_like()+" °C.");
+            outputs.add("At the moment, in "+ city + ", it's "+ WD.getMain().getTemp()+ "°C.\nFeels like: "+WD.getMain().getFeels_like()+"°C.");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }

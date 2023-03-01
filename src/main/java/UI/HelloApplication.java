@@ -1,5 +1,6 @@
 package UI;
 import backend.DA;
+import backend.Skills.WeatherData.Sys;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -16,6 +17,8 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class HelloApplication extends Application {
     private int sceneSize = 650;
@@ -90,8 +93,9 @@ public class HelloApplication extends Application {
 
     public void sendMessageEventHandler() {
         if (textField.getText() != "") {
-            outputUserMessage(textField.getText());
-            outputBotMessage(assistant.startQuery(textField.getText()));
+        String text = textField.getText();
+            outputUserMessage(text);
+            outputBotMessage(assistant.startQuery(text));
             textField.clear();
         }
     }
@@ -136,7 +140,7 @@ public class HelloApplication extends Application {
         return paneCenter;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         launch();
     }
 
