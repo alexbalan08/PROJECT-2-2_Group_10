@@ -21,7 +21,7 @@ public class HelloApplication extends Application {
     private int sceneSize = 650;
     private int textHeight = 16;
     private String font = "Courier New";
-    private BuildImages images = new BuildImages();
+    protected BuildImages images = new BuildImages();
     private VBox conversation = new VBox(10);
     TextField textField;
     DA assistant = new DA();
@@ -140,7 +140,7 @@ public class HelloApplication extends Application {
         launch();
     }
 
-    private static class BuildImages {
+    protected static class BuildImages {
         private Image eyeIcon;
         private Image backgroundImage;
         private Image sendIcon;
