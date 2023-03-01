@@ -77,24 +77,27 @@ public class HelloApplication extends Application {
 
     public void createMessage(String message, boolean userMessage) {
         Text text = new Text();
-        text.setWrappingWidth(250);
+        text.setWrappingWidth(350);
         text.setText(message);
         text.setFill(Color.WHITE);
         text.setFont(Font.font("Courier New", textHeight));
         HBox iconText = new HBox(textHeight);
-
-
+        StackPane iconPane;
 
         if (userMessage) {
             text.setTextAlignment(TextAlignment.RIGHT);
             iconText.setAlignment(Pos.CENTER_RIGHT);
-            iconText.getChildren().addAll(text, images.accountIconView(textHeight));
+            iconPane = new StackPane(images.accountIconView(textHeight));
+            iconText.getChildren().addAll(text, iconPane);
             iconText.setMargin(text, new Insets(0, 5, 0 ,0));
         } else {
-            iconText.getChildren().addAll(images.eyeIconView(textHeight), text);
+            iconPane = new StackPane(images.eyeIconView(textHeight));
+            iconText.getChildren().addAll(iconPane, text);
         }
 
+        iconPane.setAlignment(Pos.TOP_CENTER);
         conversation.getChildren().add(iconText);
+        conversation.setMargin(iconText, new Insets(5, 0, 5 ,0));
     }
 
     public void sendMessageEventHandler() {
