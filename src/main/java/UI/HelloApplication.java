@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,7 +22,7 @@ public class HelloApplication extends Application {
     private int sceneSize = 650;
     private int textHeight = 16;
     private String font = "Courier New";
-    private BuildImages images = new BuildImages();
+    public BuildImages images = new BuildImages();
     private VBox conversation = new VBox(10);
     TextField textField;
     DA assistant = new DA();
@@ -140,7 +141,7 @@ public class HelloApplication extends Application {
         launch();
     }
 
-    private static class BuildImages {
+    public static class BuildImages {
         private Image eyeIcon;
         private Image backgroundImage;
         private Image sendIcon;

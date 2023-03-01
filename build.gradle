@@ -1,11 +1,11 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.10'
-    id 'org.beryx.jlink' version '2.24.1'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+    id 'org.beryx.jlink' version '2.25.0'
 }
 
-group 'LogIn'
+group 'java'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -13,7 +13,7 @@ repositories {
 }
 
 ext {
-    junitVersion = '5.8.1'
+    junitVersion = '5.8.2'
 }
 
 sourceCompatibility = '17'
@@ -24,17 +24,19 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainModule = 'login.login'
-    mainClass = 'login.login.HelloApplication'
+    mainModule = 'java'
+    mainClass = 'UI.HelloApplication'
+
 }
 
 javafx {
-    version = '17.0.1'
+    version = '17.0.2'
     modules = ['javafx.controls', 'javafx.fxml']
 }
 
 dependencies {
 
+    implementation 'se.michaelthelin.spotify:spotify-web-api-java:7.3.0'
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }
