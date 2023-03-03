@@ -10,6 +10,7 @@ module UI {
     requires com.google.gson;
     requires org.slf4j;
     requires com.fasterxml.jackson.databind;
+    requires org.apache.pdfbox;
 
     exports backend.Skills.WeatherData;
 

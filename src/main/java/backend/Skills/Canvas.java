@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+
 public class Canvas extends SkillWrapper {
     private final String APIkey = Files.readString(Path.of("./src/main/resources/canvasKey.secret"));
     private final String accessToken = "?per_page=100&access_token=" + APIkey;
@@ -115,8 +118,8 @@ public class Canvas extends SkillWrapper {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         InputStream inputStream = con.getInputStream();
-        File file = new File("./src/main/resources/newfile.pdf");
-        FileOutputStream outputStream = new FileOutputStream(file/*saveFilePath*/);
+        File file = new File("./src/main/resources/courses/newfile.pdf");
+        FileOutputStream outputStream = new FileOutputStream(file);
         int bytesRead = -1;
         int BUFFER_SIZE = 4096;
         byte[] buffer = new byte[BUFFER_SIZE];
@@ -126,5 +129,12 @@ public class Canvas extends SkillWrapper {
 
         outputStream.close();
         inputStream.close();
+
+        // File file2 = new File("path of the document");
+        PDDocument document = PDDocument.load(file);
+        PDFTextStripper pdfStripper = new PDFTextStripper();
+        String text = pdfStripper.getText(document);
+        System.out.println(text);
+        document.close();
     }
 }
