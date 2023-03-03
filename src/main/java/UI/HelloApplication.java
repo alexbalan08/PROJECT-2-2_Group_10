@@ -35,7 +35,7 @@ public class HelloApplication extends Application {
         Scene scene = new Scene(root, sceneSize, sceneSize);
 
         stage.getIcons().add(images.eyeIcon);
-        stage.setTitle("DAC°Search");
+        stage.setTitle("EYE°Sistant");
 
         VBox eyeAndConversation = createEyeAndConversation();
 

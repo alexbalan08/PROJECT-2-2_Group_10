@@ -30,7 +30,7 @@ public class LogInPage extends Application {
     @Override
     public void start(Stage primaryStage) {
         main = new HelloApplication();
-        primaryStage.setTitle("DAC° Assistant Login");
+        primaryStage.setTitle("EYE°Sistant");
 
 
         GridPane grid = new GridPane();
@@ -111,7 +111,7 @@ public class LogInPage extends Application {
         StackPane stackPane = new StackPane();
 
         stackPane.getChildren().addAll(backgroundPane, eyePane, grid);
-        stackPane.setMargin(eyePane, new Insets(bum.getFitHeight() * 0.4, 0, bum.getFitHeight() * 0.4, 0));
+        stackPane.setMargin(eyePane, new Insets(bum.getFitHeight() * 0.6, 0, bum.getFitHeight() * 0.4, 0));
 
         Scene scene = new Scene(stackPane, 600, 600);
 
