@@ -1,9 +1,11 @@
 package backend;
 
+import backend.Skills.Canvas;
 import backend.Skills.Google;
 import backend.Skills.Spotify;
 import backend.Skills.Weather;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +13,9 @@ public class DA {
 
     List<SkillWrapper> allMySkills;
 
-    public DA() {
+    public DA() throws IOException {
         allMySkills = new ArrayList<>();
+        addSkill(new Canvas());
         addSkill(new Google());
         addSkill(new Spotify());
         addSkill(new Weather());
@@ -23,7 +26,7 @@ public class DA {
         System.out.println(skill.getClass().getSimpleName() + " wrapper loaded successfully!");
     }
 
-    public String startQuery(String query) {
+    public String startQuery(String query) throws IOException {
         double didIUnderstand = 0;
         double understandingThreshhold = 0.6;
         String matchedTemplate = null;

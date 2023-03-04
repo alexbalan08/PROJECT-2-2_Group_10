@@ -29,6 +29,9 @@ public class HelloApplication extends Application {
     TextField textField;
     DA assistant = new DA();
 
+    public HelloApplication() throws IOException {
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
         HBox root = new HBox();
@@ -91,7 +94,7 @@ public class HelloApplication extends Application {
         conversation.setMargin(iconText, new Insets(5, 0, 5 ,0));
     }
 
-    public void sendMessageEventHandler() {
+    public void sendMessageEventHandler() throws IOException {
         if (textField.getText() != "") {
         String text = textField.getText();
             outputUserMessage(text);
@@ -117,11 +120,23 @@ public class HelloApplication extends Application {
         textField.setFont(new Font(font, textHeight));
         textField.setMinHeight(textHeight + (textHeight * 1.5));
         textField.setOnKeyPressed(ke -> {
-            if (ke.getCode().equals(KeyCode.ENTER)) sendMessageEventHandler();
+            if (ke.getCode().equals(KeyCode.ENTER)) {
+                try {
+                    sendMessageEventHandler();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         });
 
         ImageView sendIconView = images.sendIconView();
-        sendIconView.setOnMouseClicked(me -> sendMessageEventHandler());
+        sendIconView.setOnMouseClicked(me -> {
+            try {
+                sendMessageEventHandler();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         HBox textFieldSend = new HBox(10);
         textFieldSend.getChildren().addAll(textField, sendIconView);
