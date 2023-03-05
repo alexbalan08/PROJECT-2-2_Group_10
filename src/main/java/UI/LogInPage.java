@@ -77,7 +77,7 @@ public class LogInPage extends Application {
         btn.setOnAction(event -> {
             String userNameValue = userTextField.getText();
             String passwordValue = pwBox.getText();
-            if (userNameValue.equals("team10") && passwordValue.equals("dacs")) {
+            if (true/*userNameValue.equals("team10") && passwordValue.equals("dacs")*/) {
                 message.setText("Login successful!");
                 primaryStage.hide();
                 try {

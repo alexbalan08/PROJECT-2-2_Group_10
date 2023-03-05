@@ -1,24 +1,18 @@
 package backend.Skills;
 
 import backend.SkillWrapper;
-import backend.Skills.WeatherData.WeatherData;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Objects;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 public class Canvas extends SkillWrapper {
@@ -45,12 +39,12 @@ public class Canvas extends SkillWrapper {
                 JsonNode course = courses.next();
                 // Look at modules inside the course
                 if(course.get("name").asText().toLowerCase().contains(keyWords[0])) {
-                    output = output.concat("For the course " + course.get("name").asText() + " you can find the topic \'" + keyWords[1] + "\' in:\n");
+                    output = output.concat("For the course \'" + course.get("name").asText() + "\' you can find the topic \'" + keyWords[1] + "\' in:\n");
                     File courseFolder = new File("./src/main/resources/courses/" + course.get("name").asText());
                     if (!courseFolder.exists()) {
-                        downloadUrlFiles(course);
+                        downloadUrlFiles(course, courseFolder);
                     }
-                    output = allSlidesWithTopic(output, keyWords[1], courseFolder);
+                    output = output.concat(allSlidesWithTopic(courseFolder, keyWords[1]));
                     outputs.add(output);
                     break;
                 } else if (!courses.hasNext()) {
@@ -63,8 +57,7 @@ public class Canvas extends SkillWrapper {
         }
     }
 
-    public void downloadUrlFiles(JsonNode course) throws IOException {
-        File courseFolder = new File("./src/main/resources/courses/" + course.get("name").asText());
+    public void downloadUrlFiles(JsonNode course, File courseFolder) throws IOException {
         courseFolder.mkdir();
         final String API_URL_course_modules = API_URL_courses + "/" + course.get("id") + "/modules";
         String courseModules = response(API_URL_course_modules + accessToken);
@@ -73,8 +66,10 @@ public class Canvas extends SkillWrapper {
         // Look at items inside the modules
         for (Iterator<JsonNode> modules = rootModules.elements(); modules.hasNext(); ) {
             JsonNode module = modules.next();
-            File moduleFolder = new File(courseFolder.getPath() + "/" + module.get("name"));
+            String moduleName = module.get("name").asText().replace(":", "");
+            File moduleFolder = new File(courseFolder.getPath() + "/" + moduleName);
             moduleFolder.mkdir();
+            System.out.println("The module directory \'" + module.get("name").asText() + "\' has been created? " + moduleFolder.exists());
             String courseModuleItems = response(module.get("items_url").asText() + accessToken);
             JsonNode rootModuleItems = om.readTree(courseModuleItems);
 
@@ -113,7 +108,7 @@ public class Canvas extends SkillWrapper {
     }
 
     // Save a pdf file (with the lecture slides content) having the download_url and saving it in the pathName
-    public static File savePdfFile(String download_url, String pathName) throws IOException {
+    public static void savePdfFile(String download_url, String pathName) throws IOException {
         URL url = new URL(download_url);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
@@ -128,12 +123,10 @@ public class Canvas extends SkillWrapper {
         }
         outputStream.close();
         inputStream.close();
-
-        return file;
     }
 
     // List of slides of one Lecture containing the topic
-    public static ArrayList<Integer> getSlidesWithTopic(String topic, File file) throws IOException {
+    public static ArrayList<Integer> getFileSlidesWithTopic(String topic, File file) throws IOException {
         ArrayList<Integer> slidesWithTopic = new ArrayList<>();
 
         PDDocument document = PDDocument.load(file);
@@ -154,25 +147,23 @@ public class Canvas extends SkillWrapper {
     }
 
     // String containing slides of all lectures containing the topic
-    public String allSlidesWithTopic(String output, String topic, File courseFolder) throws IOException {
+    public static String allSlidesWithTopic(File courseFolder, String topic) throws IOException {
+        String output = "";
         boolean topicFound = false;
         File[] courseFolderModules = courseFolder.listFiles();
         for (File courseFolderModule : courseFolderModules) {
             boolean topicInModuleFound = false;
             File[] courseFolderModuleFiles = courseFolderModule.listFiles();
             for (File courseFolderModuleFile : courseFolderModuleFiles) {
-                ArrayList<Integer> numberSlides = getSlidesWithTopic(topic, courseFolderModuleFile);
+                ArrayList<Integer> numberSlides = getFileSlidesWithTopic(topic, courseFolderModuleFile);
                 if(!numberSlides.isEmpty()) {
                     if (!topicFound) topicFound = true;
                     if (!topicInModuleFound) {
                         topicInModuleFound = true;
-                        output = output.concat("\nModule \'" + courseFolderModule.getParent() + ":\n");
+                        output = output.concat("\nModule \'" + courseFolderModule.getName() + ":\n");
                     }
                     output = output.concat("\'" + courseFolderModuleFile.getName() + "\': slide(s) ");
-                    for (Integer numberSlide : numberSlides) {
-                        if (numberSlides.get(numberSlides.size() - 1) != numberSlide) output = output.concat(numberSlide + ", ");
-                        else output = output.concat(numberSlide + "\n");
-                    }
+                    output = outputFileSlidesWithTopic(output, numberSlides);
                 }
             }
         }
@@ -181,10 +172,30 @@ public class Canvas extends SkillWrapper {
         return output;
     }
 
-    public static void main(String[] args) {
-        File file = new File("./src/main/resources/courses/calc");
+    // String concatenating slides of a file containing the topic
+    public static String outputFileSlidesWithTopic(String output, ArrayList<Integer> numberSlides) {
+        Integer previousNumberSlide = numberSlides.get(0);
+        Integer lastConsecutiveSlide = numberSlides.get(0);
+        output = output.concat(lastConsecutiveSlide.toString());
 
-        System.out.println(file.getPath());
-
+        for (Integer numberSlide : numberSlides) {
+            if (Objects.equals(numberSlide, numberSlides.get(0))) {
+                if (numberSlides.size() == 1) output = output.concat("\n");
+                continue;
+            }
+            boolean lastNumberSlide = Objects.equals(numberSlides.get(numberSlides.size() - 1), numberSlide);
+            if (numberSlide != lastConsecutiveSlide + 1) {
+                if (lastConsecutiveSlide.equals(previousNumberSlide) || lastConsecutiveSlide == previousNumberSlide + 1) {
+                    if (lastConsecutiveSlide == previousNumberSlide + 1) output = output.concat(", " + lastConsecutiveSlide);
+                    output = output.concat(", " + numberSlide);
+                } else {
+                    output = output.concat("-" + lastConsecutiveSlide + ", " + numberSlide);
+                }
+                previousNumberSlide = numberSlide;
+            } else if (lastNumberSlide) output = output.concat("-" + numberSlide);
+            lastConsecutiveSlide = numberSlide;
+            if (lastNumberSlide) output = output.concat("\n");
+        }
+        return output;
     }
 }

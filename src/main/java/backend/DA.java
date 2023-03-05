@@ -5,7 +5,7 @@ import backend.Skills.Google;
 import backend.Skills.Spotify;
 import backend.Skills.Weather;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,9 +16,9 @@ public class DA {
     public DA() throws IOException {
         allMySkills = new ArrayList<>();
         addSkill(new Canvas());
-        addSkill(new Google());
+        /*addSkill(new Google());
         addSkill(new Spotify());
-        addSkill(new Weather());
+        addSkill(new Weather());*/
     }
 
     private void addSkill(SkillWrapper skill) {
@@ -27,13 +27,31 @@ public class DA {
     }
 
     public String startQuery(String query) throws IOException {
+        if (query.contains("add skill:")) return addSkillToTextFile(query.replace("add skill:", "\n"));
+        else return doSkill(query);
+    }
+
+    // Returns a String saying if adding the skill to the SkillsTemplate was successful
+    public String addSkillToTextFile(String query) throws IOException {
+        FileWriter fw = new FileWriter(new File("./src/main/java/backend/Skills/SkillsTemplate.txt"), true);
+        BufferedWriter bw = new BufferedWriter(fw);
+        PrintWriter pw = new PrintWriter(bw);
+        pw.println(query);
+        pw.flush();
+        pw.close();
+        bw.close();
+        fw.close();
+        return "Adding the skill was successful!";
+    }
+
+    public String doSkill(String query) throws IOException {
         double didIUnderstand = 0;
         double understandingThreshhold = 0.6;
         String matchedTemplate = null;
         SkillWrapper bestMatch = null;
         String output = "";
         for (SkillWrapper skill : allMySkills) {
-        // TODO: PROCESS INPUT AND BREAK IT DOWN USING CFG AND FIND OUT WHICH SKILL WE WANT TO USE
+            // TODO: PROCESS INPUT AND BREAK IT DOWN USING CFG AND FIND OUT WHICH SKILL WE WANT TO USE
             // HARDCODE (needs changing)
             if(skill.getClass().getSimpleName().equals(query)){
                 // Assumption at this point
@@ -46,8 +64,10 @@ public class DA {
             // END OF HARDCODE
         }
 
+        didIUnderstand = 0.8; // DELETE LATER!!
         // Reality check
         if(didIUnderstand>=understandingThreshhold){
+            bestMatch = new Canvas(); // DELETE LATER!!
             bestMatch.start(query);
             output=bestMatch.getResponse();
         }

@@ -96,10 +96,10 @@ public class HelloApplication extends Application {
 
     public void sendMessageEventHandler() throws IOException {
         if (textField.getText() != "") {
-        String text = textField.getText();
+            String text = textField.getText();
             outputUserMessage(text);
-            outputBotMessage(assistant.startQuery(text));
             textField.clear();
+            outputBotMessage(assistant.startQuery(text));
         }
     }
 
@@ -121,6 +121,9 @@ public class HelloApplication extends Application {
         textField.setMinHeight(textHeight + (textHeight * 1.5));
         textField.setOnKeyPressed(ke -> {
             if (ke.getCode().equals(KeyCode.ENTER)) {
+                if (textField.getText().toLowerCase().contains("add skill:")) {
+
+                }
                 try {
                     sendMessageEventHandler();
                 } catch (IOException e) {
