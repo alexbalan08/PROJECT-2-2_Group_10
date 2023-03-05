@@ -24,24 +24,21 @@ import org.apache.pdfbox.text.PDFTextStripper;
 public class Canvas extends SkillWrapper {
     private final String APIkey = Files.readString(Path.of("./src/main/resources/canvasKey.secret"));
     private final String accessToken = "?per_page=100&access_token=" + APIkey;
+    final String API_URL_courses = "https://canvas.maastrichtuniversity.nl/api/v1/courses";
+    ObjectMapper om = new ObjectMapper();
 
     public Canvas() throws IOException {
     }
 
     @Override
     public void start(String matchedTemplate) {
-        final String API_URL_courses = "https://canvas.maastrichtuniversity.nl/api/v1/courses";
-
-        String output = "";
-        boolean topicFound = false;
-        List<JsonNode> files = new ArrayList<>();
         matchedTemplate = matchedTemplate.toLowerCase().strip();
         String[] keyWords = matchedTemplate.split(" ");
-        System.out.println(matchedTemplate);
+
+        String output = "";
         try {
             String coursesData = response(API_URL_courses + accessToken);
 
-            ObjectMapper om = new ObjectMapper();
             JsonNode rootCourses = om.readTree(coursesData);
 
             for (Iterator<JsonNode> courses = rootCourses.elements(); courses.hasNext(); ) {
@@ -49,48 +46,11 @@ public class Canvas extends SkillWrapper {
                 // Look at modules inside the course
                 if(course.get("name").asText().toLowerCase().contains(keyWords[0])) {
                     output = output.concat("For the course " + course.get("name").asText() + " you can find the topic \'" + keyWords[1] + "\' in:\n");
-                    //outputs.add("MODULE 1");
-                    final String API_URL_course_modules = API_URL_courses + "/" + course.get("id") + "/modules";
-                    String courseModules = response(API_URL_course_modules + accessToken);
-                    System.out.println("Course id is: " + course.get("id").asText());
-                    JsonNode rootModules = om.readTree(courseModules);
-                    // Look at items inside the modules
-                    for (Iterator<JsonNode> modules = rootModules.elements(); modules.hasNext(); ) {
-                        JsonNode module = modules.next();
-                        System.out.println("The module id is: " + module.get("id").asText());
-                        final String API_URL_course_module_items = module.get("items_url").asText();
-                        String courseModuleItems = response(API_URL_course_module_items + accessToken);
-                        JsonNode rootModuleItems = om.readTree(courseModuleItems);
-                        boolean topicInModuleFound = false;
-                        // Look at files inside the items
-                        for (Iterator<JsonNode> items = rootModuleItems.elements(); items.hasNext(); ) {
-                            JsonNode item = items.next();
-                            if (item.get("type").asText().equals("File")) {
-                                System.out.println("Item id is: " + item.get("id").asText() + ", and type is: " + item.get("type").asText());
-                                final String API_URL_course_module_item_file = item.get("url").asText();
-                                String courseModuleItemFile = response(API_URL_course_module_item_file + accessToken);
-                                JsonNode rootModuleItemFile = om.readTree(courseModuleItemFile);
-
-                                if (rootModuleItemFile.get("content-type").asText().equals("application/pdf")) {
-                                    String download_url = rootModuleItemFile.get("url").asText();
-                                    String pathName = "./src/main/resources/courses/" + rootModuleItemFile.get("filename").asText() + ".pdf";
-                                    ArrayList<Integer> numberSlides = getSlidesWithTopic(keyWords[1], download_url, pathName);
-                                    if(!numberSlides.isEmpty()) {
-                                        if (!topicFound) topicFound = true;
-                                        if (!topicInModuleFound) {
-                                            topicInModuleFound = true;
-                                            output = output.concat("\nModule \'" + module.get("name").asText() + ":\n");
-                                        }
-                                        output = output.concat("\'" + rootModuleItemFile.get("filename").asText() + "\': slide(s) ");
-                                        for (Integer numberSlide : numberSlides) {
-                                            if (numberSlides.get(numberSlides.size() - 1) != numberSlide) output = output.concat(numberSlide + ", ");
-                                            else output = output.concat(numberSlide + "\n");
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                    File courseFolder = new File("./src/main/resources/courses/" + course.get("name").asText());
+                    if (!courseFolder.exists()) {
+                        downloadUrlFiles(course);
                     }
+                    output = allSlidesWithTopic(output, keyWords[1], courseFolder);
                     outputs.add(output);
                     break;
                 } else if (!courses.hasNext()) {
@@ -98,15 +58,39 @@ public class Canvas extends SkillWrapper {
                     return;
                 }
             }
-
-
-            // System.out.println("CourseId: " + courseId);
-
-            //ObjectMapper om = new ObjectMapper();
-            //WeatherData WD = om.readValue(response.toString(), WeatherData.class);
-            //outputs.add("At the moment, in "+ city + ", it's "+ WD.getMain().getTemp()+ "°C.\nFeels like: "+WD.getMain().getFeels_like()+"°C.");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    public void downloadUrlFiles(JsonNode course) throws IOException {
+        File courseFolder = new File("./src/main/resources/courses/" + course.get("name").asText());
+        courseFolder.mkdir();
+        final String API_URL_course_modules = API_URL_courses + "/" + course.get("id") + "/modules";
+        String courseModules = response(API_URL_course_modules + accessToken);
+        JsonNode rootModules = om.readTree(courseModules);
+
+        // Look at items inside the modules
+        for (Iterator<JsonNode> modules = rootModules.elements(); modules.hasNext(); ) {
+            JsonNode module = modules.next();
+            File moduleFolder = new File(courseFolder.getPath() + "/" + module.get("name"));
+            moduleFolder.mkdir();
+            String courseModuleItems = response(module.get("items_url").asText() + accessToken);
+            JsonNode rootModuleItems = om.readTree(courseModuleItems);
+
+            // Look at files inside the items
+            for (Iterator<JsonNode> items = rootModuleItems.elements(); items.hasNext(); ) {
+                JsonNode item = items.next();
+                if (item.get("type").asText().equals("File")) {
+                    String courseModuleItemFile = response(item.get("url").asText() + accessToken);
+                    JsonNode rootModuleItemFile = om.readTree(courseModuleItemFile);
+                    if (rootModuleItemFile.get("content-type").asText().equals("application/pdf")) {
+                        String download_url = rootModuleItemFile.get("url").asText();
+                        String pathName = moduleFolder.getPath() + "/" + rootModuleItemFile.get("filename").asText();
+                        savePdfFile(download_url, pathName);
+                    }
+                }
+            }
         }
     }
 
@@ -128,10 +112,8 @@ public class Canvas extends SkillWrapper {
         return response.toString();
     }
 
-    public static ArrayList<Integer> getSlidesWithTopic(String topic, String download_url, String pathName) throws IOException {
-        ArrayList<Integer> slidesWithTopic = new ArrayList<>();
-
-        // Save a pdf file with the content of the lecture slides
+    // Save a pdf file (with the lecture slides content) having the download_url and saving it in the pathName
+    public static File savePdfFile(String download_url, String pathName) throws IOException {
         URL url = new URL(download_url);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
@@ -147,9 +129,15 @@ public class Canvas extends SkillWrapper {
         outputStream.close();
         inputStream.close();
 
+        return file;
+    }
+
+    // List of slides of one Lecture containing the topic
+    public static ArrayList<Integer> getSlidesWithTopic(String topic, File file) throws IOException {
+        ArrayList<Integer> slidesWithTopic = new ArrayList<>();
+
         PDDocument document = PDDocument.load(file);
         PDFTextStripper pdfStripper = new PDFTextStripper();
-
         // Find slides that contain the topic
         for (int pageNumber = 1; pageNumber <= document.getNumberOfPages(); pageNumber++) {
             StringWriter outputStreamSlide = new StringWriter();
@@ -157,7 +145,6 @@ public class Canvas extends SkillWrapper {
             pdfStripper.setEndPage(pageNumber);
             pdfStripper.writeText(document, outputStreamSlide);
             if (outputStreamSlide.toString().toLowerCase().contains(topic)) {
-                System.out.println("Topic is in slide: " + pageNumber);
                 slidesWithTopic.add(pageNumber);
             }
         }
@@ -166,14 +153,38 @@ public class Canvas extends SkillWrapper {
         return slidesWithTopic;
     }
 
-    public static void main(String[] args) throws IOException {
-        /*Canvas c = new Canvas();
-        c.start("Theoretical");*/
+    // String containing slides of all lectures containing the topic
+    public String allSlidesWithTopic(String output, String topic, File courseFolder) throws IOException {
+        boolean topicFound = false;
+        File[] courseFolderModules = courseFolder.listFiles();
+        for (File courseFolderModule : courseFolderModules) {
+            boolean topicInModuleFound = false;
+            File[] courseFolderModuleFiles = courseFolderModule.listFiles();
+            for (File courseFolderModuleFile : courseFolderModuleFiles) {
+                ArrayList<Integer> numberSlides = getSlidesWithTopic(topic, courseFolderModuleFile);
+                if(!numberSlides.isEmpty()) {
+                    if (!topicFound) topicFound = true;
+                    if (!topicInModuleFound) {
+                        topicInModuleFound = true;
+                        output = output.concat("\nModule \'" + courseFolderModule.getParent() + ":\n");
+                    }
+                    output = output.concat("\'" + courseFolderModuleFile.getName() + "\': slide(s) ");
+                    for (Integer numberSlide : numberSlides) {
+                        if (numberSlides.get(numberSlides.size() - 1) != numberSlide) output = output.concat(numberSlide + ", ");
+                        else output = output.concat(numberSlide + "\n");
+                    }
+                }
+            }
+        }
+        if (!topicFound) output = output.concat("No lecture slide contains the topic \'" + topic + "\'");
 
-        /*ObjectMapper om = new ObjectMapper();
-        String urlFile = "https://canvas.maastrichtuniversity.nl/api/v1/courses/11856/files/2328213?per_page=100&access_token=15183~uSW7dxlpiDnZicfuGzgzZGPoESt8XFeM8Ub5EKfYg9ygIARDS4Y3iaxUKwKDWC56";
-        String courseModuleItemFile = response(urlFile);
-        JsonNode rootModuleItemFile = om.readTree(courseModuleItemFile);
-        System.out.println("Is the content type of pdf? " + rootModuleItemFile.get("content-type").asText().equals("application/pdf"));*/
+        return output;
+    }
+
+    public static void main(String[] args) {
+        File file = new File("./src/main/resources/courses/calc");
+
+        System.out.println(file.getPath());
+
     }
 }
