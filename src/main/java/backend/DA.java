@@ -16,9 +16,9 @@ public class DA {
     public DA() throws IOException {
         allMySkills = new ArrayList<>();
         addSkill(new Canvas());
-        /*addSkill(new Google());
+        addSkill(new Google());
         addSkill(new Spotify());
-        addSkill(new Weather());*/
+        addSkill(new Weather());
     }
 
     private void addSkill(SkillWrapper skill) {
@@ -64,10 +64,8 @@ public class DA {
             // END OF HARDCODE
         }
 
-        didIUnderstand = 0.8; // DELETE LATER!!
         // Reality check
         if(didIUnderstand>=understandingThreshhold){
-            bestMatch = new Canvas(); // DELETE LATER!!
             bestMatch.start(query);
             output=bestMatch.getResponse();
         }
