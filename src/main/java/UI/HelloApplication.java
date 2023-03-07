@@ -1,10 +1,15 @@
 package UI;
 import backend.DA;
-import backend.Skills.WeatherData.Sys;
+import backend.SkillEditor;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Control;
+import javafx.scene.control.Skin;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -17,8 +22,9 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.lang.reflect.InvocationTargetException;
+
+import static java.awt.Color.red;
 
 public class HelloApplication extends Application {
     private int sceneSize = 650;
@@ -26,23 +32,24 @@ public class HelloApplication extends Application {
     private String font = "Courier New";
     protected BuildImages images = new BuildImages();
     private VBox conversation = new VBox(10);
-    TextField textField;
+    TextArea textArea;
     DA assistant = new DA();
 
-    public HelloApplication() throws IOException {
+    public HelloApplication() throws IOException, NoSuchMethodException {
     }
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) throws IOException, NoSuchMethodException {
         HBox root = new HBox();
         Scene scene = new Scene(root, sceneSize, sceneSize);
+        scene.getStylesheets().add("file:src/main/resources/hello.css");
 
         stage.getIcons().add(images.eyeIcon);
         stage.setTitle("EYE°Sistant");
 
         VBox eyeAndConversation = createEyeAndConversation();
 
-        HBox textFieldSend = createTextFieldSend();
+        HBox textFieldSend = createTextAreaSend();
 
         StackPane paneCenter = createPaneCenter(eyeAndConversation, textFieldSend);
 
@@ -56,7 +63,7 @@ public class HelloApplication extends Application {
         root.setAlignment(Pos.CENTER);
         stage.setScene(scene);
 
-        textField.setPrefWidth(paneCenter.getMinWidth() - images.sendIcon.getWidth());
+        textArea.setPrefWidth(paneCenter.getMinWidth() - images.sendIcon.getWidth());
 
         stage.show();
     }
@@ -94,18 +101,23 @@ public class HelloApplication extends Application {
         conversation.setMargin(iconText, new Insets(5, 0, 5 ,0));
     }
 
-    public void sendMessageEventHandler() throws IOException {
-        if (textField.getText() != "") {
-            String text = textField.getText();
+    public void sendMessageEventHandler() throws IOException, InvocationTargetException, IllegalAccessException {
+        if (textArea.getText() != "") {
+            String text = textArea.getText();
             outputUserMessage(text);
-            textField.clear();
+            textArea.clear();
             outputBotMessage(assistant.startQuery(text));
         }
     }
 
     public VBox createEyeAndConversation() {
-        StackPane eyeIcon = new StackPane(images.eyeIconView(45));
+        ImageView eyeIconView = images.eyeIconView(45);
+        StackPane eyeIcon = new StackPane(eyeIconView);
         eyeIcon.setAlignment(Pos.TOP_CENTER);
+        eyeIcon.setOnMouseClicked(me -> {
+            System.out.println("EYE PRESSED!");
+            outputBotMessage("THE EYE ICON IS AT POSITION X: " + sceneSize / 2 + " AND Y: " + eyeIconView.getY());
+        });
 
         VBox eyeAndConversation = new VBox(eyeIcon, conversation);
         eyeAndConversation.setMargin(eyeIcon, new Insets(25, 0, 15, 0));
@@ -114,35 +126,63 @@ public class HelloApplication extends Application {
         return eyeAndConversation;
     }
 
-    public HBox createTextFieldSend() {
-        textField = new TextField();
-        textField.setStyle("-fx-background-color: rgba(115, 188, 224, 0.2); -fx-text-fill: white; -fx-font: " + font);
-        textField.setFont(new Font(font, textHeight));
-        textField.setMinHeight(textHeight + (textHeight * 1.5));
-        textField.setOnKeyPressed(ke -> {
-            if (ke.getCode().equals(KeyCode.ENTER)) {
-                if (textField.getText().toLowerCase().contains("add skill:")) {
+    public HBox createTextAreaSend() throws NoSuchMethodException {
+        textArea = new TextArea();
+        textArea.setStyle("-fx-text-fill: white; -fx-font: " + font);
+        // Design for scroll bar in text area
+        textArea.skinProperty().addListener(new ChangeListener<Skin<?>>() {
+            @Override
+            public void changed(
+                    ObservableValue<? extends Skin<?>> ov, Skin<?> t, Skin<?> t1) {
+                if (t1 != null && t1.getNode() instanceof Region) {
+                    Region r = (Region) t1.getNode();
+                    r.getChildrenUnmodifiable().stream().filter(n -> n instanceof Region).map(n -> (Region) n).forEach(n -> n.setBackground(Background.EMPTY));
+                    r.getChildrenUnmodifiable().stream().filter(n -> n instanceof Control).map(n -> (Control) n).forEach(c -> c.skinProperty().addListener(this));
+                }
+            }
+        });
 
+        textArea.setMaxHeight((textHeight + (textHeight * 1.5)));
+        textArea.setFont(new Font(font, textHeight));
+        textArea.setMinHeight(textHeight + (textHeight * 1.5));
+        textArea.setOnKeyPressed(ke -> {
+            int maxNewLines = 4;
+            String text = textArea.getText().strip();
+            SkillEditor skillEditor;
+            try {
+                skillEditor = new SkillEditor();
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+            if (ke.getCode().equals(KeyCode.ENTER)) {
+                if (skillEditor.editSkill(text) && skillEditor.entry.getValue().getName().equals("addSkill")) {
+                    if (textArea.getMaxHeight() <= (textHeight + (textHeight * 1.5)) + maxNewLines * (textHeight + 3)) textArea.setMaxHeight(textArea.getMaxHeight() + (textHeight + 3));
+                } else if (!text.equals("")) {
+                    try {
+                        textArea.setMaxHeight((textHeight + (textHeight * 1.5)));
+                        sendMessageEventHandler();
+                    } catch (IOException | InvocationTargetException | IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
-                try {
-                    sendMessageEventHandler();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            } else if (ke.getCode().equals(KeyCode.BACK_SPACE)) {
+                int numNewLines = (int) text.chars().filter(num -> num == '\n').count();
+                if (numNewLines <= maxNewLines) textArea.setMaxHeight((textHeight + (textHeight * 1.5)) + numNewLines * (textHeight + 3));
             }
         });
 
         ImageView sendIconView = images.sendIconView();
         sendIconView.setOnMouseClicked(me -> {
             try {
+                textArea.setMaxHeight((textHeight + (textHeight * 1.5)));
                 sendMessageEventHandler();
-            } catch (IOException e) {
+            } catch (IOException | InvocationTargetException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         });
 
         HBox textFieldSend = new HBox(10);
-        textFieldSend.getChildren().addAll(textField, sendIconView);
+        textFieldSend.getChildren().addAll(textArea, sendIconView);
         textFieldSend.setAlignment(Pos.BOTTOM_CENTER);
 
         return textFieldSend;

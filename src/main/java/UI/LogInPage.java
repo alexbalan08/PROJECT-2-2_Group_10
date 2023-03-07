@@ -28,7 +28,7 @@ public class LogInPage extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) throws IOException, NoSuchMethodException {
         main = new HelloApplication();
         primaryStage.setTitle("EYE°Sistant");
 
@@ -48,14 +48,14 @@ public class LogInPage extends Application {
 
         grid.add(userName, 0, 1);
         TextField userTextField = new TextField();
-        userTextField.setStyle("-fx-background-color: rgba(115, 188, 224, 0.2); -fx-text-fill: white");
+        userTextField.setStyle("-fx-background-color: rgba(55, 180, 220, 0.15); -fx-text-fill: white");
         grid.add(userTextField, 1, 1);
         Label pw = new Label("Password:");
         pw.setFont(Font.font(font, 20));
         pw.setTextFill(Color.WHITE);
         grid.add(pw, 0, 2);
         PasswordField pwBox = new PasswordField();
-        pwBox.setStyle("-fx-background-color: rgba(115, 188, 224, 0.2); -fx-text-fill: white");
+        pwBox.setStyle("-fx-background-color: rgba(55, 180, 220, 0.15); -fx-text-fill: white");
         grid.add(pwBox, 1, 2);
 
 
@@ -63,7 +63,7 @@ public class LogInPage extends Application {
         // Add the login button
         Button btn = new Button("Login");
         btn.setFont(Font.font(font));
-        btn.setStyle("-fx-background-color: rgba(115, 188, 224, 0.2); -fx-text-fill: white");
+        btn.setStyle("-fx-background-color: rgba(55, 180, 220, 0.15); -fx-text-fill: white");
         HBox hbBtn = new HBox(20);
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbBtn.getChildren().add(btn);
@@ -77,12 +77,12 @@ public class LogInPage extends Application {
         btn.setOnAction(event -> {
             String userNameValue = userTextField.getText();
             String passwordValue = pwBox.getText();
-            if (userNameValue.equals("team10") && passwordValue.equals("dacs")) {
+            if (true/*userNameValue.equals("team10") && passwordValue.equals("dacs")*/) {
                 message.setText("Login successful!");
                 primaryStage.hide();
                 try {
                     main.start(primaryStage);
-                } catch (IOException e) {
+                } catch (IOException | NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
 

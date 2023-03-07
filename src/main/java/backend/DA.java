@@ -6,14 +6,16 @@ import backend.Skills.Spotify;
 import backend.Skills.Weather;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DA {
+public class DA implements ActionQuery {
 
     List<SkillWrapper> allMySkills;
+    SkillEditor skillEditor = new SkillEditor();
 
-    public DA() throws IOException {
+    public DA() throws IOException, NoSuchMethodException {
         allMySkills = new ArrayList<>();
         addSkill(new Canvas());
         addSkill(new Google());
@@ -26,22 +28,9 @@ public class DA {
         System.out.println(skill.getClass().getSimpleName() + " wrapper loaded successfully!");
     }
 
-    public String startQuery(String query) throws IOException {
-        if (query.contains("add skill:")) return addSkillToTextFile(query.replace("add skill:", "\n"));
+    public String startQuery(String query) throws IOException, InvocationTargetException, IllegalAccessException {
+        if (skillEditor.editSkill(query)) return skillEditor.startQuery(query);
         else return doSkill(query);
-    }
-
-    // Returns a String saying if adding the skill to the SkillsTemplate was successful
-    public String addSkillToTextFile(String query) throws IOException {
-        FileWriter fw = new FileWriter(new File("./src/main/java/backend/Skills/SkillsTemplate.txt"), true);
-        BufferedWriter bw = new BufferedWriter(fw);
-        PrintWriter pw = new PrintWriter(bw);
-        pw.println(query);
-        pw.flush();
-        pw.close();
-        bw.close();
-        fw.close();
-        return "Adding the skill was successful!";
     }
 
     public String doSkill(String query) throws IOException {

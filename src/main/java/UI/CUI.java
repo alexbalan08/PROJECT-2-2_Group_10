@@ -3,17 +3,18 @@ package UI;
 import backend.DA;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Scanner;
 
 public class CUI {
     public final DA assistant;
     Scanner input;
-    CUI() throws IOException {
+    CUI() throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
        assistant = new DA();
        input = new Scanner(System.in);
        launch();
     }
-    private void launch() throws IOException {
+    private void launch() throws IOException, InvocationTargetException, IllegalAccessException {
         boolean exited = false;
         while (!exited){
             System.out.println("What can I help you with?");
@@ -23,7 +24,7 @@ public class CUI {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
        new CUI();
     }
 }
