@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class SkillEditor implements ActionQuery {
@@ -13,6 +14,7 @@ public class SkillEditor implements ActionQuery {
     String query;
     String key;
     String lastSkillsAdded = "";
+    String allSkillsAdded = "";
     int countMinSkillsAdded = 0;
     boolean isQueryToEditSkill;
     public HashMap.Entry<ArrayList<String>, Method> entry;
@@ -21,63 +23,67 @@ public class SkillEditor implements ActionQuery {
     public ArrayList<String> getLastSkill = new ArrayList<>();
     public ArrayList<String> getLastSkillAdded = new ArrayList<>();
     public ArrayList<String> getLastSkillsAdded = new ArrayList<>();
+    public ArrayList<String> deleteAllAddedSkills = new ArrayList<>();
 
     public SkillEditor() throws NoSuchMethodException {
         addSkillsToHashMap();
     }
 
     public void addSkillsToHashMap() throws NoSuchMethodException {
-        addSkills.add("add skill:");
-        addSkills.add("add skills:");
-        addSkills.add("add this skill");
-        addSkills.add("add the following skill:");
-        addSkills.add("add this following skill:");
-        addSkills.add("add the following skills:");
-        addSkills.add("add these following skills:");
-        addSkills.add("add the skill:");
-        addSkills.add("add the skills:");
-        addSkills.add("add these skills:");
-        addSkills.add("add:");
-        addSkills.add("add this other skill:");
-        addSkills.add("add these other skills:");
-        addSkills.add("add another skill:");
-        addSkills.add("add one more skill:");
-        addSkills.add("add this one more skill:");
-
-        String[] getShow = {"get", "get me", "show", "show me"};
-        String[] the = {" the", ""};
-        String[] added = {" added", " I added", " that I added", " you added", " that you added", " that has been added", " that was added"};
-
-        for (String item : getShow) {
-            showSkills.add(item + " skills");
-            showSkills.add(item + " the skills");
-            showSkills.add(item + " all skills");
-            showSkills.add(item + " all the skills");
+        String[] addSkill = {"add skill:", "add skills:", "add this skill:", "add the following skill:", "add this following skill:", "add the following skills:", "add these following skills:", "add the skill:", "add the skills:", "add these skills:", "add:", "add this other skill:", "add these other skills:", "add another skill:", "add one more skill:", "add this one more skill:"};
+        addSkills.addAll(Arrays.asList(addSkill));
+        for (String addSkillOption : addSkill) {
+            addSkills.add(addSkillOption);
+            addSkills.add("can you " + addSkillOption);
         }
 
-        for (String value : getShow) {
-            for (String s : the) {
+        String[] getShow = {"get", "can you get", "get me", "can you get me", "show", "can you show", "show me", "can you show me"};
+        String[] the = {" the", ""};
+        String[] added = {" added", " I added", " that I added", " you added", " that you added", " I told you to add", " that I told you to add"};
+        String[] addedSingular = {" that has been added", " that was added"};
+        String[] addedPlural = {" that have been added", " that were added"};
+        String[] remove = {"remove", " please remove", "can you remove", "delete", "can you delete", " please delete"};
+        String[] skills = {" skills", " the skills", " all skills", " all the skills"};
+
+        for (String getShowOption : getShow) {
+            for (String skillsOption : skills) {
+                showSkills.add(getShowOption + skillsOption);
+            }
+        }
+
+        for (String removeOption : remove) {
+            for (String skillsOption : skills) {
+                deleteAllAddedSkills.add(removeOption + " the " + skillsOption);
+                deleteAllAddedSkills.add(removeOption + skillsOption);
+            }
+        }
+
+        for (String getShowOption : getShow) {
+            for (String theOption : the) {
                 for (String add : added) {
-                    getLastSkill.add(value + s + " last skill");
-                    getLastSkillAdded.add(value + s + " last skill" + add);
+                    getLastSkill.add(getShowOption + theOption + " last skill");
+                    getLastSkillAdded.add(getShowOption + theOption + " last skill" + add);
+                    getLastSkillAdded.add(getShowOption + theOption + "skill" + add);
+                }
+                for (String add : addedSingular) {
+                    getLastSkill.add(getShowOption + theOption + " last skill");
+                    getLastSkillAdded.add(getShowOption + theOption + " last skill" + add);
                 }
             }
         }
 
         for (String showSkill : showSkills) {
-            getLastSkillsAdded.add(showSkill.concat(" added"));
-            getLastSkillsAdded.add(showSkill.concat(" that I added"));
-            getLastSkillsAdded.add(showSkill.concat(" that you added"));
-            getLastSkillsAdded.add(showSkill.concat(" that have been added"));
-            getLastSkillsAdded.add(showSkill.concat(" that were added"));
             String show = showSkill.substring(0, showSkill.lastIndexOf(" ") + 1);
             String skill = showSkill.substring(showSkill.lastIndexOf(" ") + 1);
+            for (String add : added) {
+                getLastSkillsAdded.add(showSkill.concat(add));
+                getLastSkillsAdded.add(show + "last " + skill + add);
+            }
+            for (String add : addedPlural) {
+                getLastSkillsAdded.add(showSkill.concat(add));
+                getLastSkillsAdded.add(show + "last " + skill + add);
+            }
             getLastSkillsAdded.add(show + "last " + skill);
-            getLastSkillsAdded.add(show + "last " + skill + " added");
-            getLastSkillsAdded.add(show + "last " + skill + " that I added");
-            getLastSkillsAdded.add(show + "last " + skill + " that you added");
-            getLastSkillsAdded.add(show + "last " + skill + " that have been added");
-            getLastSkillsAdded.add(show + "last " + skill + " that were added");
         }
 
         mapFunctions.put(addSkills, SkillEditor.class.getMethod("addSkill"));
@@ -85,6 +91,7 @@ public class SkillEditor implements ActionQuery {
         mapFunctions.put(getLastSkill, SkillEditor.class.getMethod("getLastSkill"));
         mapFunctions.put(getLastSkillsAdded, SkillEditor.class.getMethod("getLastSkillsAdded"));
         mapFunctions.put(getLastSkillAdded, SkillEditor.class.getMethod("getLastSkillAdded"));
+        mapFunctions.put(deleteAllAddedSkills, SkillEditor.class.getMethod("deleteAllAddedSkills"));
     }
 
     public void setQuery(String query) {
@@ -116,7 +123,8 @@ public class SkillEditor implements ActionQuery {
         boolean addMoreThanOneSkill = command.contains("skills");
         query = query.replace(command, "");
         countMinSkillsAdded++;
-        lastSkillsAdded = lastSkillsAdded.concat(query);
+        lastSkillsAdded = lastSkillsAdded.concat("\n" + query);
+        allSkillsAdded = allSkillsAdded.concat("\n" + query);
         FileWriter fw = new FileWriter(new File("./src/main/java/backend/Skills/SkillsTemplate.txt"), true);
         BufferedWriter bw = new BufferedWriter(fw);
         PrintWriter pw = new PrintWriter(bw);
@@ -152,14 +160,22 @@ public class SkillEditor implements ActionQuery {
    public String getLastSkillsAdded() {
         if(countMinSkillsAdded == 0) return "No skills have been recently added.";
         else if (countMinSkillsAdded == 1) {
-            return "One skill has been added:\n".concat(lastSkillsAdded);
+            return "One skill has been added:\n".concat(lastSkillsAdded.strip());
         }
-        return lastSkillsAdded;
+        return lastSkillsAdded.strip();
    }
 
-   public String deleteAllAddedSkills() {
+   public String deleteAllAddedSkills() throws IOException {
        if(countMinSkillsAdded == 0) return "No skills have been recently added.";
-       return null;
+       String filePath = "./src/main/java/backend/Skills/SkillsTemplate.txt";
+       String skills = Files.readString(Path.of(filePath));
+       skills = skills.replaceAll(allSkillsAdded.strip(), "");
+       System.out.println("Text file will have:\n" + skills);
+       System.out.println("The skills added are:\n" + allSkillsAdded.strip());
+       PrintWriter pw = new PrintWriter(new File(filePath));
+       pw.append(skills.strip().concat("\n"));
+       pw.flush();
+       return "All the added skills were deleted successfully.";
    }
 
    public String deleteLastSkillAdded() {

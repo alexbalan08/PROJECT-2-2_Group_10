@@ -99,8 +99,8 @@ public class HelloApplication extends Application {
     }
 
     public void sendMessageEventHandler() throws IOException, InvocationTargetException, IllegalAccessException {
-        if (textArea.getText() != "") {
-            String text = textArea.getText();
+        if (textArea.getText().strip() != "") {
+            String text = textArea.getText().strip();
             outputUserMessage(text);
             textArea.clear();
             outputBotMessage(assistant.startQuery(text));
@@ -153,6 +153,7 @@ public class HelloApplication extends Application {
                 if (skillEditor.isQueryToEditSkill() && skillEditor.entry.getValue().getName().equals("addSkill")) {
                     if (textArea.getMaxHeight() <= (textHeight + (textHeight * 1.5)) + maxNewLines * (textHeight + 3)) textArea.setMaxHeight(textArea.getMaxHeight() + (textHeight + 3));
                 } else if (!text.equals("")) {
+                    System.out.println(text + "yey");
                     try {
                         textArea.setMaxHeight((textHeight + (textHeight * 1.5)));
                         sendMessageEventHandler();
