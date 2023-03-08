@@ -11,6 +11,8 @@ module UI {
     requires org.slf4j;
     requires com.fasterxml.jackson.databind;
     requires org.apache.pdfbox;
+    requires org.json;
+   
 
     exports backend.Skills.WeatherData;
 

@@ -1,9 +1,6 @@
 package backend;
 
-import backend.Skills.Canvas;
-import backend.Skills.Google;
-import backend.Skills.Spotify;
-import backend.Skills.Weather;
+import backend.Skills.*;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -17,10 +14,11 @@ public class DA implements ActionQuery {
 
     public DA() throws IOException, NoSuchMethodException {
         allMySkills = new ArrayList<>();
-        addSkill(new Canvas());
+      //  addSkill(new Canvas());
         addSkill(new Google());
         addSkill(new Spotify());
         addSkill(new Weather());
+        addSkill(new Wikipedia());
     }
 
     private void addSkill(SkillWrapper skill) {
@@ -35,6 +33,7 @@ public class DA implements ActionQuery {
     }
 
     public String doSkill(String query) throws IOException {
+        System.out.println(query);
         double didIUnderstand = 0;
         double understandingThreshhold = 0.6;
         String matchedTemplate = null;

@@ -38,6 +38,7 @@ dependencies {
     implementation 'org.apache.pdfbox:pdfbox:2.0.27'
     implementation "org.apache.pdfbox:preflight:2.0.27"
     implementation 'se.michaelthelin.spotify:spotify-web-api-java:7.3.0'
+    implementation group: 'org.json', name: 'json', version: '20230227'
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }
