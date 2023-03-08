@@ -29,7 +29,8 @@ public class DA implements ActionQuery {
     }
 
     public String startQuery(String query) throws IOException, InvocationTargetException, IllegalAccessException {
-        if (skillEditor.editSkill(query)) return skillEditor.startQuery(query);
+        skillEditor.setQuery(query);
+        if (skillEditor.isQueryToEditSkill()) return skillEditor.startQuery(query);
         else return doSkill(query);
     }
 

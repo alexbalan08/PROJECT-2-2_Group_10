@@ -10,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Control;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -23,8 +22,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-
-import static java.awt.Color.red;
 
 public class HelloApplication extends Application {
     private int sceneSize = 650;
@@ -148,14 +145,12 @@ public class HelloApplication extends Application {
         textArea.setOnKeyPressed(ke -> {
             int maxNewLines = 4;
             String text = textArea.getText().strip();
-            SkillEditor skillEditor;
-            try {
-                skillEditor = new SkillEditor();
-            } catch (NoSuchMethodException e) {
-                throw new RuntimeException(e);
-            }
             if (ke.getCode().equals(KeyCode.ENTER)) {
-                if (skillEditor.editSkill(text) && skillEditor.entry.getValue().getName().equals("addSkill")) {
+                SkillEditor skillEditor;
+                try { skillEditor = new SkillEditor();
+                } catch (NoSuchMethodException e) { throw new RuntimeException(e); }
+                skillEditor.setQuery(text);
+                if (skillEditor.isQueryToEditSkill() && skillEditor.entry.getValue().getName().equals("addSkill")) {
                     if (textArea.getMaxHeight() <= (textHeight + (textHeight * 1.5)) + maxNewLines * (textHeight + 3)) textArea.setMaxHeight(textArea.getMaxHeight() + (textHeight + 3));
                 } else if (!text.equals("")) {
                     try {
