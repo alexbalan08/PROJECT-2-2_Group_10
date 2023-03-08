@@ -20,7 +20,7 @@ public class Wikipedia extends SkillWrapper {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             JSONObject response = new JSONObject(new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine());
             JSONObject page = response.getJSONObject("query").getJSONObject("pages").getJSONObject(response.getJSONObject("query").getJSONObject("pages").keys().next());
-            String summary = page.getString("extract");
+            String summary = page.getString("extract").replaceAll("\\<.*?\\>", "").replaceAll("[\\r\\n]+", " ");;
             System.out.println(summary);
             outputs.add(summary);
 
