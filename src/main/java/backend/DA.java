@@ -1,6 +1,7 @@
 package backend;
 
 import backend.Skills.*;
+import javafx.scene.control.TextArea;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -10,7 +11,7 @@ import java.util.List;
 public class DA implements ActionQuery {
 
     List<SkillWrapper> allMySkills;
-    SkillEditor skillEditor = new SkillEditor();
+    SkillEditor skillEditor;
 
     public DA() throws IOException, NoSuchMethodException {
         allMySkills = new ArrayList<>();
@@ -24,6 +25,10 @@ public class DA implements ActionQuery {
     private void addSkill(SkillWrapper skill) {
         allMySkills.add(skill);
         System.out.println(skill.getClass().getSimpleName() + " wrapper loaded successfully!");
+    }
+
+    public void instantiateSkillEditor(TextArea textArea) throws IOException, NoSuchMethodException {
+        skillEditor = new SkillEditor(textArea);
     }
 
     public String startQuery(String query) throws IOException, InvocationTargetException, IllegalAccessException {

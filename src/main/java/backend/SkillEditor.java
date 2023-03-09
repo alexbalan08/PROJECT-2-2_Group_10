@@ -1,5 +1,7 @@
 package backend;
 
+import javafx.scene.control.TextArea;
+
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -8,13 +10,17 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SkillEditor implements ActionQuery {
     HashMap<ArrayList<String>, Method> mapFunctions = new HashMap<>();
+    String skillsFilePath = "./src/main/java/backend/Skills/SkillsTemplate.txt";
+    TextArea textArea;
     String query;
     String key;
     String lastSkillsAdded = "";
-    String allSkillsAdded = "";
+    String originalSkillsTemplate;
     int countMinSkillsAdded = 0;
     boolean isQueryToEditSkill;
     public HashMap.Entry<ArrayList<String>, Method> entry;
@@ -24,9 +30,14 @@ public class SkillEditor implements ActionQuery {
     public ArrayList<String> getLastSkillAdded = new ArrayList<>();
     public ArrayList<String> getLastSkillsAdded = new ArrayList<>();
     public ArrayList<String> deleteAllAddedSkills = new ArrayList<>();
+    public ArrayList<String> deleteLastAddedSkill = new ArrayList<>();
+    public ArrayList<String> editLastSkill = new ArrayList<>();
+    public ArrayList<String> editSkill = new ArrayList<>();
 
-    public SkillEditor() throws NoSuchMethodException {
+    public SkillEditor(TextArea textArea) throws NoSuchMethodException, IOException {
+        this.textArea = textArea;
         addSkillsToHashMap();
+        originalSkillsTemplate = Files.readString(Path.of(skillsFilePath));
     }
 
     public void addSkillsToHashMap() throws NoSuchMethodException {
@@ -38,11 +49,12 @@ public class SkillEditor implements ActionQuery {
         }
 
         String[] getShow = {"get", "can you get", "get me", "can you get me", "show", "can you show", "show me", "can you show me"};
+        String[] remove = {"remove", "please remove", "can you remove", "delete", "can you delete", "please delete"};
+        String[] edit = {"edit", "can I edit", "may I edit", "let me edit", "please let me edit", "change", "can I change", "may I change", "let me change", "please let me change"};
         String[] the = {" the", ""};
         String[] added = {" added", " I added", " that I added", " you added", " that you added", " I told you to add", " that I told you to add"};
         String[] addedSingular = {" that has been added", " that was added"};
         String[] addedPlural = {" that have been added", " that were added"};
-        String[] remove = {"remove", " please remove", "can you remove", "delete", "can you delete", " please delete"};
         String[] skills = {" skills", " the skills", " all skills", " all the skills"};
 
         for (String getShowOption : getShow) {
@@ -55,6 +67,44 @@ public class SkillEditor implements ActionQuery {
             for (String skillsOption : skills) {
                 deleteAllAddedSkills.add(removeOption + " the " + skillsOption);
                 deleteAllAddedSkills.add(removeOption + skillsOption);
+                deleteAllAddedSkills.add(removeOption + " added skills");
+                deleteAllAddedSkills.add(removeOption + " the added skills");
+                deleteAllAddedSkills.add(removeOption + " all added skills");
+                deleteAllAddedSkills.add(removeOption + " all the added skills");
+            }
+        }
+
+        for (String removeOption : remove) {
+            for (String theOption : the) {
+                for (String addedOption : added) {
+                    deleteLastAddedSkill.add(removeOption + theOption + " skill" + addedOption);
+                    deleteLastAddedSkill.add(removeOption + theOption + " last skill" + addedOption);
+                }
+                for (String addedOption : addedPlural) {
+                    deleteLastAddedSkill.add(removeOption + theOption + " skill" + addedOption);
+                    deleteLastAddedSkill.add(removeOption + theOption + " last skill" + addedOption);
+                }
+                deleteLastAddedSkill.add(removeOption + theOption + " added skill");
+                deleteLastAddedSkill.add(removeOption + theOption + " last added skill");
+            }
+        }
+
+        for (String editOption : edit) {
+            for (String theOption : the) {
+                editLastSkill.add(editOption + theOption + " last skill");
+                for (String addedOption : added) {
+                    editLastSkill.add(editOption + theOption + " last skill" + addedOption);
+                }
+            }
+        }
+
+        for (String editOption : edit) {
+            for (String theOption : the) {
+                editSkill.add(editOption + theOption + " skill \\d+");
+                editSkill.add(editOption + theOption + " skill \\d+ from the text file");
+                for (String addedOption : added) {
+                    editSkill.add(editOption + theOption + " skill \\d+" + addedOption);
+                }
             }
         }
 
@@ -91,7 +141,10 @@ public class SkillEditor implements ActionQuery {
         mapFunctions.put(getLastSkill, SkillEditor.class.getMethod("getLastSkill"));
         mapFunctions.put(getLastSkillsAdded, SkillEditor.class.getMethod("getLastSkillsAdded"));
         mapFunctions.put(getLastSkillAdded, SkillEditor.class.getMethod("getLastSkillAdded"));
+        mapFunctions.put(deleteLastAddedSkill, SkillEditor.class.getMethod("deleteLastAddedSkill"));
         mapFunctions.put(deleteAllAddedSkills, SkillEditor.class.getMethod("deleteAllAddedSkills"));
+        mapFunctions.put(editLastSkill, SkillEditor.class.getMethod("editLastSkill"));
+        mapFunctions.put(editSkill, SkillEditor.class.getMethod("editSkill"));
     }
 
     public void setQuery(String query) {
@@ -99,10 +152,18 @@ public class SkillEditor implements ActionQuery {
         for (HashMap.Entry<ArrayList<String>, Method> entry : mapFunctions.entrySet()) {
             ArrayList<String> commands = entry.getKey();
             for (String command : commands) {
-                if (query.toLowerCase().contains(command)) {
-                    this.entry = entry;
-                    this.key = command;
-                    this.isQueryToEditSkill = true;
+                if (command.contains("\\d+")) {
+                    if (Pattern.compile(command).matcher(query).find()) {
+                        this.entry = entry;
+                        this.key = command;
+                        this.isQueryToEditSkill = true;
+                    }
+                } else {
+                    if (query.toLowerCase().contains(command)) {
+                        this.entry = entry;
+                        this.key = command;
+                        this.isQueryToEditSkill = true;
+                    }
                 }
             }
         }
@@ -124,11 +185,10 @@ public class SkillEditor implements ActionQuery {
         query = query.replace(command, "");
         countMinSkillsAdded++;
         lastSkillsAdded = lastSkillsAdded.concat("\n" + query);
-        allSkillsAdded = allSkillsAdded.concat("\n" + query);
         FileWriter fw = new FileWriter(new File("./src/main/java/backend/Skills/SkillsTemplate.txt"), true);
         BufferedWriter bw = new BufferedWriter(fw);
         PrintWriter pw = new PrintWriter(bw);
-        pw.println(query);
+        pw.print(query + "\n");
         pw.flush();
         pw.close();
         bw.close();
@@ -167,26 +227,44 @@ public class SkillEditor implements ActionQuery {
 
    public String deleteAllAddedSkills() throws IOException {
        if(countMinSkillsAdded == 0) return "No skills have been recently added.";
-       String filePath = "./src/main/java/backend/Skills/SkillsTemplate.txt";
-       String skills = Files.readString(Path.of(filePath));
-       skills = skills.replaceAll(allSkillsAdded.strip(), "");
-       System.out.println("Text file will have:\n" + skills);
-       System.out.println("The skills added are:\n" + allSkillsAdded.strip());
-       PrintWriter pw = new PrintWriter(new File(filePath));
-       pw.append(skills.strip().concat("\n"));
-       pw.flush();
+       writeToSkillsFile(originalSkillsTemplate);
+       countMinSkillsAdded = 0;
+       lastSkillsAdded = "";
        return "All the added skills were deleted successfully.";
    }
 
-   public String deleteLastSkillAdded() {
-        return null;
+   public String deleteLastAddedSkill() throws IOException {
+       if(countMinSkillsAdded == 0) return "No skills have been recently added.";
+       String textWithDeletedSkill = getSkills().substring(0, getSkills().indexOf(getLastSkillAdded().strip()));
+       writeToSkillsFile(textWithDeletedSkill.strip().concat("\n"));
+       countMinSkillsAdded--;
+       return "The last added skill was deleted successfully.";
    }
 
-   public String editSkill() {
-        return null;
+   public void writeToSkillsFile(String text) throws FileNotFoundException {
+       PrintWriter pw = new PrintWriter(new File(skillsFilePath));
+       pw.append(text);
+       pw.flush();
    }
 
-   public String editLastSkill() {
-        return null;
+   public String editSkill() throws IOException {
+        Matcher matcher = Pattern.compile("\\d+").matcher(query);
+        int skillNumber = 0;
+        if (matcher.find()) {
+            skillNumber = Integer.parseInt(matcher.group());
+        }
+        String[] skills = getSkills().split("\n\n");
+        String skill = skills[skillNumber - 1].strip();
+        if (!lastSkillsAdded.contains(skill)) return "Sorry, you can not edit a skill you have not added yourself.";
+        textArea.setText("add the skill:\n" + skill);
+        writeToSkillsFile(getSkills().replaceAll("\n\n" + skill, "").replaceAll("\n\n\n", "\n\n"));
+        return "You can now edit the skill.";
+   }
+
+   public String editLastSkill() throws IOException {
+       if(countMinSkillsAdded == 0) return "Sorry, you can not edit a skill you have not added yourself.";
+       textArea.setText("add the skill:\n" + getLastSkillAdded().strip());
+       deleteLastAddedSkill();
+       return "You can now edit the skill.";
    }
 }

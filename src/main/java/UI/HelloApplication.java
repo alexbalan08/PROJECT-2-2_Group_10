@@ -29,10 +29,12 @@ public class HelloApplication extends Application {
     private String font = "Courier New";
     protected BuildImages images = new BuildImages();
     private VBox conversation = new VBox(10);
-    TextArea textArea;
+    public TextArea textArea;
     DA assistant = new DA();
 
     public HelloApplication() throws IOException, NoSuchMethodException {
+        textArea = new TextArea();
+        assistant.instantiateSkillEditor(textArea);
     }
 
     @Override
@@ -124,7 +126,6 @@ public class HelloApplication extends Application {
     }
 
     public HBox createTextAreaSend() throws NoSuchMethodException {
-        textArea = new TextArea();
         textArea.setStyle("-fx-text-fill: white; -fx-font: " + font);
         // Design for scroll bar in text area
         textArea.skinProperty().addListener(new ChangeListener<Skin<?>>() {
@@ -147,8 +148,8 @@ public class HelloApplication extends Application {
             String text = textArea.getText().strip();
             if (ke.getCode().equals(KeyCode.ENTER)) {
                 SkillEditor skillEditor;
-                try { skillEditor = new SkillEditor();
-                } catch (NoSuchMethodException e) { throw new RuntimeException(e); }
+                try { skillEditor = new SkillEditor(textArea);
+                } catch (NoSuchMethodException | IOException e) { throw new RuntimeException(e); }
                 skillEditor.setQuery(text);
                 if (skillEditor.isQueryToEditSkill() && skillEditor.entry.getValue().getName().equals("addSkill")) {
                     if (textArea.getMaxHeight() <= (textHeight + (textHeight * 1.5)) + maxNewLines * (textHeight + 3)) textArea.setMaxHeight(textArea.getMaxHeight() + (textHeight + 3));
