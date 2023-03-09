@@ -17,6 +17,8 @@ public class SkillEditor implements ActionQuery {
     HashMap<ArrayList<String>, Method> mapFunctions = new HashMap<>();
     String skillsFilePath = "./src/main/java/backend/Skills/SkillsTemplate.txt";
     TextArea textArea;
+    int maxNewLinesTextArea;
+    int textHeight;
     String query;
     String key;
     String lastSkillsAdded = "";
@@ -34,8 +36,10 @@ public class SkillEditor implements ActionQuery {
     public ArrayList<String> editLastSkill = new ArrayList<>();
     public ArrayList<String> editSkill = new ArrayList<>();
 
-    public SkillEditor(TextArea textArea) throws NoSuchMethodException, IOException {
+    public SkillEditor(TextArea textArea, int maxNewLinesTextArea, int textHeight) throws NoSuchMethodException, IOException {
         this.textArea = textArea;
+        this.maxNewLinesTextArea = maxNewLinesTextArea;
+        this.textHeight = textHeight;
         addSkillsToHashMap();
         originalSkillsTemplate = Files.readString(Path.of(skillsFilePath));
     }
@@ -256,15 +260,23 @@ public class SkillEditor implements ActionQuery {
         String[] skills = getSkills().split("\n\n");
         String skill = skills[skillNumber - 1].strip();
         if (!lastSkillsAdded.contains(skill)) return "Sorry, you can not edit a skill you have not added yourself.";
-        textArea.setText("add the skill:\n" + skill);
+        addToTextArea("add the skill:\n" + skill);
         writeToSkillsFile(getSkills().replaceAll("\n\n" + skill, "").replaceAll("\n\n\n", "\n\n"));
         return "You can now edit the skill.";
    }
 
    public String editLastSkill() throws IOException {
        if(countMinSkillsAdded == 0) return "Sorry, you can not edit a skill you have not added yourself.";
-       textArea.setText("add the skill:\n" + getLastSkillAdded().strip());
+       addToTextArea("add the skill:\n" + getLastSkillAdded().strip());
        deleteLastAddedSkill();
        return "You can now edit the skill.";
+   }
+
+   public void addToTextArea(String text) {
+        textArea.setText(text);
+        int numberOfLines = text.split("\n").length;
+        System.out.println("Number of lines: " + numberOfLines);
+        if (numberOfLines > maxNewLinesTextArea) textArea.setMaxHeight((textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3));
+        else textArea.setMaxHeight((textHeight + (textHeight * 1.5)) + (numberOfLines - 1) * (textHeight + 3));
    }
 }

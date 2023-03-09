@@ -27,8 +27,8 @@ public class DA implements ActionQuery {
         System.out.println(skill.getClass().getSimpleName() + " wrapper loaded successfully!");
     }
 
-    public void instantiateSkillEditor(TextArea textArea) throws IOException, NoSuchMethodException {
-        skillEditor = new SkillEditor(textArea);
+    public void instantiateSkillEditor(TextArea textArea, int maxNewLinesTextArea, int textHeight) throws IOException, NoSuchMethodException {
+        skillEditor = new SkillEditor(textArea, maxNewLinesTextArea, textHeight);
     }
 
     public String startQuery(String query) throws IOException, InvocationTargetException, IllegalAccessException {

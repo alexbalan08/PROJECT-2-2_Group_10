@@ -30,11 +30,12 @@ public class HelloApplication extends Application {
     protected BuildImages images = new BuildImages();
     private VBox conversation = new VBox(10);
     public TextArea textArea;
+    int maxNewLinesTextArea = 4;
     DA assistant = new DA();
 
     public HelloApplication() throws IOException, NoSuchMethodException {
         textArea = new TextArea();
-        assistant.instantiateSkillEditor(textArea);
+        assistant.instantiateSkillEditor(textArea, maxNewLinesTextArea, textHeight);
     }
 
     @Override
@@ -144,17 +145,15 @@ public class HelloApplication extends Application {
         textArea.setFont(new Font(font, textHeight));
         textArea.setMinHeight(textHeight + (textHeight * 1.5));
         textArea.setOnKeyPressed(ke -> {
-            int maxNewLines = 4;
             String text = textArea.getText().strip();
             if (ke.getCode().equals(KeyCode.ENTER)) {
                 SkillEditor skillEditor;
-                try { skillEditor = new SkillEditor(textArea);
+                try { skillEditor = new SkillEditor(textArea, maxNewLinesTextArea, textHeight);
                 } catch (NoSuchMethodException | IOException e) { throw new RuntimeException(e); }
                 skillEditor.setQuery(text);
                 if (skillEditor.isQueryToEditSkill() && skillEditor.entry.getValue().getName().equals("addSkill")) {
-                    if (textArea.getMaxHeight() <= (textHeight + (textHeight * 1.5)) + maxNewLines * (textHeight + 3)) textArea.setMaxHeight(textArea.getMaxHeight() + (textHeight + 3));
+                    if (textArea.getMaxHeight() <= (textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3)) textArea.setMaxHeight(textArea.getMaxHeight() + (textHeight + 3));
                 } else if (!text.equals("")) {
-                    System.out.println(text + "yey");
                     try {
                         textArea.setMaxHeight((textHeight + (textHeight * 1.5)));
                         sendMessageEventHandler();
@@ -164,7 +163,7 @@ public class HelloApplication extends Application {
                 }
             } else if (ke.getCode().equals(KeyCode.BACK_SPACE)) {
                 int numNewLines = (int) text.chars().filter(num -> num == '\n').count();
-                if (numNewLines <= maxNewLines) textArea.setMaxHeight((textHeight + (textHeight * 1.5)) + numNewLines * (textHeight + 3));
+                if (numNewLines <= maxNewLinesTextArea) textArea.setMaxHeight((textHeight + (textHeight * 1.5)) + numNewLines * (textHeight + 3));
             }
         });
 
