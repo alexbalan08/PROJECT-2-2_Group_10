@@ -6,11 +6,13 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DA implements ActionQuery {
 
     List<SkillWrapper> allMySkills;
     SkillEditor skillEditor = new SkillEditor();
+    private final cfgPlayground cfg;
 
     public DA() throws IOException, NoSuchMethodException {
         allMySkills = new ArrayList<>();
@@ -19,6 +21,7 @@ public class DA implements ActionQuery {
         addSkill(new Spotify());
         addSkill(new Weather());
         addSkill(new Wikipedia());
+        this.cfg = new cfgPlayground();
     }
 
     private void addSkill(SkillWrapper skill) {
@@ -28,38 +31,36 @@ public class DA implements ActionQuery {
 
     public String startQuery(String query) throws IOException, InvocationTargetException, IllegalAccessException {
         skillEditor.setQuery(query);
-        if (skillEditor.isQueryToEditSkill()) return skillEditor.startQuery(query);
+        if (skillEditor.isQueryToEditSkill()) {
+            return skillEditor.startQuery(query);
+        }
         else return doSkill(query);
     }
 
     public String doSkill(String query) throws IOException {
-        System.out.println(query);
-        double didIUnderstand = 0;
-        double understandingThreshhold = 0.6;
-        String matchedTemplate = null;
         SkillWrapper bestMatch = null;
+
         String output = "";
+        String determinedSkill = this.cfg.determineSkill(query.toLowerCase(Locale.ROOT));
+
         for (SkillWrapper skill : allMySkills) {
-            // TODO: PROCESS INPUT AND BREAK IT DOWN USING CFG AND FIND OUT WHICH SKILL WE WANT TO USE
-            // HARDCODE (needs changing)
-            if(skill.getClass().getSimpleName().equals(query)){
-                // Assumption at this point
-                didIUnderstand = 0.89;
+            if(skill.getClass().getSimpleName().equals(determinedSkill)) {
                 bestMatch = skill;
-                // TODO: DEALING WITH THE PLACEHOLDERS USING CONTEXT-FREE GRAMMAR (CFG)
-//                matchedTemplate = "play <song>";
-                ///////////////////////////
+                break;
             }
-            // END OF HARDCODE
         }
 
-        // Reality check
-        if(didIUnderstand>=understandingThreshhold){
+        if(bestMatch != null){
             bestMatch.start(query);
-            output=bestMatch.getResponse();
-        }
-        else {
-            return ("Sorry, didn't understand you!");
+            /*
+                Need to find more information according the skill recognised
+                    IF Weather --> try to find the city
+                    IF Spotify --> try to find what the user is searching (play/stop music, what's the song, ect)
+                    ...
+             */
+            output = bestMatch.getResponse();
+        } else {
+            return ("Sorry, I didn't understand you!");
         }
         return output;
     }

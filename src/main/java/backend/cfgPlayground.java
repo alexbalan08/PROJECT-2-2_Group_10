@@ -27,12 +27,65 @@ package backend;
 
 
 // THIS CLASS IS JUST A SCRATCH. IGNORE IT
+
+import java.util.*;
+
 public class cfgPlayground {
-    public static void main(String[] args) {
-        String input = "play classical music";
-        // regex syntax
-        if(input.matches("play (rock|pop|jazz|classical) music")){
-            System.out.println("Playing");
+    Map<String, String> request;
+    Map<String, String> actions;
+    List<String> queries;
+
+    public cfgPlayground() {
+        this.request = new HashMap<>();
+        this.request.put("can you", "action");
+        this.request.put("what is", "query");
+
+        this.actions = new HashMap<>();
+        this.actions.put("search for", "query");
+        this.actions.put("tell me", "query");
+
+        this.queries = new ArrayList<>();
+        this.queries.add("weather");
+        this.queries.add("music");
+    }
+
+    public String determineSkill(String input) {
+        return this.determineRequest(input);
+    }
+
+    private String determineRequest(String input) {
+        for (String request : this.request.keySet()) {
+            if(input.contains(request)) {
+                return switch (this.request.get(request)) {
+                    case "action" -> determineAction(input);
+                    case "query" -> determineQuery(input);
+                    default -> "";
+                };
+            }
         }
+        return "";
+    }
+
+    private String determineAction(String input) {
+        for (String action : this.actions.keySet()) {
+            if(input.contains(action)) {
+                if(Objects.equals(this.actions.get(action), "query")) {
+                    return determineQuery(input);
+                }
+            }
+        }
+        return "";
+    }
+
+    private String determineQuery(String input) {
+        for (String query : this.queries) {
+            if(input.contains(query)) {
+                if(query.equals("music")) {
+                    return "Spotify";
+                }
+                return query.substring(0, 1).toUpperCase() + query.substring(1);
+            }
+        }
+        return "";
     }
 }
