@@ -12,7 +12,7 @@ public class DA implements ActionQuery {
 
     List<SkillWrapper> allMySkills;
     SkillEditor skillEditor = new SkillEditor();
-    private final cfgPlayground cfg;
+    private final SkillRecognition skillRecognition;
 
     public DA() throws IOException, NoSuchMethodException {
         allMySkills = new ArrayList<>();
@@ -21,7 +21,7 @@ public class DA implements ActionQuery {
         addSkill(new Spotify());
         addSkill(new Weather());
         addSkill(new Wikipedia());
-        this.cfg = new cfgPlayground();
+        this.skillRecognition = new SkillRecognition();
     }
 
     private void addSkill(SkillWrapper skill) {
@@ -41,7 +41,7 @@ public class DA implements ActionQuery {
         SkillWrapper bestMatch = null;
 
         String output = "";
-        String determinedSkill = this.cfg.determineSkill(query.toLowerCase(Locale.ROOT));
+        String determinedSkill = this.skillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
 
         for (SkillWrapper skill : allMySkills) {
             if(skill.getClass().getSimpleName().equals(determinedSkill)) {

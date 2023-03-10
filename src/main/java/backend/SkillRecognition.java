@@ -1,6 +1,6 @@
 package backend;
 
-// Examples provided by ChatGBT:
+// Examples provided by ChatGPT:
 
 //<start> ::= <greeting> <request> | <goodbye>
 //<greeting> ::= "Hello" | "Hi" | "Hey"
@@ -30,15 +30,17 @@ package backend;
 
 import java.util.*;
 
-public class cfgPlayground {
-    Map<String, String> request;
-    Map<String, String> actions;
-    List<String> queries;
+public class SkillRecognition {
+    private final Map<String, String> request;
+    private final Map<String, String> actions;
+    private final List<String> queries;
+    private final List<String> skills;
 
-    public cfgPlayground() {
+    public SkillRecognition() {
         this.request = new HashMap<>();
         this.request.put("can you", "action");
         this.request.put("what is", "query");
+        this.request.put("tell me", "query");
 
         this.actions = new HashMap<>();
         this.actions.put("search for", "query");
@@ -47,6 +49,10 @@ public class cfgPlayground {
         this.queries = new ArrayList<>();
         this.queries.add("weather");
         this.queries.add("music");
+
+        this.skills = new ArrayList<>();
+        this.queries.add("Weather");
+        this.queries.add("Music");
     }
 
     public String determineSkill(String input) {
