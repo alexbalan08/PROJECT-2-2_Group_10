@@ -1,6 +1,9 @@
 package backend;
 
 import backend.Skills.*;
+import backend.recognition.SkillRecognition;
+import backend.recognition.SlotRecognition;
+import backend.recognition.WeatherSlotRecognition;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -13,15 +16,18 @@ public class DA implements ActionQuery {
     List<SkillWrapper> allMySkills;
     SkillEditor skillEditor = new SkillEditor();
     private final SkillRecognition skillRecognition;
+    private final SlotRecognition weatherSlot;
 
     public DA() throws IOException, NoSuchMethodException {
         allMySkills = new ArrayList<>();
-      //  addSkill(new Canvas());
+        // addSkill(new Canvas());
         addSkill(new Google());
         addSkill(new Spotify());
         addSkill(new Weather());
         addSkill(new Wikipedia());
+
         this.skillRecognition = new SkillRecognition();
+        this.weatherSlot = new WeatherSlotRecognition();
     }
 
     private void addSkill(SkillWrapper skill) {
@@ -40,9 +46,10 @@ public class DA implements ActionQuery {
     public String doSkill(String query) throws IOException {
         SkillWrapper bestMatch = null;
 
-        String output = "";
+        StringBuilder output = new StringBuilder();
         String determinedSkill = this.skillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
 
+        /*
         for (SkillWrapper skill : allMySkills) {
             if(skill.getClass().getSimpleName().equals(determinedSkill)) {
                 bestMatch = skill;
@@ -58,10 +65,19 @@ public class DA implements ActionQuery {
                     IF Spotify --> try to find what the user is searching (play/stop music, what's the song, ect)
                     ...
              */
+        /*
             output = bestMatch.getResponse();
         } else {
             return ("Sorry, I didn't understand you!");
         }
-        return output;
+        */
+        output = new StringBuilder(determinedSkill);
+        if(determinedSkill.equals("Weather")) {
+            String[] slots = weatherSlot.findSlot(query);
+            for(String slot : slots) {
+                output.append(" -- ").append(slot);
+            }
+        }
+        return output.toString();
     }
 }
