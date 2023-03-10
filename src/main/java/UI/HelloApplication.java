@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Control;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
@@ -29,7 +30,11 @@ public class HelloApplication extends Application {
     private String font = "Courier New";
     protected BuildImages images = new BuildImages();
     private VBox conversation = new VBox(10);
+    private ScrollPane conversationScrollPane = new ScrollPane(conversation);
+    public int eyeIconHeight = 45;
     public TextArea textArea;
+    public int topMarginTextAreaSend = 20;
+    public int borderMargin = 25;
     int maxNewLinesTextArea = 4;
     DA assistant = new DA();
 
@@ -49,9 +54,9 @@ public class HelloApplication extends Application {
 
         VBox eyeAndConversation = createEyeAndConversation();
 
-        HBox textFieldSend = createTextAreaSend();
+        HBox textAreaSend = createTextAreaSend();
 
-        StackPane paneCenter = createPaneCenter(eyeAndConversation, textFieldSend);
+        StackPane paneCenter = createPaneCenter(eyeAndConversation, textAreaSend);
 
         outputBotMessage("Hello DACStudent, how can I help you?");
 
@@ -111,7 +116,7 @@ public class HelloApplication extends Application {
     }
 
     public VBox createEyeAndConversation() {
-        ImageView eyeIconView = images.eyeIconView(45);
+        ImageView eyeIconView = images.eyeIconView(eyeIconHeight);
         StackPane eyeIcon = new StackPane(eyeIconView);
         eyeIcon.setAlignment(Pos.TOP_CENTER);
         eyeIcon.setOnMouseClicked(me -> {
@@ -119,11 +124,28 @@ public class HelloApplication extends Application {
             outputBotMessage("THE EYE ICON IS AT POSITION X: " + sceneSize / 2 + " AND Y: " + eyeIconView.getY());
         });
 
-        VBox eyeAndConversation = new VBox(eyeIcon, conversation);
-        eyeAndConversation.setMargin(eyeIcon, new Insets(25, 0, 15, 0));
-        eyeAndConversation.setMargin(conversation, new Insets(10, 30, 10, 30));
+        setConversationPaneScrollHeight();
+        conversationScrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent; ");
+        conversationScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        conversationScrollPane.setFitToWidth(true);
+        /*conversationPane.setOnSwipeUp(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                *//*conversationPane.setTranslateX(conversationPane.getTranslateX() + 50);
+                conversationPane.setTranslateY(conversationPane.getTranslateY() + 10);*//*
+            }
+        });*/
+
+        VBox eyeAndConversation = new VBox(eyeIcon, conversationScrollPane);
+        eyeAndConversation.setMargin(eyeIcon, new Insets(borderMargin, borderMargin, borderMargin, borderMargin));
+        eyeAndConversation.setMargin(conversationScrollPane, new Insets(0, borderMargin + 10, 0, borderMargin + 10));
 
         return eyeAndConversation;
+    }
+
+    public void setConversationPaneScrollHeight() {
+        int maxHeight = sceneSize - (borderMargin + eyeIconHeight + borderMargin + topMarginTextAreaSend + (int) (textArea.getMaxHeight()) + borderMargin);
+        conversationScrollPane.setMaxHeight(maxHeight);
     }
 
     public HBox createTextAreaSend() throws NoSuchMethodException {
@@ -145,25 +167,32 @@ public class HelloApplication extends Application {
         textArea.setFont(new Font(font, textHeight));
         textArea.setMinHeight(textHeight + (textHeight * 1.5));
         textArea.setOnKeyPressed(ke -> {
-            String text = textArea.getText().strip();
             if (ke.getCode().equals(KeyCode.ENTER)) {
+                String text = textArea.getText().strip();
                 SkillEditor skillEditor;
                 try { skillEditor = new SkillEditor(textArea, maxNewLinesTextArea, textHeight);
                 } catch (NoSuchMethodException | IOException e) { throw new RuntimeException(e); }
                 skillEditor.setQuery(text);
                 if (skillEditor.isQueryToEditSkill() && skillEditor.entry.getValue().getName().equals("addSkill")) {
-                    if (textArea.getMaxHeight() <= (textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3)) textArea.setMaxHeight(textArea.getMaxHeight() + (textHeight + 3));
+                    if (textArea.getMaxHeight() <= (textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3)) {
+                        textArea.setMaxHeight(textArea.getMaxHeight() + (textHeight + 3));
+                        setConversationPaneScrollHeight();
+                    }
                 } else if (!text.equals("")) {
                     try {
                         textArea.setMaxHeight((textHeight + (textHeight * 1.5)));
+                        setConversationPaneScrollHeight();
                         sendMessageEventHandler();
                     } catch (IOException | InvocationTargetException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
                 }
             } else if (ke.getCode().equals(KeyCode.BACK_SPACE)) {
-                int numNewLines = (int) text.chars().filter(num -> num == '\n').count();
-                if (numNewLines <= maxNewLinesTextArea) textArea.setMaxHeight((textHeight + (textHeight * 1.5)) + numNewLines * (textHeight + 3));
+                int numNewLines = (int) textArea.getText().chars().filter(num -> num == '\n').count();
+                if (numNewLines <= maxNewLinesTextArea) {
+                    textArea.setMaxHeight((textHeight + (textHeight * 1.5)) + numNewLines * (textHeight + 3));
+                    setConversationPaneScrollHeight();
+                }
             }
         });
 
@@ -177,19 +206,19 @@ public class HelloApplication extends Application {
             }
         });
 
-        HBox textFieldSend = new HBox(10);
-        textFieldSend.getChildren().addAll(textArea, sendIconView);
-        textFieldSend.setAlignment(Pos.BOTTOM_CENTER);
+        HBox textAreaSend = new HBox(10);
+        textAreaSend.getChildren().addAll(textArea, sendIconView);
+        textAreaSend.setAlignment(Pos.BOTTOM_CENTER);
 
-        return textFieldSend;
+        return textAreaSend;
     }
 
-    public StackPane createPaneCenter(VBox eyeAndConversation, HBox textFieldSend) {
+    public StackPane createPaneCenter(VBox eyeAndConversation, HBox textAreaSend) {
         StackPane paneCenter = new StackPane();
         paneCenter.setMinWidth(sceneSize);
         paneCenter.setMaxWidth(sceneSize);
-        paneCenter.setMargin(textFieldSend, new Insets(20, 20, 25, 20));
-        paneCenter.getChildren().addAll(eyeAndConversation, textFieldSend);
+        paneCenter.setMargin(textAreaSend, new Insets(topMarginTextAreaSend, borderMargin, borderMargin, borderMargin));
+        paneCenter.getChildren().addAll(eyeAndConversation, textAreaSend);
 
         return paneCenter;
     }

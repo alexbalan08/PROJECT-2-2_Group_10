@@ -38,7 +38,6 @@ public class DA implements ActionQuery {
     }
 
     public String doSkill(String query) throws IOException {
-        System.out.println(query);
         double didIUnderstand = 0;
         double understandingThreshhold = 0.6;
         String matchedTemplate = null;
