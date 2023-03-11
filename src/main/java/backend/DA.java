@@ -1,9 +1,7 @@
 package backend;
 
 import backend.Skills.*;
-import backend.recognition.SkillRecognition;
-import backend.recognition.SlotRecognition;
-import backend.recognition.WeatherSlotRecognition;
+import backend.recognition.*;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -17,6 +15,8 @@ public class DA implements ActionQuery {
     SkillEditor skillEditor = new SkillEditor();
     private final SkillRecognition skillRecognition;
     private final SlotRecognition weatherSlot;
+    private final SlotRecognition spotifySlot;
+    private final SlotRecognition canvasSlot;
 
     public DA() throws IOException, NoSuchMethodException {
         allMySkills = new ArrayList<>();
@@ -28,6 +28,8 @@ public class DA implements ActionQuery {
 
         this.skillRecognition = new SkillRecognition();
         this.weatherSlot = new WeatherSlotRecognition();
+        this.spotifySlot = new SpotifySlotRecognition();
+        this.canvasSlot = new CanvasSlotRecognition();
     }
 
     private void addSkill(SkillWrapper skill) {
@@ -74,6 +76,18 @@ public class DA implements ActionQuery {
         output = new StringBuilder(determinedSkill);
         if(determinedSkill.equals("Weather")) {
             String[] slots = weatherSlot.findSlot(query);
+            for(String slot : slots) {
+                output.append(" -- ").append(slot);
+            }
+        }
+        if(determinedSkill.equals("Spotify")) {
+            String[] slots = spotifySlot.findSlot(query);
+            for(String slot : slots) {
+                output.append(" -- ").append(slot);
+            }
+        }
+        if(determinedSkill.equals("Canvas")) {
+            String[] slots = canvasSlot.findSlot(query);
             for(String slot : slots) {
                 output.append(" -- ").append(slot);
             }

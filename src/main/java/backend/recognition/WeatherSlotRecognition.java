@@ -11,10 +11,10 @@ package backend.recognition;
  * - What will the weather be like in <PLACE> at <TIME> ?
  * - Tell me the weather in <PLACE>
  *
- * - <PLACE> : Maastricht, Liège, Amsterdam, …
- * - <TIME> : 9 pm, 12 am, etc
+ * - <PLACE> : Maastricht, Liege, Amsterdam, ect
+ * - <TIME> : 9pm, 12am, etc
  *
- * The <PLACE> will always be found. The <TIME> is optional.
+ * - RESULT = [<PLACE>, optional <TIME>]
  *
  * */
 
@@ -24,33 +24,12 @@ public class WeatherSlotRecognition implements SlotRecognition {
 
     @Override
     public String[] findSlot(String input) {
-        String place = "";
-        String time = "";
-
-        place = find(" in ", input);
-        time = find(" at ", input);
+        String place = find(" in ", input);
+        String time = find(" at ", input);
 
         if(!time.equals("")) {
-            String[] result = new String[2];
-            result[0] = place;
-            result[1] = time;
-            return result;
+            return new String[] {place, time};
         }
-        String[] result = new String[1];
-        result[0] = place;
-        return result;
-    }
-
-    private String find(String key, String input) {
-        int index = input.indexOf(key);
-        if(index != -1) {
-            String sub = input.substring(index + 4);
-            index = sub.indexOf(" ");
-            if(index != -1) {
-                return sub.substring(0, index).trim();
-            }
-            return sub.replace("?", "").replace(".", "");
-        }
-        return "";
+        return new String[] {place};
     }
 }
