@@ -15,6 +15,10 @@ import java.util.Objects;
  * - <TOPIC> : A topic from a course
  *
  * - RESULT = [<COURSE>, <TOPIC>]
+ *
+ * <COURSE> can be found after the words "course", "of" and "in".
+ * <TOPIC> is found after the word "find".
+ *
  * */
 public class CanvasSlotRecognition implements SlotRecognition {
 
@@ -32,8 +36,8 @@ public class CanvasSlotRecognition implements SlotRecognition {
         String topic = find(" find ", input);
 
         if(Objects.equals(course, "") || Objects.equals(topic, "")) {
-            return new String[] {"course", "topic"};
+            return new String[] { "course", "topic" };
         }
-        return new String[] {course, topic};
+        return new String[] { course, topic };
     }
 }
