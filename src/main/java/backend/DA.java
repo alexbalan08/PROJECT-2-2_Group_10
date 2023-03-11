@@ -5,37 +5,27 @@ import backend.recognition.*;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class DA implements ActionQuery {
 
-    List<SkillWrapper> allMySkills;
+    private final Map<SkillWrapper, SlotRecognition> skills;
     SkillEditor skillEditor = new SkillEditor();
     private final SkillRecognition skillRecognition;
-    private final SlotRecognition weatherSlot;
-    private final SlotRecognition spotifySlot;
-    private final SlotRecognition canvasSlot;
-    private final SlotRecognition wikipediaSlot;
 
     public DA() throws IOException, NoSuchMethodException {
-        allMySkills = new ArrayList<>();
-        // addSkill(new Canvas());
-        addSkill(new Google());
-        addSkill(new Spotify());
-        addSkill(new Weather());
-        addSkill(new Wikipedia());
+        this.skills = new HashMap<>();
+        this.addSkill(new Weather(), new WeatherSlotRecognition());
+        this.addSkill(new Spotify(), new SpotifySlotRecognition());
+        // this.addSkill(new Canvas(), new CanvasSlotRecognition());
+        this.addSkill(new Wikipedia(), new WikipediaSlotRecognition());
+        // this.addSkill(new Google(), ...);
 
         this.skillRecognition = new SkillRecognition();
-        this.weatherSlot = new WeatherSlotRecognition();
-        this.spotifySlot = new SpotifySlotRecognition();
-        this.canvasSlot = new CanvasSlotRecognition();
-        this.wikipediaSlot = new WikipediaSlotRecognition();
     }
 
-    private void addSkill(SkillWrapper skill) {
-        allMySkills.add(skill);
+    private void addSkill(SkillWrapper skill, SlotRecognition slotRecognition) {
+        this.skills.put(skill, slotRecognition);
         System.out.println(skill.getClass().getSimpleName() + " wrapper loaded successfully!");
     }
 
@@ -48,58 +38,27 @@ public class DA implements ActionQuery {
     }
 
     public String doSkill(String query) throws IOException {
-        SkillWrapper bestMatch = null;
-
         StringBuilder output = new StringBuilder();
         String determinedSkill = this.skillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
 
-        /*
-        for (SkillWrapper skill : allMySkills) {
+        // CHECK IF IT'S A SKILL ADDED BY THE USER (in a file)
+
+        for(SkillWrapper skill : this.skills.keySet()) {
             if(skill.getClass().getSimpleName().equals(determinedSkill)) {
-                bestMatch = skill;
+                String[] slots = this.skills.get(skill).findSlot(query);
+                output.append(skill.getClass().getSimpleName());
+                for(String slot : slots) {
+                    output.append(" -- ").append(slot);
+                }
                 break;
             }
         }
 
-        if(bestMatch != null){
-            bestMatch.start(query);
-            /*
-                Need to find more information according the skill recognised
-                    IF Weather --> try to find the city
-                    IF Spotify --> try to find what the user is searching (play/stop music, what's the song, ect)
-                    ...
-             */
-        /*
-            output = bestMatch.getResponse();
+        if(!output.toString().equals("")) {
+            return output.toString();
         } else {
-            return ("Sorry, I didn't understand you!");
+            return "Sorry, I didn't understand you ...";
         }
-        */
-        output = new StringBuilder(determinedSkill);
-        if(determinedSkill.equals("Weather")) {
-            String[] slots = weatherSlot.findSlot(query);
-            for(String slot : slots) {
-                output.append(" -- ").append(slot);
-            }
-        }
-        if(determinedSkill.equals("Spotify")) {
-            String[] slots = spotifySlot.findSlot(query);
-            for(String slot : slots) {
-                output.append(" -- ").append(slot);
-            }
-        }
-        if(determinedSkill.equals("Canvas")) {
-            String[] slots = canvasSlot.findSlot(query);
-            for(String slot : slots) {
-                output.append(" -- ").append(slot);
-            }
-        }
-        if(determinedSkill.equals("Wikipedia")) {
-            String[] slots = wikipediaSlot.findSlot(query);
-            for(String slot : slots) {
-                output.append(" -- ").append(slot);
-            }
-        }
-        return output.toString();
+
     }
 }
