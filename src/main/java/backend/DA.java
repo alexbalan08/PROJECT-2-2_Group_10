@@ -17,6 +17,7 @@ public class DA implements ActionQuery {
     private final SlotRecognition weatherSlot;
     private final SlotRecognition spotifySlot;
     private final SlotRecognition canvasSlot;
+    private final SlotRecognition wikipediaSlot;
 
     public DA() throws IOException, NoSuchMethodException {
         allMySkills = new ArrayList<>();
@@ -30,6 +31,7 @@ public class DA implements ActionQuery {
         this.weatherSlot = new WeatherSlotRecognition();
         this.spotifySlot = new SpotifySlotRecognition();
         this.canvasSlot = new CanvasSlotRecognition();
+        this.wikipediaSlot = new WikipediaSlotRecognition();
     }
 
     private void addSkill(SkillWrapper skill) {
@@ -88,6 +90,12 @@ public class DA implements ActionQuery {
         }
         if(determinedSkill.equals("Canvas")) {
             String[] slots = canvasSlot.findSlot(query);
+            for(String slot : slots) {
+                output.append(" -- ").append(slot);
+            }
+        }
+        if(determinedSkill.equals("Wikipedia")) {
+            String[] slots = wikipediaSlot.findSlot(query);
             for(String slot : slots) {
                 output.append(" -- ").append(slot);
             }

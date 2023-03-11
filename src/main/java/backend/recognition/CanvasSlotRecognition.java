@@ -20,12 +20,23 @@ import java.util.Objects;
  * <TOPIC> is found after the word "find".
  *
  * */
+
 public class CanvasSlotRecognition implements SlotRecognition {
 
     public CanvasSlotRecognition() { }
 
     @Override
     public String[] findSlot(String input) {
+        String course = findCourse(input);
+        String topic = find(" find ", input);
+
+        if(Objects.equals(course, "") || Objects.equals(topic, "")) {
+            return new String[] { "course", "topic" };
+        }
+        return new String[] { course, topic };
+    }
+
+    private String findCourse(String input) {
         String course = find(" course ", input);
         if(Objects.equals(course, "")) {
             course = find(" of ", input);
@@ -33,11 +44,6 @@ public class CanvasSlotRecognition implements SlotRecognition {
                 course = find(" in ", input);
             }
         }
-        String topic = find(" find ", input);
-
-        if(Objects.equals(course, "") || Objects.equals(topic, "")) {
-            return new String[] { "course", "topic" };
-        }
-        return new String[] { course, topic };
+        return course;
     }
 }
