@@ -51,7 +51,7 @@ public class Spotify extends SkillWrapper {
     private String getSongID(String song) {
         try {
             SearchTracksRequest request = spotifyApi.searchTracks(song).build();
-            
+
             // Execute the request and get the first page of results
             Paging<Track> trackPaging = request.execute();
             Track[] tracks = trackPaging.getItems();

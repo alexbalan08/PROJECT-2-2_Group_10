@@ -30,6 +30,7 @@ public class SkillRecognition {
         this.request.add("what's");
         this.request.add("in which");
         this.request.add("where");
+        this.request.add("who");
         this.request.add("for the course");
         this.request.add("what");
 
