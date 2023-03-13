@@ -27,14 +27,16 @@ public class SkillRecognition {
         this.request.add("what is");
         this.request.add("tell me");
         this.request.add("how is");
-        this.request.add("what");
         this.request.add("what's");
         this.request.add("in which");
         this.request.add("where");
         this.request.add("for the course");
+        this.request.add("what");
 
         this.themes = new HashMap<>();
         this.themes.put("the weather", "Weather");
+        this.themes.put("the climate", "Weather");
+        this.themes.put("forecast", "Weather");
         this.themes.put("music", "Spotify");
         this.themes.put("song", "Spotify");
         this.themes.put("spotify", "Spotify");

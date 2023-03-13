@@ -28,7 +28,7 @@ public class CanvasSlotRecognition implements SlotRecognition {
     @Override
     public String[] findSlot(String input) {
         String course = findCourse(input);
-        String topic = find(" find ", input);
+        String topic = findFirst(" find ", input);
 
         if(Objects.equals(course, "") || Objects.equals(topic, "")) {
             return new String[] { "course", "topic" };
@@ -37,11 +37,11 @@ public class CanvasSlotRecognition implements SlotRecognition {
     }
 
     private String findCourse(String input) {
-        String course = find(" course ", input);
+        String course = findFirst(" course ", input);
         if(Objects.equals(course, "")) {
-            course = find(" of ", input);
+            course = findFirst(" of ", input);
             if(Objects.equals(course, "")) {
-                course = find(" in ", input);
+                course = findFirst(" in ", input);
             }
         }
         return course;

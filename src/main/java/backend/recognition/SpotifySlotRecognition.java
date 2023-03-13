@@ -15,7 +15,7 @@ import java.util.List;
  * - <ACTION> "<TITLE>"
  * - <ACTION> music
  *
- * - <ACTION> : Play | Pause | Stop
+ * - <ACTION> : Play | Pause | Stop | Resume | Replay
  * - <TITLE> : title of one music, has to be between quotation marks
  *
  * - RESULT = [<ACTION>, optional <TITLE>]
@@ -36,6 +36,7 @@ public class SpotifySlotRecognition implements SlotRecognition {
         this.actions.add("stop");
         this.actions.add("pause");
         this.actions.add("resume");
+        this.actions.add("replay");
     }
 
     @Override

@@ -1,5 +1,7 @@
 package backend.recognition;
 
+import java.util.Objects;
+
 /**
  *
  * This class find slots for these examples :
@@ -24,10 +26,16 @@ public class WeatherSlotRecognition implements SlotRecognition {
 
     @Override
     public String[] findSlot(String input) {
-        String place = find(" in ", input);
-        String time = find(" at ", input);
+        String place = findFirst(" in ", input);
+        if(Objects.equals(place, "")) {
+            return getSlotsInArray(findFirst(" at ", input), findLast(" at ", input));
+        } else {
+            return getSlotsInArray(place, findFirst(" at ", input));
+        }
+    }
 
-        if(!time.equals("")) {
+    private String[] getSlotsInArray(String place, String time) {
+        if(!time.equals("") && !Objects.equals(place, time)) {
             return new String[] {place, time};
         }
         return new String[] {place};

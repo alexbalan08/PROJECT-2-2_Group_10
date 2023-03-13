@@ -19,11 +19,11 @@ public class WikipediaSlotRecognition implements SlotRecognition {
 
     @Override
     public String[] findSlot(String input) {
-        String subject = find(" about ", input);
+        String subject = findFirst(" about ", input);
         if(Objects.equals(subject, "")) {
-            subject = find(" of ", input);
+            subject = findFirst(" of ", input);
             if(Objects.equals(subject, "")) {
-                subject = find(" is ", input);
+                subject = findFirst(" is ", input);
             }
         }
         return new String[] { subject };

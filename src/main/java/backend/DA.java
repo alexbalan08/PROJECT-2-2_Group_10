@@ -42,6 +42,7 @@ public class DA implements ActionQuery {
         String determinedSkill = this.skillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
 
         // CHECK IF IT'S A SKILL ADDED BY THE USER (in a file)
+        // IF NOT, TRY TO FIND THE SKILL IN THE MAP
 
         for(SkillWrapper skill : this.skills.keySet()) {
             if(skill.getClass().getSimpleName().equals(determinedSkill)) {
