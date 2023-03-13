@@ -45,18 +45,22 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException, NoSuchMethodException {
-        HBox root = new HBox();
+        StackPane root = new StackPane();
         Scene scene = new Scene(root, sceneSize, sceneSize);
         scene.getStylesheets().add("file:src/main/resources/hello.css");
+
+        scene.setOnMouseClicked(e -> {
+            if (scene.getHeight() != sceneSize) System.out.println("SCENE SIZE CHANGED");
+        });
 
         stage.getIcons().add(images.eyeIcon);
         stage.setTitle("EYE°Sistant");
 
-        VBox eyeAndConversation = createEyeAndConversation();
-
         HBox textAreaSend = createTextAreaSend();
 
-        StackPane paneCenter = createPaneCenter(eyeAndConversation, textAreaSend);
+        VBox eyeAndConversation = createEyeAndConversation(textAreaSend);
+
+        StackPane paneCenter = createPaneCenter(eyeAndConversation);
 
         outputBotMessage("Hello DACStudent, how can I help you?");
 
@@ -65,7 +69,6 @@ public class HelloApplication extends Application {
         backgroundPane.setMinWidth(3000 * 0.4);
 
         root.getChildren().add(new StackPane(backgroundPane, paneCenter));
-        root.setAlignment(Pos.CENTER);
         stage.setScene(scene);
 
         textArea.setPrefWidth(paneCenter.getMinWidth() - images.sendIcon.getWidth());
@@ -115,7 +118,7 @@ public class HelloApplication extends Application {
         }
     }
 
-    public VBox createEyeAndConversation() {
+    public VBox createEyeAndConversation(HBox textAreaSend) {
         ImageView eyeIconView = images.eyeIconView(eyeIconHeight);
         StackPane eyeIcon = new StackPane(eyeIconView);
         eyeIcon.setAlignment(Pos.TOP_CENTER);
@@ -127,24 +130,21 @@ public class HelloApplication extends Application {
         setConversationPaneScrollHeight();
         conversationScrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent; ");
         conversationScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        conversationScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         conversationScrollPane.setFitToWidth(true);
-        /*conversationPane.setOnSwipeUp(new EventHandler() {
-            @Override
-            public void handle(Event event) {
-                *//*conversationPane.setTranslateX(conversationPane.getTranslateX() + 50);
-                conversationPane.setTranslateY(conversationPane.getTranslateY() + 10);*//*
-            }
-        });*/
+        conversationScrollPane.vvalueProperty().bind(conversation.heightProperty());
 
-        VBox eyeAndConversation = new VBox(eyeIcon, conversationScrollPane);
+        VBox eyeAndConversation = new VBox(eyeIcon, conversationScrollPane, textAreaSend);
         eyeAndConversation.setMargin(eyeIcon, new Insets(borderMargin, borderMargin, borderMargin, borderMargin));
         eyeAndConversation.setMargin(conversationScrollPane, new Insets(0, borderMargin + 10, 0, borderMargin + 10));
+        eyeAndConversation.setMargin(textAreaSend, new Insets(topMarginTextAreaSend, borderMargin, borderMargin, borderMargin));
 
         return eyeAndConversation;
     }
 
     public void setConversationPaneScrollHeight() {
         int maxHeight = sceneSize - (borderMargin + eyeIconHeight + borderMargin + topMarginTextAreaSend + (int) (textArea.getMaxHeight()) + borderMargin);
+        conversationScrollPane.setMinHeight(maxHeight);
         conversationScrollPane.setMaxHeight(maxHeight);
     }
 
@@ -164,8 +164,8 @@ public class HelloApplication extends Application {
         });
 
         textArea.setMaxHeight((textHeight + (textHeight * 1.5)));
-        textArea.setFont(new Font(font, textHeight));
         textArea.setMinHeight(textHeight + (textHeight * 1.5));
+        textArea.setFont(new Font(font, textHeight));
         textArea.setOnKeyPressed(ke -> {
             if (ke.getCode().equals(KeyCode.ENTER)) {
                 String text = textArea.getText().strip();
@@ -176,11 +176,13 @@ public class HelloApplication extends Application {
                 if (skillEditor.isQueryToEditSkill() && skillEditor.entry.getValue().getName().equals("addSkill")) {
                     if (textArea.getMaxHeight() <= (textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3)) {
                         textArea.setMaxHeight(textArea.getMaxHeight() + (textHeight + 3));
+                        textArea.setMinHeight(textArea.getMinHeight() + (textHeight + 3));
                         setConversationPaneScrollHeight();
                     }
                 } else if (!text.equals("")) {
                     try {
                         textArea.setMaxHeight((textHeight + (textHeight * 1.5)));
+                        textArea.setMinHeight((textHeight + (textHeight * 1.5)));
                         setConversationPaneScrollHeight();
                         sendMessageEventHandler();
                     } catch (IOException | InvocationTargetException | IllegalAccessException e) {
@@ -191,6 +193,7 @@ public class HelloApplication extends Application {
                 int numNewLines = (int) textArea.getText().chars().filter(num -> num == '\n').count();
                 if (numNewLines <= maxNewLinesTextArea) {
                     textArea.setMaxHeight((textHeight + (textHeight * 1.5)) + numNewLines * (textHeight + 3));
+                    textArea.setMinHeight((textHeight + (textHeight * 1.5)) + numNewLines * (textHeight + 3));
                     setConversationPaneScrollHeight();
                 }
             }
@@ -210,15 +213,17 @@ public class HelloApplication extends Application {
         textAreaSend.getChildren().addAll(textArea, sendIconView);
         textAreaSend.setAlignment(Pos.BOTTOM_CENTER);
 
+        textAreaSend.setMaxHeight(textArea.getMaxHeight());
+
         return textAreaSend;
     }
 
-    public StackPane createPaneCenter(VBox eyeAndConversation, HBox textAreaSend) {
-        StackPane paneCenter = new StackPane();
+    public StackPane createPaneCenter(VBox eyeAndConversation) {
+        StackPane paneCenter = new StackPane(eyeAndConversation);
         paneCenter.setMinWidth(sceneSize);
         paneCenter.setMaxWidth(sceneSize);
-        paneCenter.setMargin(textAreaSend, new Insets(topMarginTextAreaSend, borderMargin, borderMargin, borderMargin));
-        paneCenter.getChildren().addAll(eyeAndConversation, textAreaSend);
+        paneCenter.setMinHeight(sceneSize);
+        paneCenter.setMaxHeight(sceneSize);
 
         return paneCenter;
     }
