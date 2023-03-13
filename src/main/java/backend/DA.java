@@ -47,14 +47,14 @@ public class DA implements ActionQuery {
         for(SkillWrapper skill : this.skills.keySet()) {
             if(skill.getClass().getSimpleName().equals(determinedSkill)) {
                 String[] slots = this.skills.get(skill).findSlot(query);
-                output.append(skill.getClass().getSimpleName());
-                for(String slot : slots) {
-                    output.append(" -- ").append(slot);
-                }
-
-                if(Objects.equals(determinedSkill, "Weather")) {
+                if((Objects.equals(determinedSkill, "Weather")) || (Objects.equals(determinedSkill, "Wikipedia"))) {
                     skill.start(slots);
-                    output = new StringBuilder(skill.getResponse());
+                    output.append(skill.getResponse());
+                } else {
+                    output.append(skill.getClass().getSimpleName());
+                    for(String slot : slots) {
+                        output.append(" -- ").append(slot);
+                    }
                 }
 
                 break;
