@@ -47,7 +47,8 @@ public class DA implements ActionQuery {
         for(SkillWrapper skill : this.skills.keySet()) {
             if(skill.getClass().getSimpleName().equals(determinedSkill)) {
                 String[] slots = this.skills.get(skill).findSlot(query);
-                if((Objects.equals(determinedSkill, "Weather")) || (Objects.equals(determinedSkill, "Wikipedia"))) {
+                if((Objects.equals(determinedSkill, "Weather")) || (Objects.equals(determinedSkill, "Wikipedia"))
+                        || (Objects.equals(determinedSkill, "Spotify"))) {
                     skill.start(slots);
                     output.append(skill.getResponse());
                 } else {
