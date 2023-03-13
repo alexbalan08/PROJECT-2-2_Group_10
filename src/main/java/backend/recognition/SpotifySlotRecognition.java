@@ -13,7 +13,6 @@ import java.util.List;
  * - Can you <ACTION> this song "<TITLE>" ?
  * - Can you <ACTION> "<TITLE>" ?
  * - <ACTION> "<TITLE>"
- * - <ACTION> music
  *
  * - <ACTION> : Play | Pause | Stop | Resume | Replay
  * - <TITLE> : title of one music, has to be between quotation marks

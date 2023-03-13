@@ -21,7 +21,7 @@ public interface SlotRecognition {
             if(index != -1) {
                 return sub.substring(0, index).trim();
             }
-            return sub.replace("?", "").replace(".", "");
+            return sub.replace("?", "").replace(".", "").replace("\n", "");
         }
         return "";
     }

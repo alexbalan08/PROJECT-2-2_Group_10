@@ -25,9 +25,9 @@ public class Canvas extends SkillWrapper {
     }
 
     @Override
-    public void start(String matchedTemplate) {
-        matchedTemplate = matchedTemplate.toLowerCase().strip();
-        String[] keyWords = matchedTemplate.split(" ");
+    public void start(String[] slots) {
+        String slot = slots[0].toLowerCase().strip();
+        String[] keyWords = slot.split(" ");
 
         String output = "";
         try {

@@ -11,47 +11,44 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class Weather extends SkillWrapper {
-    public final String APIkey = "450b386258d6eca1fe2eda0820dfa7a6";
-    public String city = "Maastricht";
-    private final String API_URL = "https://api.openweathermap.org/data/2.5/weather?q="+city+"&appid="+APIkey+"&units=metric";
 
+    public final String APIkey = "450b386258d6eca1fe2eda0820dfa7a6";
+    public String city;
 
     @Override
-    public void start(String matchedTemplate) {
-        System.out.println("Start");
-        String output = "";
+    public void start(String[] slots) {
         try {
+            if(slots.length == 1) {
+                city = slots[0];
+            } else {
+                city = slots[0];
+                String time = slots[1];
+            }
+
+            String API_URL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + APIkey + "&units=metric";
+
             URL url = new URL(API_URL);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
 
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
-            StringBuffer response = new StringBuffer();
+            StringBuilder response = new StringBuilder();
 
             while ((inputLine = in.readLine()) != null) {
                 response.append(inputLine);
             }
             in.close();
 
-            // System.out.println(response.toString());
-
             ObjectMapper om = new ObjectMapper();
             WeatherData WD = om.readValue(response.toString(), WeatherData.class);
-            outputs.add("At the moment, in "+ city + ", it's "+ WD.getMain().getTemp()+ "°C.\nFeels like: "+WD.getMain().getFeels_like()+"°C.");
+
+            outputs.add("At the moment, in " + city + ", it's " + WD.getMain().getTemp() + "°C.\nFeels like: " + WD.getMain().getFeels_like() + "°C.");
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            outputs.add("I can't find the weather for " + city.trim().replace("\n", "") + ". This city exist ?");
         }
     }
-
-    public static void main(String[] args) {
-        Weather w = new Weather();
-        w.start("TODO");
-    }
-
-
-
-    }
+}
 
 
 

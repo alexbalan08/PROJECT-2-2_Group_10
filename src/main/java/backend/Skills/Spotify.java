@@ -24,7 +24,7 @@ public class Spotify extends SkillWrapper {
 
     // TODO: CFG
     @Override
-    public void start(String matchedTemplate) {
+    public void start(String[] slots) {
 
         playSong(getSongID("Корабль в бутылке"));
         outputs.add("Playing Корабль в бутылке.");
@@ -99,11 +99,4 @@ public class Spotify extends SkillWrapper {
         }
         return;
     }
-
-    public static void main(String[] args) {
-        Spotify s = new Spotify();
-        s.start("TODO");
-    }
-
-
 }

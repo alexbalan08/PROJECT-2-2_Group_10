@@ -13,7 +13,7 @@ import org.json.JSONObject;
 public class Wikipedia extends SkillWrapper {
 
     @Override
-    public void start(String matchedTemplate) {
+    public void start(String[] slots) {
         try {
             String searchTerm = "The_Cats";
             URL url = new URL("https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exsentences=2&exlimit=1&format=json&titles=" + searchTerm);
@@ -23,8 +23,6 @@ public class Wikipedia extends SkillWrapper {
             String summary = page.getString("extract").replaceAll("\\<.*?\\>", "").replaceAll("[\\r\\n]+", " ");;
             System.out.println(summary);
             outputs.add(summary);
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }

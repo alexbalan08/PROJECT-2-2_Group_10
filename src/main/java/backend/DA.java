@@ -51,6 +51,12 @@ public class DA implements ActionQuery {
                 for(String slot : slots) {
                     output.append(" -- ").append(slot);
                 }
+
+                if(Objects.equals(determinedSkill, "Weather")) {
+                    skill.start(slots);
+                    output = new StringBuilder(skill.getResponse());
+                }
+
                 break;
             }
         }
