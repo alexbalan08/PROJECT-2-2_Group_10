@@ -3,6 +3,7 @@ package backend.Skills;
 import backend.SkillWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -21,43 +22,49 @@ public class Canvas extends SkillWrapper {
     final String API_URL_courses = "https://canvas.maastrichtuniversity.nl/api/v1/courses";
     ObjectMapper om = new ObjectMapper();
 
-    public Canvas() throws IOException {
-    }
+    public Canvas() throws IOException { }
 
     @Override
     public void start(String[] slots) {
-        String slot = slots[0].toLowerCase().strip();
-        String[] keyWords = slot.split(" ");
+        if (!Objects.equals(slots[0], "course")) {
+            String course = slots[0];
+            String topic = slots[1];
+            outputs.add(find(course, topic));
+        } else {
+            outputs.add("Sorry, I didn't understand the course or the topic. Try another one.");
+        }
 
-        String output = "";
+    }
+
+    private String find(String courseName, String topic) {
         try {
+            String output = "";
             String coursesData = response(API_URL_courses + accessToken);
-
             JsonNode rootCourses = om.readTree(coursesData);
 
             for (Iterator<JsonNode> courses = rootCourses.elements(); courses.hasNext(); ) {
                 JsonNode course = courses.next();
                 // Look at modules inside the course
-                if(course.get("name").asText().toLowerCase().contains(keyWords[0])) {
-                    output = output.concat("For the course \'" + course.get("name").asText() + "\' you can find the topic \'" + keyWords[1] + "\' in:\n");
+                if (course.get("name").asText().toLowerCase().contains(courseName)) {
+                    output = output.concat("For the course \'" + course.get("name").asText() + "\' you can find the topic \'" + topic + "\' in:\n");
                     File courseFolder = new File("./src/main/resources/courses/" + course.get("name").asText());
                     if (!courseFolder.exists()) {
                         downloadUrlFiles(course, courseFolder);
                     }
-                    output = output.concat(allSlidesWithTopic(courseFolder, keyWords[1]));
-                    outputs.add(output);
-                    break;
+                    output = output.concat(allSlidesWithTopic(courseFolder, topic));
+                    return output;
                 } else if (!courses.hasNext()) {
-                    outputs.add("Sorry, this course can not be found.");
-                    return;
+                    return "Sorry, I can't find this course.";
                 }
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
+            return "Oh, this service had an error.";
         }
+        return "";
     }
 
-    public void downloadUrlFiles(JsonNode course, File courseFolder) throws IOException {
+    private void downloadUrlFiles(JsonNode course, File courseFolder) throws IOException {
         courseFolder.mkdir();
         final String API_URL_course_modules = API_URL_courses + "/" + course.get("id") + "/modules";
         String courseModules = response(API_URL_course_modules + accessToken);
@@ -90,7 +97,7 @@ public class Canvas extends SkillWrapper {
     }
 
     // Returns String of content inside an API_URL
-    public static String response(String API_URL) throws IOException {
+    private static String response(String API_URL) throws IOException {
         URL url = new URL(API_URL);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
@@ -108,7 +115,7 @@ public class Canvas extends SkillWrapper {
     }
 
     // Save a pdf file (with the lecture slides content) having the download_url and saving it in the pathName
-    public static void savePdfFile(String download_url, String pathName) throws IOException {
+    private static void savePdfFile(String download_url, String pathName) throws IOException {
         URL url = new URL(download_url);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
@@ -126,7 +133,7 @@ public class Canvas extends SkillWrapper {
     }
 
     // List of slides of one Lecture containing the topic
-    public static ArrayList<Integer> getFileSlidesWithTopic(String topic, File file) throws IOException {
+    private static ArrayList<Integer> getFileSlidesWithTopic(String topic, File file) throws IOException {
         ArrayList<Integer> slidesWithTopic = new ArrayList<>();
 
         PDDocument document = PDDocument.load(file);
@@ -147,7 +154,7 @@ public class Canvas extends SkillWrapper {
     }
 
     // String containing slides of all lectures containing the topic
-    public static String allSlidesWithTopic(File courseFolder, String topic) throws IOException {
+    private static String allSlidesWithTopic(File courseFolder, String topic) throws IOException {
         String output = "";
         boolean topicFound = false;
         File[] courseFolderModules = courseFolder.listFiles();
@@ -156,7 +163,7 @@ public class Canvas extends SkillWrapper {
             File[] courseFolderModuleFiles = courseFolderModule.listFiles();
             for (File courseFolderModuleFile : courseFolderModuleFiles) {
                 ArrayList<Integer> numberSlides = getFileSlidesWithTopic(topic, courseFolderModuleFile);
-                if(!numberSlides.isEmpty()) {
+                if (!numberSlides.isEmpty()) {
                     if (!topicFound) topicFound = true;
                     if (!topicInModuleFound) {
                         topicInModuleFound = true;
@@ -173,7 +180,7 @@ public class Canvas extends SkillWrapper {
     }
 
     // String concatenating slides of a file containing the topic
-    public static String outputFileSlidesWithTopic(String output, ArrayList<Integer> numberSlides) {
+    private static String outputFileSlidesWithTopic(String output, ArrayList<Integer> numberSlides) {
         Integer previousNumberSlide = numberSlides.get(0);
         Integer lastConsecutiveSlide = numberSlides.get(0);
         output = output.concat(lastConsecutiveSlide.toString());
@@ -186,7 +193,8 @@ public class Canvas extends SkillWrapper {
             boolean lastNumberSlide = Objects.equals(numberSlides.get(numberSlides.size() - 1), numberSlide);
             if (numberSlide != lastConsecutiveSlide + 1) {
                 if (lastConsecutiveSlide.equals(previousNumberSlide) || lastConsecutiveSlide == previousNumberSlide + 1) {
-                    if (lastConsecutiveSlide == previousNumberSlide + 1) output = output.concat(", " + lastConsecutiveSlide);
+                    if (lastConsecutiveSlide == previousNumberSlide + 1)
+                        output = output.concat(", " + lastConsecutiveSlide);
                     output = output.concat(", " + numberSlide);
                 } else {
                     output = output.concat("-" + lastConsecutiveSlide + ", " + numberSlide);
