@@ -153,6 +153,7 @@ public class SkillEditor implements ActionQuery {
 
     public void setQuery(String query) {
         this.query = query;
+        this.isQueryToEditSkill = false;
         for (HashMap.Entry<ArrayList<String>, Method> entry : mapFunctions.entrySet()) {
             ArrayList<String> commands = entry.getKey();
             for (String command : commands) {
