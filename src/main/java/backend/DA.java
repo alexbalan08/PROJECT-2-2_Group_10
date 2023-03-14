@@ -13,7 +13,7 @@ public class DA implements ActionQuery {
     private final Map<SkillWrapper, SlotRecognition> skills;
     private final SkillRecognition skillRecognition;
 
-    SkillEditor skillEditor;
+    private SkillEditor skillEditor;
 
     public DA() throws IOException, NoSuchMethodException {
         this.skills = new HashMap<>();
@@ -32,13 +32,13 @@ public class DA implements ActionQuery {
     }
 
     public void instantiateSkillEditor(TextArea textArea, int maxNewLinesTextArea, int textHeight) throws IOException, NoSuchMethodException {
-        skillEditor = new SkillEditor(textArea, maxNewLinesTextArea, textHeight);
+        this.skillEditor = new SkillEditor(textArea, maxNewLinesTextArea, textHeight);
     }
 
     public String startQuery(String query) throws IOException, InvocationTargetException, IllegalAccessException {
-        skillEditor.setQuery(query);
-        if (skillEditor.isQueryToEditSkill()) {
-            return skillEditor.startQuery(query);
+        this.skillEditor.setQuery(query);
+        if (this.skillEditor.isQueryToEditSkill()) {
+            return this.skillEditor.startQuery(query);
         }
         else return doSkill(query);
     }
