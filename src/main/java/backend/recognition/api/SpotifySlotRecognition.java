@@ -1,4 +1,6 @@
-package backend.recognition;
+package backend.recognition.api;
+
+import backend.recognition.SlotRecognition;
 
 import java.util.ArrayList;
 import java.util.List;

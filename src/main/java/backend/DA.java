@@ -1,7 +1,10 @@
 package backend;
 
 import backend.Skills.*;
-import backend.recognition.*;
+import backend.recognition.SkillRecognition;
+import backend.recognition.SlotRecognition;
+import backend.recognition.api.*;
+import backend.recognition.user.UserSkillRecognition;
 import javafx.scene.control.TextArea;
 
 import java.io.*;
@@ -11,7 +14,7 @@ import java.util.*;
 public class DA implements ActionQuery {
 
     private final Map<SkillWrapper, SlotRecognition> skills;
-    private final SkillRecognition skillRecognition;
+    private final SkillRecognition apiSkillRecognition;
 
     private SkillEditor skillEditor;
 
@@ -23,7 +26,7 @@ public class DA implements ActionQuery {
         this.addSkill(new Wikipedia(), new WikipediaSlotRecognition());
         // this.addSkill(new Google(), ...);
 
-        this.skillRecognition = new SkillRecognition();
+        this.apiSkillRecognition = new ApiSkillRecognition();
     }
 
     private void addSkill(SkillWrapper skill, SlotRecognition slotRecognition) {
@@ -36,6 +39,7 @@ public class DA implements ActionQuery {
     }
 
     public String startQuery(String query) throws IOException, InvocationTargetException, IllegalAccessException {
+        query = query.replace("\n", "").trim();
         this.skillEditor.setQuery(query);
         if (this.skillEditor.isQueryToEditSkill()) {
             return this.skillEditor.startQuery(query);
@@ -45,17 +49,21 @@ public class DA implements ActionQuery {
 
     public String doSkill(String query) throws IOException {
         StringBuilder output = new StringBuilder();
-        String determinedSkill = this.skillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
+        String determinedSkill = this.apiSkillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
 
         // CHECK IF IT'S A SKILL ADDED BY THE USER (in a file)
         // IF NOT, TRY TO FIND THE SKILL IN THE MAP
+        SkillRecognition userSkillRecognition = new UserSkillRecognition();
+        output.append(userSkillRecognition.determineSkill(query));
 
-        for(SkillWrapper skill : this.skills.keySet()) {
-            if(skill.getClass().getSimpleName().equals(determinedSkill)) {
-                String[] slots = this.skills.get(skill).findSlot(query);
-                skill.start(slots);
-                output.append(skill.getResponse());
-                break;
+        if(output.isEmpty()) {
+            for(SkillWrapper skill : this.skills.keySet()) {
+                if(skill.getClass().getSimpleName().equals(determinedSkill)) {
+                    String[] slots = this.skills.get(skill).findSlot(query);
+                    skill.start(slots);
+                    output.append(skill.getResponse());
+                    break;
+                }
             }
         }
 

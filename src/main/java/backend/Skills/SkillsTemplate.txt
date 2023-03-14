@@ -1,2 +1,26 @@
-Question [in which lecture slides of, for the course] <COURSE> [can you find] <TOPIC>
-Action :Canvas
+Question : Which transport do I take to do to <CITY> ?
+Question : How can I get to <CITY> ?
+Question : What transport to I take to go to <CITY> ?
+Action : Maastricht : Bike
+Action : Amsterdam : Train
+Action : Liege : Car
+Action : Madrid : Plane
+Answer : You can go to <CITY> by <ANSWER>
+Error : I don't know what is the best mode of transport to go to <CITY>
+
+Question : What is the capital of <COUNTRY> ?
+Action : France : Paris
+Action : Belgium : Brussels
+Answer : The capital of <COUNTRY> is <ANSWER>.
+Error : I don't know the capital of <COUNTRY>.
+
+Question : Which lectures are there on <DAY> at <TIME> ?
+Action : Monday, 9 : Mathematical Modelling
+Action : Monday, 11 : Mathematical Modelling
+Action : Monday, 13 : Theoretical Computer Science
+Action : Monday, 15 : Theoretical Computer Science
+Action : Tuesday, 9 : Human Computer Interaction & Affective Computing
+Action : Tuesday, 11 : Human Computer Interaction & Affective Computing
+Action : Tuesday, 13 : Mathematical Modelling
+Answer : On <DAY>, at <TIME>, you have <ANSWER>.
+Error : You didn't have a course on <DAY> at <TIME>.
