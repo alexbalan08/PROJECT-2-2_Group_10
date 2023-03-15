@@ -20,7 +20,7 @@ public class UserSkillRecognition implements SkillRecognition {
     /*
      * Which lectures are there on Monday at 9 ?
      * What is the capital of Belgium ?
-     * Which transport do I take to do to Liege ?
+     * Which transport do I take to go to Liege ?
      * */
     @Override
     public String determineSkill(String input) {
@@ -30,7 +30,6 @@ public class UserSkillRecognition implements SkillRecognition {
                 if(line.startsWith("Question :")) {
                     String result = findQuestion(input, line, br);
                     if(!result.equals("")) {
-                        // FIND TEMPLATE
                         return result;
                     }
                 }
@@ -55,39 +54,74 @@ public class UserSkillRecognition implements SkillRecognition {
 
     private String findAnswer(String input, String question, BufferedReader br) throws IOException {
         // CHECK IF IT KNOWS <SLOT>
+        String answer = "";
+        BufferedReader newBr = null;
         String[] slots = this.slotRecognition.getSlots(input, question);
         if(slots.length > 0) {
             // FIND ANSWER
-            String newLine = "";
-            while (!Objects.equals(newLine = br.readLine(), null)) {
-                String template = "";
-                String answer = findAction(newLine, slots);
-                if(!answer.equals("")) {
-                    return answer;
+            String line = "";
+            while (!Objects.equals(line = br.readLine(), null)) {
+                if(line.startsWith("Action")) {
+                    answer = findAction(line, slots);
+                    if(!answer.equals("")) {
+                        break;
+                    }
+                } else if(line.startsWith("Answer")){
+                    break;
                 }
+                newBr = br;
             }
         }
-        return "";
+        if(newBr != null) {
+            return findTemplate(slots, answer, newBr);
+        } else {
+            return findTemplate(slots, answer, br);
+        }
+
     }
 
     private String findAction(String line, String[] slots) {
-        if(line.startsWith("Action")) {
-            int count = 0;
-            for(String slot : slots) {
-                if(line.contains(slot)) {
-                    count++;
-                }
+        int count = 0;
+        for(String slot : slots) {
+            if(line.contains(slot)) {
+                count++;
             }
-            if(count == slots.length) {
-                int index = line.lastIndexOf(":");
-                return line.substring(index + 2);
+        }
+        if(count == slots.length) {
+            int index = line.lastIndexOf(":");
+            return line.substring(index + 2);
+        }
+        return "";
+    }
+
+    private String findTemplate(String[] slots, String answer, BufferedReader br) throws IOException {
+        String line = "";
+        while (!Objects.equals(line = br.readLine(), null)) {
+            String template = line.substring(line.indexOf(":") + 2);
+            if(!Objects.equals(answer, "")) {
+                if(line.startsWith("Answer")) {
+                    template = template.replace("<ANSWER>", answer);
+                    for(String slot : slots) {
+                        template = replaceSlot(template, slot);
+                    }
+                    return template;
+                }
+            } else {
+                if(line.startsWith("Error")) {
+                    for(String slot : slots) {
+                        template = replaceSlot(template, slot);
+                    }
+                    return template;
+                }
             }
         }
         return "";
     }
 
-    private String findTemplate(String[] slots) {
-        return "";
+    private String replaceSlot(String template, String slot) {
+        int firstIndex = template.indexOf("<");
+        int secondIndex = template.indexOf(">") + 1;
+        return template.substring(0, firstIndex) + slot + template.substring(secondIndex);
     }
 
     // Levenshtein distance, from Chat GPT

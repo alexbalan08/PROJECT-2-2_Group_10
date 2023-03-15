@@ -51,11 +51,14 @@ public class DA implements ActionQuery {
         StringBuilder output = new StringBuilder();
         String determinedSkill = this.apiSkillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
 
+        // CHECK IF IT'S SKILL EDITOR
+        // TODO
+
         // CHECK IF IT'S A SKILL ADDED BY THE USER (in a file)
-        // IF NOT, TRY TO FIND THE SKILL IN THE MAP
         SkillRecognition userSkillRecognition = new UserSkillRecognition();
         output.append(userSkillRecognition.determineSkill(query));
 
+        // THEN CHECK IF IT'S AN API SKILL WANTED
         if(output.isEmpty()) {
             for(SkillWrapper skill : this.skills.keySet()) {
                 if(skill.getClass().getSimpleName().equals(determinedSkill)) {
