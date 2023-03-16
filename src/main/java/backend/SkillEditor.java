@@ -179,29 +179,43 @@ public class SkillEditor implements ActionQuery {
     }
 
     public String startQuery(String query) throws InvocationTargetException, IllegalAccessException {
-        if (entry == null) System.out.println("Check if the user wants to edit a skill");
-        return (String) mapFunctions.get(entry.getKey()).invoke(this);
+        if (entry == null) {
+            return "Check if the user wants to edit a skill";
+        } else {
+            return (String) mapFunctions.get(entry.getKey()).invoke(this);
+        }
     }
 
     // Adds the skill to the text file and returns a String saying if adding the skill to the SkillsTemplate was successful
     public String addSkill() throws IOException {
-        String command = query.substring(0, query.indexOf("\n"));
-        boolean addMoreThanOneSkill = command.contains("skills");
-        query = query.replace(command, "");
-        countMinSkillsAdded++;
-        lastSkillsAdded = lastSkillsAdded.concat("\n" + query);
-        FileWriter fw = new FileWriter(new File("./src/main/java/backend/Skills/SkillsTemplate.txt"), true);
-        BufferedWriter bw = new BufferedWriter(fw);
-        PrintWriter pw = new PrintWriter(bw);
-        pw.print(query + "\n");
-        pw.flush();
-        pw.close();
-        bw.close();
-        fw.close();
-        if (!addMoreThanOneSkill) return "The skill has been added";
-        countMinSkillsAdded += 2;
-        lastSkillsAdded = query;
-        return "The skills have been added";
+        int index = query.indexOf(":");
+        if(index != -1) {
+            try (FileWriter fw = new FileWriter("./src/main/java/backend/Skills/SkillsTemplate.txt", true)) {
+                try (BufferedWriter bw = new BufferedWriter(fw)) {
+                    try (PrintWriter pw = new PrintWriter(bw)) {
+                        String command = query.substring(0, index + 1).trim();
+                        boolean addMoreThanOneSkill = command.contains("skills");
+                        query = query.replace(command, "");
+                        countMinSkillsAdded++;
+                        lastSkillsAdded = lastSkillsAdded.concat("\n" + query);
+                        pw.println(query + "\n");
+
+                        if (!addMoreThanOneSkill) {
+                            return "The skill has been added";
+                        }
+
+                        countMinSkillsAdded += 2;
+                        lastSkillsAdded = query;
+                        return "The skills have been added";
+                    }
+                } catch (IOException io) {
+                    return "Error with the BufferedWriter";
+                }
+            } catch (IOException io) {
+                return "Error with the FileWritter";
+            }
+        }
+        return "No skill added.";
     }
 
    public String getSkills() throws IOException {
