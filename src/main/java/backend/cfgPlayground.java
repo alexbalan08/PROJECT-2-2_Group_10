@@ -25,6 +25,7 @@ package backend;
 //<songs> ::= "pop" | "rock" | "jazz" | "classical"
 
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,59 +33,60 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-
 import UI.HelloApplication;
 
 // THIS CLASS IS JUST A SCRATCH. IGNORE IT
 public class cfgPlayground {
-    public static void main(String[] args) throws IOException {
+    public static String CFG(String input) throws IOException {
         int max = 0;
         int count = 0;
         ArrayList<String> keywords = new ArrayList<>();
         ArrayList<String> userkeys = new ArrayList<>();
         ArrayList<String[]> outputkeys = new ArrayList<>();
         ArrayList<String> actions = new ArrayList<>();
-        //String user = HelloApplication.getUserMessage();
         String question = "";
         String answer = "";
-        Scanner reader = new Scanner(new File("./src/main/java/backend/Skills//SkillsTemplate.txt"));
-        while (reader.hasNextLine()) {
-            String word = reader.nextLine();
-            if (word.contains("Slot ")) {
-                keywords.add(word.replaceAll("Slot |<.*?> ", ""));
+        Scanner reader = new Scanner(new File("C:\\Users\\simon\\Downloads\\PROJECT-2-2_Group_10-main-2\\src\\main\\java\\backend\\Skills\\SkillsTemplate.txt"));
+            while(reader.hasNextLine()) {
+               String word = reader.nextLine();
+             if(word.contains("Slot ")) {
+                keywords.add(word.replaceAll("Slot |<.*?> ",""));
+               }
+             if(word.contains("Question ")) {
+                 question = word.replaceAll("Question | <.*?>| at", "");
+             }
+             if(word.contains("Action ")) {
+                 actions.add(word.replaceAll("Action |<.*?> ",""));
+             }
             }
-            if (word.contains("Question ")) {
-                question = word.replace("Question ", "");
-            }
-            if (word.contains("Action ")) {
-                actions.add(word.replaceAll("Action |<.*?> ", ""));
-            }
-        }
+            reader.close();
 
-        for (int i = 0; i < keywords.size(); i++) {
-            if (question.contains(keywords.get(i))) {
+        for(int i = 0; i < keywords.size(); i++) {
+            if(input.contains(question) && input.contains(keywords.get(i))) {
                 userkeys.add(keywords.get(i));
             }
         }
 
-        for (int i = 0; i < actions.size(); i++) {
-            for (int j = 0; j < userkeys.size(); j++) {
-                if (actions.get(i).contains(userkeys.get(j))) {
-                    count++;
-                }
-                if (count > max) {
-                    max = count;
-                    answer = actions.get(i);
+        for(int i = 0; i < actions.size(); i++) {
+          for(int j = 0; j < userkeys.size(); j++) {
+              if(actions.get(i).contains(userkeys.get(j))) {
+                  count++;
+              }
+              if(count > max) {
+                  max = count;
+                  answer = actions.get(i);
 
-                }
-                count = 0;
-            }
+              }
+          }
+          count = 0;
         }
-        if (max == 0) {
-            System.out.println(actions.get(actions.size() - 1));
-        } else {
-            System.out.println(answer);
+        if(max == 0) {
+            System.out.println(question);
+            return(actions.get(actions.size()-1));
         }
-        reader.close();
+        else {
+            System.out.println(question);
+            return(answer);
+        }
     }
 }

@@ -63,7 +63,7 @@ public class DA implements ActionQuery {
             output=bestMatch.getResponse();
         }
         else {
-            return ("Sorry, didn't understand you!");
+            output = cfgPlayground.CFG(query);
         }
         return output;
     }
