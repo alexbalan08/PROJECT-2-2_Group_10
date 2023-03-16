@@ -32,7 +32,7 @@ public class UserSkillRecognition implements SkillRecognition {
      *
      * This function returns a String :
      * - Empty if a question or an answer is not found.
-     * - Not empty if a question and an answer if found.
+     * - Not empty if a question and an answer is found.
      *
      * */
     @Override
