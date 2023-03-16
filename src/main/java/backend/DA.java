@@ -49,7 +49,7 @@ public class DA implements ActionQuery {
         else return doSkill(query);
     }
 
-    public String doSkill(String query) throws IOException {
+    private String doSkill(String query) {
         StringBuilder output = new StringBuilder();
         String determinedSkill = this.apiSkillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
 

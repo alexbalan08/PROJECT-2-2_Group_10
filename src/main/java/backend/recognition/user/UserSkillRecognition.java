@@ -48,6 +48,7 @@ public class UserSkillRecognition implements SkillRecognition {
                 }
             }
         } catch (IOException e) {
+            System.out.println("Error with the file : " + this.fileURL);
             e.printStackTrace();
         }
         return "";
