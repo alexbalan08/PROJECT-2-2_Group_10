@@ -1,10 +1,16 @@
 package backend.recognition.user;
 
-public class UserSlotRecognition {
+import backend.recognition.SlotRecognition;
+
+public class UserSlotRecognition implements SlotRecognition {
 
     public UserSlotRecognition() { }
 
-    public String[] getSlots(String input, String question) {
+    @Override
+    public String[] findSlot(String input) {
+        String question = getInformation(input, true);
+        input = getInformation(input, false);
+
         int index = question.indexOf("<");
         String questionSlot = getSlotForQuestion(question);
         String inputSlot = getSlotForInput(input, index);
@@ -28,5 +34,13 @@ public class UserSlotRecognition {
         String sub = input.substring(index);
         index = sub.indexOf(" ");
         return sub.substring(0, index);
+    }
+
+    private String getInformation(String input, boolean question) {
+        int index = input.indexOf("/");
+        if(!question) {
+            return input.substring(0, index).trim();
+        }
+        return input.substring(index + 1).trim();
     }
 }

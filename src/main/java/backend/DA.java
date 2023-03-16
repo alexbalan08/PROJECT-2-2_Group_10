@@ -15,6 +15,7 @@ public class DA implements ActionQuery {
 
     private final Map<SkillWrapper, SlotRecognition> skills;
     private final SkillRecognition apiSkillRecognition;
+    private final SkillRecognition userSkillRecognition;
 
     private SkillEditor skillEditor;
 
@@ -27,6 +28,7 @@ public class DA implements ActionQuery {
         // this.addSkill(new Google(), ...);
 
         this.apiSkillRecognition = new ApiSkillRecognition();
+        this.userSkillRecognition = new UserSkillRecognition();
     }
 
     private void addSkill(SkillWrapper skill, SlotRecognition slotRecognition) {
@@ -52,11 +54,10 @@ public class DA implements ActionQuery {
         String determinedSkill = this.apiSkillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
 
         // CHECK IF IT'S SKILL EDITOR
-        // TODO
+        // TODO (or did before calling this function)
 
         // CHECK IF IT'S A SKILL ADDED BY THE USER (in a file)
-        SkillRecognition userSkillRecognition = new UserSkillRecognition();
-        output.append(userSkillRecognition.determineSkill(query));
+        output.append(this.userSkillRecognition.determineSkill(query));
 
         // THEN CHECK IF IT'S AN API SKILL WANTED
         if(output.isEmpty()) {
@@ -70,7 +71,7 @@ public class DA implements ActionQuery {
             }
         }
 
-        if(!output.toString().equals("")) {
+        if(!output.isEmpty()) {
             return output.toString();
         } else {
             return "Sorry, I didn't understand you ...";

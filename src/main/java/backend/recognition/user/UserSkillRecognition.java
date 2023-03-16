@@ -1,11 +1,18 @@
 package backend.recognition.user;
 
 import backend.recognition.SkillRecognition;
+import utils.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Objects;
+
+/*
+ * Which lectures are there on Monday at 9 ?
+ * What is the capital of Belgium ?
+ * Which transport do I take to go to Liege ?
+ * */
 
 public class UserSkillRecognition implements SkillRecognition {
 
@@ -17,10 +24,16 @@ public class UserSkillRecognition implements SkillRecognition {
         this.slotRecognition = new UserSlotRecognition();
     }
 
-    /*
-     * Which lectures are there on Monday at 9 ?
-     * What is the capital of Belgium ?
-     * Which transport do I take to go to Liege ?
+    /**
+     *
+     * Function that read the file "SkillsTemplate.txt" line by line.
+     * It will search first for a question by using the line starting by the key word : Question.
+     * For each question, it will search for a similitude with the input thanks to the function "findQuestion".
+     *
+     * This function returns a String :
+     * - Empty if a question or an answer is not found.
+     * - Not empty if a question and an answer if found.
+     *
      * */
     @Override
     public String determineSkill(String input) {
@@ -40,10 +53,15 @@ public class UserSkillRecognition implements SkillRecognition {
         return "";
     }
 
+    /**
+     *
+     * This function return an answer, if a question is found by their similitude, with the function "findAnswer".
+     * Otherwise, it will return an empty String.
+     *
+     * */
     private String findQuestion(String input, String line, BufferedReader br) throws IOException {
-        // FIND A QUESTION THAT MATCH THE INPUT
         String question = line.substring(line.indexOf(":") + 2).trim();
-        if(isThisQuestion(input, question)) {
+        if(StringUtils.areSimilarSentences(input, question)) {
             String answer = findAnswer(input, question, br);
             if(!answer.equals("")) {
                 return answer;
@@ -52,13 +70,25 @@ public class UserSkillRecognition implements SkillRecognition {
         return "";
     }
 
+    /**
+     *
+     * This function will first determine the Slots from the input, thanks to (User)SlotRecognition.
+     * If there are found, it will continue to read the file line by line.
+     *
+     * If a line start by "Action" :
+     * - it will try to find an answer, based of the slots, thanks to the function "findAction".
+     *   If an answer is found, it will break the "while" and return an answer in a template, thanks to "findTemplate".
+     *
+     * If a line start with "Answer" :
+     * - That means that the file doesn't include an answer for the given slots.
+     *   This will return an error template, thanks to "findTemplate".
+     *
+     * */
     private String findAnswer(String input, String question, BufferedReader br) throws IOException {
-        // CHECK IF IT KNOWS <SLOT>
         String answer = "";
         BufferedReader newBr = null;
-        String[] slots = this.slotRecognition.getSlots(input, question);
+        String[] slots = this.slotRecognition.findSlot(input + " / " + question);
         if(slots.length > 0) {
-            // FIND ANSWER
             String line = "";
             while (!Objects.equals(line = br.readLine(), null)) {
                 if(line.startsWith("Action")) {
@@ -77,9 +107,18 @@ public class UserSkillRecognition implements SkillRecognition {
         } else {
             return findTemplate(slots, answer, br);
         }
-
     }
 
+    /**
+     *
+     * This function will try to find an answer, based on the given slots and line.
+     * It's called if the line start with "Action".
+     *
+     * If the line contains all the slots, that's mean that this line is the answer (without format) and return
+     * a substring, with only the response.
+     * Else, it returns an empty String.
+     *
+     * */
     private String findAction(String line, String[] slots) {
         int count = 0;
         for(String slot : slots) {
@@ -94,6 +133,14 @@ public class UserSkillRecognition implements SkillRecognition {
         return "";
     }
 
+    /**
+     *
+     * This function is called to return a formatted answer.
+     *
+     * It will search the lines that start with "Answer" (if the paramater "answer" is not empty) or "Error" (else).
+     * If a template is found, il will replace the <SLOT> in the template and return it.
+     *
+     * */
     private String findTemplate(String[] slots, String answer, BufferedReader br) throws IOException {
         String line = "";
         while (!Objects.equals(line = br.readLine(), null)) {
@@ -123,37 +170,4 @@ public class UserSkillRecognition implements SkillRecognition {
         int secondIndex = template.indexOf(">") + 1;
         return template.substring(0, firstIndex) + slot + template.substring(secondIndex);
     }
-
-    // Levenshtein distance, from Chat GPT
-    private boolean isThisQuestion(String input, String question) {
-        int n = input.length();
-        int m = question.length();
-        int[][] dp = new int[n + 1][m + 1];
-
-        if (n == 0 || m == 0) {
-            return false;
-        }
-
-        for (int i = 1; i <= n; i++) {
-            dp[i][0] = i;
-        }
-
-        for (int j = 1; j <= m; j++) {
-            dp[0][j] = j;
-        }
-
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= m; j++) {
-                int cost = input.charAt(i - 1) == question.charAt(j - 1) ? 0 : 1;
-                dp[i][j] = Math.min(Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1), dp[i - 1][j - 1] + cost);
-            }
-        }
-
-        int distance = dp[n][m];
-        int maxLength = Math.max(n, m);
-        double similarity = (double) (maxLength - distance) / maxLength;
-        return similarity >= 0.6;
-    }
-
-
 }
