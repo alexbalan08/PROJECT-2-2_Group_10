@@ -51,7 +51,6 @@ public class DA implements ActionQuery {
 
     private String doSkill(String query) {
         StringBuilder output = new StringBuilder();
-        String determinedSkill = this.apiSkillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
 
         // CHECK IF IT'S SKILL EDITOR
         // TODO (or did before calling this function)
@@ -61,6 +60,7 @@ public class DA implements ActionQuery {
 
         // THEN CHECK IF IT'S AN API SKILL WANTED
         if(output.isEmpty()) {
+            String determinedSkill = this.apiSkillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
             for(SkillWrapper skill : this.skills.keySet()) {
                 if(skill.getClass().getSimpleName().equals(determinedSkill)) {
                     String[] slots = this.skills.get(skill).findSlot(query);
