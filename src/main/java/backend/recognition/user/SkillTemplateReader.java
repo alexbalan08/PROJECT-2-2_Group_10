@@ -1,4 +1,4 @@
-package backend.recognition;
+package backend.recognition.user;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,8 +12,8 @@ public class SkillTemplateReader {
     private final String fileURL;
     private final List<SkillTemplate> skillTemplates;
 
-    public SkillTemplateReader() {
-        this.fileURL = "./src/main/java/backend/Skills/SkillsTemplate.txt";
+    public SkillTemplateReader(String url) {
+        this.fileURL = url;
         this.skillTemplates = new ArrayList<>();
     }
 

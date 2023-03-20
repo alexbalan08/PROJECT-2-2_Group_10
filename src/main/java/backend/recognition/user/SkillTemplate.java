@@ -1,5 +1,6 @@
-package backend.recognition;
+package backend.recognition.user;
 
+import backend.recognition.SlotRecognition;
 import backend.recognition.user.UserSlotRecognition;
 import utils.StringUtils;
 
@@ -52,10 +53,11 @@ public class SkillTemplate {
         this.error = error;
     }
 
-    public String findAnswer(String question, String[] slots) {
+    public String findAnswer(String question) {
         for (String next : this.questions) {
-            if (StringUtils.areSimilarSentences(next, question)) {
-                String result = this.findAction(this.slotRecognition.findSlot(question + " / " + next));
+            if (StringUtils.areSimilarSentences(question, next)) {
+                String[] slots = this.slotRecognition.findSlot(question + " / " + next);
+                String result = this.findAction(slots);
                 if (!Objects.equals(result, "")) {
                     return getAnswerTemplate(result, slots);
                 } else {
