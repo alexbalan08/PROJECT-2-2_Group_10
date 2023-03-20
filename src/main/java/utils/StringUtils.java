@@ -6,11 +6,11 @@ public class StringUtils {
         int firstIndex = question.indexOf("<");
         while (firstIndex != -1) {
             int secondIndex = question.indexOf(">") + 1;
-            if(input.length() > secondIndex + 1) {
+            if (input.length() > secondIndex + 1) {
                 question = question.substring(0, firstIndex) + question.substring(secondIndex + 1);
                 input = input.substring(0, firstIndex) + input.substring(secondIndex + 1);
             } else {
-                if(input.length() < firstIndex) {
+                if (input.length() < firstIndex) {
                     break;
                 } else {
                     question = question.substring(0, firstIndex) + question.substring(secondIndex + 1);
