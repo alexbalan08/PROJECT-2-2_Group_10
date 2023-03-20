@@ -2,6 +2,7 @@ package backend.recognition.user;
 
 import backend.recognition.SkillRecognition;
 
+import java.util.List;
 import java.util.Objects;
 
 /*
@@ -12,16 +13,15 @@ import java.util.Objects;
 
 public class UserSkillRecognition implements SkillRecognition {
 
-    private final SkillTemplateReader reader;
+    private final List<SkillTemplate> skillTemplates;
 
-    public UserSkillRecognition() {
-        this.reader = new SkillTemplateReader("./src/main/java/backend/Skills/SkillsTemplate.txt");
-        reader.readFile();
+    public UserSkillRecognition(List<SkillTemplate> list) {
+        this.skillTemplates = list;
     }
 
     @Override
     public String determineSkill(String input) {
-        for(SkillTemplate skill : this.reader.getSkillTemplates()) {
+        for(SkillTemplate skill : this.skillTemplates) {
             String answer = skill.findAnswer(input);
             if(!Objects.equals(answer, "")) {
                 return answer;

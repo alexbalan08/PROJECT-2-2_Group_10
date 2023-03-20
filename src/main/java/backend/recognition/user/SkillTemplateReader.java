@@ -15,9 +15,15 @@ public class SkillTemplateReader {
     public SkillTemplateReader(String url) {
         this.fileURL = url;
         this.skillTemplates = new ArrayList<>();
+        this.readFile();
     }
 
-    public void readFile() {
+
+    public List<SkillTemplate> getSkillTemplates() {
+        return this.skillTemplates;
+    }
+
+    private void readFile() {
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(this.fileURL))) {
             String line;
 
@@ -48,10 +54,6 @@ public class SkillTemplateReader {
         } catch (IOException e) {
             System.out.println("Error with the file : " + this.fileURL);
         }
-    }
-
-    public List<SkillTemplate> getSkillTemplates() {
-        return this.skillTemplates;
     }
 
     private String removeKeyWord(String line) {

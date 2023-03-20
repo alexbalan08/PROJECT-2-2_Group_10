@@ -4,6 +4,7 @@ import backend.Skills.*;
 import backend.recognition.SkillRecognition;
 import backend.recognition.SlotRecognition;
 import backend.recognition.api.*;
+import backend.recognition.user.SkillTemplateReader;
 import backend.recognition.user.UserSkillRecognition;
 import javafx.scene.control.TextArea;
 
@@ -16,6 +17,7 @@ public class DA implements ActionQuery {
     private final Map<SkillWrapper, SlotRecognition> skills;
     private final SkillRecognition apiSkillRecognition;
     private final SkillRecognition userSkillRecognition;
+    private final SkillTemplateReader fileReader;
 
     private SkillEditor skillEditor;
 
@@ -27,8 +29,9 @@ public class DA implements ActionQuery {
         this.addSkill(new Wikipedia(), new WikipediaSlotRecognition());
         // this.addSkill(new Google(), ...);
 
+        this.fileReader = new SkillTemplateReader("./src/main/java/backend/Skills/SkillsTemplate.txt");
         this.apiSkillRecognition = new ApiSkillRecognition();
-        this.userSkillRecognition = new UserSkillRecognition();
+        this.userSkillRecognition = new UserSkillRecognition(fileReader.getSkillTemplates());
     }
 
     private void addSkill(SkillWrapper skill, SlotRecognition slotRecognition) {
