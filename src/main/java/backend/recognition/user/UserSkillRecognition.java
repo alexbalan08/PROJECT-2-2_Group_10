@@ -1,6 +1,7 @@
 package backend.recognition.user;
 
 import backend.recognition.SkillRecognition;
+import backend.recognition.SkillTemplateReader;
 import utils.StringUtils;
 
 import java.io.BufferedReader;
@@ -23,6 +24,12 @@ public class UserSkillRecognition implements SkillRecognition {
     public UserSkillRecognition() {
         this.fileURL = "./src/main/java/backend/Skills/SkillsTemplate.txt";
         this.slotRecognition = new UserSlotRecognition();
+
+        var fileReader = new SkillTemplateReader();
+        fileReader.readFile();
+        var list = fileReader.getSkillTemplates();
+        var answer = list.get(0).findAnswer("Which transport do I take to go to Liege ?", new String[] {"Liege"});
+        var t = "";
     }
 
     /**
