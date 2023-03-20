@@ -1,5 +1,5 @@
 Question : Which transport do I take to go to <CITY> ?
-Question : How can I get to <CITY> ?
+Question : How can I go to <CITY> ?
 Question : What transport to I take to go to <CITY> ?
 Action : Maastricht : bike
 Action : Amsterdam : train

@@ -6,6 +6,7 @@ import utils.StringUtils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Objects;
 
 /*
@@ -123,7 +124,7 @@ public class UserSkillRecognition implements SkillRecognition {
     private String findAction(String line, String[] slots) {
         int count = 0;
         for(String slot : slots) {
-            if(line.contains(slot)) {
+            if(line.toLowerCase(Locale.ROOT).contains(slot.toLowerCase(Locale.ROOT))) {
                 count++;
             }
         }
