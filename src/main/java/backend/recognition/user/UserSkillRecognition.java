@@ -12,11 +12,10 @@ import java.util.Objects;
 
 public class UserSkillRecognition implements SkillRecognition {
 
-    private final String fileURL = "./src/main/java/backend/Skills/SkillsTemplate.txt";
     private final SkillTemplateReader reader;
 
     public UserSkillRecognition() {
-        this.reader = new SkillTemplateReader(this.fileURL);
+        this.reader = new SkillTemplateReader("./src/main/java/backend/Skills/SkillsTemplate.txt");
         reader.readFile();
     }
 
