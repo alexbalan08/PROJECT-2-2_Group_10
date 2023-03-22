@@ -25,6 +25,7 @@ public class SkillEditor implements ActionQuery {
     boolean isQueryToEditSkill;
     public HashMap.Entry<ArrayList<String>, Method> entry;
     public ArrayList<String> addSkills = new ArrayList<>();
+    public ArrayList<String> addActionToSkill = new ArrayList<>();
     public ArrayList<String> showSkills = new ArrayList<>();
     public ArrayList<String> getLastSkill = new ArrayList<>();
     public ArrayList<String> getLastSkillAdded = new ArrayList<>();
@@ -46,6 +47,8 @@ public class SkillEditor implements ActionQuery {
             addSkills.add(addSkillOption);
             addSkills.add("can you " + addSkillOption);
         }
+
+        addActionToSkill.add("Can you add the action to skill \\d+:");
 
         String[] getShow = {"get", "can you get", "get me", "can you get me", "show", "can you show", "show me", "can you show me"};
         String[] remove = {"remove", "please remove", "can you remove", "delete", "can you delete", "please delete"};
@@ -136,6 +139,7 @@ public class SkillEditor implements ActionQuery {
         }
 
         mapFunctions.put(addSkills, SkillEditor.class.getMethod("addSkill"));
+        mapFunctions.put(addActionToSkill, SkillEditor.class.getMethod("addActionToSkill"));
         mapFunctions.put(showSkills, SkillEditor.class.getMethod("getSkills"));
         mapFunctions.put(getLastSkill, SkillEditor.class.getMethod("getLastSkill"));
         mapFunctions.put(getLastSkillsAdded, SkillEditor.class.getMethod("getLastSkillsAdded"));
@@ -153,10 +157,21 @@ public class SkillEditor implements ActionQuery {
             ArrayList<String> commands = entry.getKey();
             for (String command : commands) {
                 if (command.contains("\\d+")) {
+                    String[] commandSeparated = command.split(Pattern.quote("\\d+"));
                     if (Pattern.compile(command).matcher(query).find()) {
-                        this.entry = entry;
-                        this.key = command;
-                        this.isQueryToEditSkill = true;
+                        boolean doesQueryMatchToCommand = true;
+                        // RECENTLY ADDED
+                        for (String commandPart : commandSeparated) {
+                            if (!query.contains(commandPart)) {
+                                doesQueryMatchToCommand = false;
+                                break;
+                            }
+                        }
+                        if (doesQueryMatchToCommand) {
+                            this.entry = entry;
+                            this.key = command;
+                            this.isQueryToEditSkill = true;
+                        }
                     }
                 } else {
                     if (query.toLowerCase().contains(command)) {
@@ -204,6 +219,40 @@ public class SkillEditor implements ActionQuery {
         } catch (IOException io) {
             return "Error with the FileWritter";
         }
+    }
+
+    public String addSkillTemplate() {
+        return "\nQuestion :  ?\nAction : \nAnswer : \nError : ";
+    }
+
+    public String addActionToSkill() throws IOException {
+        Matcher matcher = Pattern.compile("\\d+").matcher(query);
+        int skillNumber = 0;
+        if (matcher.find()) {
+            skillNumber = Integer.parseInt(matcher.group());
+        }
+        String[] skills = getSkills().split("\\r?\\n\\r?\\n");
+        String skill = skills[skillNumber - 1].strip();
+        int lastIndexOfAction = skill.lastIndexOf("Action");
+        int newLineAfterActionIndex = skill.substring(lastIndexOfAction).indexOf("\n");
+        int indexToPrintAction = lastIndexOfAction + newLineAfterActionIndex + 1;
+        String command = query.substring(0, query.indexOf("\n"));
+        query = query.replace(command, "");
+
+        skills[skillNumber - 1] = skill.substring(0, indexToPrintAction - 1) + query + "\n" + skill.substring(indexToPrintAction);
+
+        String output = "";
+        for (String skillPart : skills) {
+            output += skillPart + "\r\n\r\n";
+        }
+        output = output.substring(0, output.length() - 1);
+
+        writeToSkillsFile(output.strip() + "\n");
+        return "The action has been added";
+    }
+
+    public String addActionToSkillTemplate() {
+        return "\nAction : ";
     }
 
    public String getSkills() throws IOException {
@@ -282,4 +331,33 @@ public class SkillEditor implements ActionQuery {
        return "You can now edit the skill.";
    }
 
+    /*public static void main(String[] args) throws IOException, NoSuchMethodException {
+        SkillEditor se = new SkillEditor();
+        String command = "Can you add the action to skill \\d+:";
+        if (command.contains("\\d+")) {
+            String[] commandSeparated = command.split(Pattern.quote("\\d+"));
+            System.out.println("The separated string is:");
+            for (String commandPart : commandSeparated) {
+                System.out.println("Command part: " + commandPart);
+            }
+            *//*if (Pattern.compile(command).matcher(query).find()) {
+                boolean doesQueryMatchToCommand = true;
+                // RECENTLY ADDED
+                for (String commandPart : commandSeparated) {
+                    if (!query.contains(commandPart)) {
+                        doesQueryMatchToCommand = false;
+                        break;
+                    }
+                }
+                if (doesQueryMatchToCommand) {
+                    this.entry = entry;
+                    this.key = command;
+                    this.isQueryToEditSkill = true;
+                }
+            }*//*
+        }
+        se.setQuery("Can you add the action to skill 2:\nAction : HELLOOO");
+        System.out.println("Is the query and edit skill? " + se.isQueryToEditSkill);
+        se.addActionToSkill();
+    }*/
 }

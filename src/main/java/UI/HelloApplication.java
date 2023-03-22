@@ -173,8 +173,12 @@ public class HelloApplication extends Application {
                 try { skillEditor = new SkillEditor();
                 } catch (NoSuchMethodException | IOException e) { throw new RuntimeException(e); }
                 skillEditor.setQuery(text);
-                if (skillEditor.isQueryToEditSkill() && skillEditor.entry.getValue().getName().equals("addSkill")) {
-                    if (textArea.getMaxHeight() <= (textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3)) {
+                if (skillEditor.isQueryToEditSkill() && (skillEditor.entry.getValue().getName().equals("addSkill") || skillEditor.entry.getValue().getName().equals("addActionToSkill"))) {
+                    if (skillEditor.entry.getValue().getName().equals("addSkill") && !text.contains("Question"))
+                        addToTextArea(text + skillEditor.addSkillTemplate());
+                    else if (skillEditor.entry.getValue().getName().equals("addActionToSkill") && !text.contains("Question"))
+                        addToTextArea(text + skillEditor.addActionToSkillTemplate());
+                    else if (textArea.getMaxHeight() <= (textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3)) {
                         textArea.setMaxHeight(textArea.getMaxHeight() + (textHeight + 3));
                         textArea.setMinHeight(textArea.getMinHeight() + (textHeight + 3));
                         setConversationPaneScrollHeight();
