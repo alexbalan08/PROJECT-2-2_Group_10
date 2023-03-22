@@ -1,6 +1,8 @@
 package backend;
 
+import UI.HelloApplication;
 import backend.Skills.*;
+import backend.recognition.LanguageModel;
 import backend.recognition.SkillRecognition;
 import backend.recognition.SlotRecognition;
 import backend.recognition.api.*;
@@ -17,21 +19,25 @@ public class DA implements ActionQuery {
     private final Map<SkillWrapper, SlotRecognition> skills;
     private final SkillRecognition apiSkillRecognition;
     private final SkillRecognition userSkillRecognition;
+    
     private final SkillTemplateReader fileReader;
+    private final LanguageModel languageModel;
 
     private SkillEditor skillEditor;
 
-    public DA() throws IOException, NoSuchMethodException {
+    public DA() throws Exception {
         this.skills = new HashMap<>();
         this.addSkill(new Weather(), new WeatherSlotRecognition());
         this.addSkill(new Spotify(), new SpotifySlotRecognition());
-        // this.addSkill(new Canvas(), new CanvasSlotRecognition());
+        this.addSkill(new Canvas(), new CanvasSlotRecognition());
         this.addSkill(new Wikipedia(), new WikipediaSlotRecognition());
-        // this.addSkill(new Google(), ...);
+
+        this.skillEditor = new SkillEditor();
 
         this.fileReader = new SkillTemplateReader("./src/main/java/backend/Skills/SkillsTemplate.txt");
         this.apiSkillRecognition = new ApiSkillRecognition();
         this.userSkillRecognition = new UserSkillRecognition(fileReader.getSkillTemplates());
+        this.languageModel = new LanguageModel();
     }
 
     private void addSkill(SkillWrapper skill, SlotRecognition slotRecognition) {
@@ -39,20 +45,17 @@ public class DA implements ActionQuery {
         System.out.println(skill.getClass().getSimpleName() + " wrapper loaded successfully!");
     }
 
-    public void instantiateSkillEditor(TextArea textArea, int maxNewLinesTextArea, int textHeight) throws IOException, NoSuchMethodException {
-        this.skillEditor = new SkillEditor(textArea, maxNewLinesTextArea, textHeight);
-    }
-
     public String startQuery(String query) throws IOException, InvocationTargetException, IllegalAccessException {
-        query = query.replace("\n", "").trim();
         this.skillEditor.setQuery(query);
-        if (this.skillEditor.isQueryToEditSkill()) {
+        if (this.skillEditor.isQueryToEditSkill())
             return this.skillEditor.startQuery(query);
+        else {
+            query = query.replace("\n", "").trim();
+            return doSkill(query);
         }
-        else return doSkill(query);
     }
 
-    private String doSkill(String query) {
+    private String doSkill(String query) throws IOException {
         StringBuilder output = new StringBuilder();
 
         // CHECK IF IT'S SKILL EDITOR
@@ -62,10 +65,10 @@ public class DA implements ActionQuery {
         output.append(this.userSkillRecognition.determineSkill(query));
 
         // THEN CHECK IF IT'S AN API SKILL WANTED
-        if(output.isEmpty()) {
+        if (output.isEmpty()) {
             String determinedSkill = this.apiSkillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
-            for(SkillWrapper skill : this.skills.keySet()) {
-                if(skill.getClass().getSimpleName().equals(determinedSkill)) {
+            for (SkillWrapper skill : this.skills.keySet()) {
+                if (skill.getClass().getSimpleName().equals(determinedSkill)) {
                     String[] slots = this.skills.get(skill).findSlot(query);
                     skill.start(slots);
                     output.append(skill.getResponse());
@@ -74,7 +77,25 @@ public class DA implements ActionQuery {
             }
         }
 
-        if(!output.isEmpty()) {
+        /*
+        if (output.isEmpty()) {
+            String determinedSkill = languageModel.determineSkill(query);
+            for (SkillWrapper skill : this.skills.keySet()) {
+                if (skill.getClass().getSimpleName().equals(determinedSkill)) {
+                    String[] slots = languageModel.findSlot(query);
+                    output.append(languageModel.botResponse(slots));
+                    if (slots != null) {
+                        skill.start(slots);
+                        output.append(skill.getResponse());
+                    }
+                    break;
+                }
+            }
+        }
+        */
+
+
+        if (!output.isEmpty()) {
             return output.toString();
         } else {
             return "Sorry, I didn't understand you ...";

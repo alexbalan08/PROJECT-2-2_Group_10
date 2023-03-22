@@ -1,5 +1,6 @@
 package backend;
 
+import UI.HelloApplication;
 import javafx.scene.control.TextArea;
 
 import java.io.*;
@@ -16,9 +17,6 @@ import java.util.regex.Pattern;
 public class SkillEditor implements ActionQuery {
     HashMap<ArrayList<String>, Method> mapFunctions = new HashMap<>();
     String skillsFilePath = "./src/main/java/backend/Skills/SkillsTemplate.txt";
-    TextArea textArea;
-    int maxNewLinesTextArea;
-    int textHeight;
     String query;
     String key;
     String lastSkillsAdded = "";
@@ -39,10 +37,7 @@ public class SkillEditor implements ActionQuery {
     public ArrayList<String> editLastSkill = new ArrayList<>();
     public ArrayList<String> editSkill = new ArrayList<>();
 
-    public SkillEditor(TextArea textArea, int maxNewLinesTextArea, int textHeight) throws NoSuchMethodException, IOException {
-        this.textArea = textArea;
-        this.maxNewLinesTextArea = maxNewLinesTextArea;
-        this.textHeight = textHeight;
+    public SkillEditor() throws NoSuchMethodException, IOException {
         addSkillsToHashMap();
         originalSkillsTemplate = Files.readString(Path.of(skillsFilePath));
     }
@@ -204,11 +199,9 @@ public class SkillEditor implements ActionQuery {
     }
 
     public String startQuery(String query) throws InvocationTargetException, IllegalAccessException {
-        if (entry == null) {
+        if (entry == null)
             return "Check if the user wants to edit a skill";
-        } else {
-            return (String) mapFunctions.get(entry.getKey()).invoke(this);
-        }
+        return (String) mapFunctions.get(entry.getKey()).invoke(this);
     }
 
     // Adds the skill to the text file and returns a String saying if adding the skill to the SkillsTemplate was successful
@@ -230,7 +223,6 @@ public class SkillEditor implements ActionQuery {
             lastSkillsAdded = query;
             return "The skills have been added";
         }
-        return "No skill added.";
     }
 
     public String addAction() {
@@ -295,13 +287,15 @@ public class SkillEditor implements ActionQuery {
         return "All the added skills were deleted successfully.";
     }
 
-    public String deleteLastAddedSkill() throws IOException {
-        if (countMinSkillsAdded == 0) return "No skills have been recently added.";
-        String textWithDeletedSkill = getSkills().substring(0, getSkills().indexOf(getLastSkillAdded().strip()));
-        writeToSkillsFile(textWithDeletedSkill.strip().concat("\n"));
-        countMinSkillsAdded--;
-        return "The last added skill was deleted successfully.";
-    }
+   public String deleteLastAddedSkill() throws IOException {
+       if(countMinSkillsAdded == 0) return "No skills have been recently added.";
+       String lastSkillAdded = getLastSkillAdded().strip();
+       String textWithDeletedSkill = getSkills().substring(0, getSkills().indexOf(lastSkillAdded));
+       writeToSkillsFile(textWithDeletedSkill.strip().concat("\n"));
+       countMinSkillsAdded--;
+       lastSkillsAdded = lastSkillsAdded.replaceAll(lastSkillAdded, "");
+       return "The last added skill was deleted successfully.";
+   }
 
     public void writeToSkillsFile(String text) throws FileNotFoundException {
         PrintWriter pw = new PrintWriter(new File(skillsFilePath));
@@ -315,11 +309,16 @@ public class SkillEditor implements ActionQuery {
         if (matcher.find()) {
             skillNumber = Integer.parseInt(matcher.group());
         }
-        String[] skills = getSkills().split("\n\n");
+        String[] skills = getSkills().split("\\r?\\n\\r?\\n");
+        System.out.println("The separate skills are:");
+        for (String skill : skills) {
+            System.out.println("The skill:");
+            System.out.println(skill);
+        }
         String skill = skills[skillNumber - 1].strip();
         if (!lastSkillsAdded.contains(skill)) return "Sorry, you can not edit a skill you have not added yourself.";
-        addToTextArea("add the skill:\n" + skill);
-        writeToSkillsFile(getSkills().replaceAll("\n\n" + skill, "").replaceAll("\n\n\n", "\n\n"));
+        HelloApplication.getInstance().addToTextArea("add the skill:\n" + skill);
+        writeToSkillsFile(getSkills().replaceAll("\\n\\n" + skill, "").replaceAll("\\n\\n\\n", "\n\n"));
         return "You can now edit the skill.";
     }
 

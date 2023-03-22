@@ -2,6 +2,9 @@ package backend.recognition.user;
 
 import backend.recognition.SlotRecognition;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserSlotRecognition implements SlotRecognition {
 
     public UserSlotRecognition() { }
@@ -11,29 +14,38 @@ public class UserSlotRecognition implements SlotRecognition {
         String question = getInformation(input, true);
         input = getInformation(input, false);
 
+        List<String> result = new ArrayList<>();
+
         int index = question.indexOf("<");
-        String questionSlot = getSlotForQuestion(question);
-        String inputSlot = getSlotForInput(input, index);
+        while (index != -1) {
+            String questionSlot = getSlotForQuestion(question);
+            question = question.substring(index + questionSlot.length() + 1);
 
-        question = question.substring(index + questionSlot.length() + 1);
-        input = input.substring(index + inputSlot.length() + 1);
+            String inputSlot = getSlotForInput(input, index, getNextWord(question));
+            input = input.substring(index + inputSlot.length() + 1);
 
-        index = question.indexOf("<");
-        if(index != -1) {
-            return new String[] { inputSlot, getSlotForInput(input, index) };
-        } else {
-            return new String[] { inputSlot };
+            result.add(inputSlot);
+            index = question.indexOf("<");
         }
+        return result.toArray(new String[0]);
     }
 
     private String getSlotForQuestion(String question) {
         return question.substring(question.indexOf("<"), question.indexOf(">") + 1);
     }
 
-    private String getSlotForInput(String input, int index) {
+    private String getSlotForInput(String input, int index, String nextWord) {
         String sub = input.substring(index);
-        index = sub.indexOf(" ");
+        index = sub.indexOf(nextWord) - 1;
         return sub.substring(0, index);
+    }
+
+    private String getNextWord(String question) {
+        int index = question.indexOf(" ");
+        if(index == -1) {
+            return "?";
+        }
+        return question.substring(0, index);
     }
 
     private String getInformation(String input, boolean question) {

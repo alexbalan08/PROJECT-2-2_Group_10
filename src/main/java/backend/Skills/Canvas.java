@@ -26,14 +26,14 @@ public class Canvas extends SkillWrapper {
 
     @Override
     public void start(String[] slots) {
-        if (!Objects.equals(slots[0], "course")) {
+        /*if (!Objects.equals(slots[0], "course")) {
             String course = slots[0];
             String topic = slots[1];
             outputs.add(find(course, topic));
         } else {
             outputs.add("Sorry, I didn't understand the course or the topic. Try another one.");
-        }
-
+        }*/
+        outputs.add(find(slots[0], slots[1]));
     }
 
     private String find(String courseName, String topic) {

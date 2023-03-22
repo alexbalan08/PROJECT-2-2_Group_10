@@ -28,7 +28,7 @@ public class LogInPage extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws IOException, NoSuchMethodException {
+    public void start(Stage primaryStage) throws Exception {
         main = new HelloApplication();
         primaryStage.setTitle("EYE°Sistant");
 

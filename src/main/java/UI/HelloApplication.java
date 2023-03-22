@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 public class HelloApplication extends Application {
+    private static HelloApplication instance;
     private int sceneSize = 650;
     private int textHeight = 16;
     private String font = "Courier New";
@@ -32,15 +33,14 @@ public class HelloApplication extends Application {
     private VBox conversation = new VBox(10);
     private ScrollPane conversationScrollPane = new ScrollPane(conversation);
     public int eyeIconHeight = 45;
-    public TextArea textArea;
+    public TextArea textArea = new TextArea();
     public int topMarginTextAreaSend = 20;
     public int borderMargin = 25;
     int maxNewLinesTextArea = 4;
     DA assistant = new DA();
 
-    public HelloApplication() throws IOException, NoSuchMethodException {
-        textArea = new TextArea();
-        assistant.instantiateSkillEditor(textArea, maxNewLinesTextArea, textHeight);
+    public HelloApplication() throws Exception {
+        instance = this;
     }
 
     @Override
@@ -110,7 +110,7 @@ public class HelloApplication extends Application {
     }
 
     public void sendMessageEventHandler() throws IOException, InvocationTargetException, IllegalAccessException {
-        if (textArea.getText().strip() != "") {
+        if (!(textArea.getText().strip()).equals("")) {
             String text = textArea.getText().strip();
             outputUserMessage(text);
             textArea.clear();
@@ -170,7 +170,7 @@ public class HelloApplication extends Application {
             if (ke.getCode().equals(KeyCode.ENTER)) {
                 String text = textArea.getText().strip();
                 SkillEditor skillEditor;
-                try { skillEditor = new SkillEditor(textArea, maxNewLinesTextArea, textHeight);
+                try { skillEditor = new SkillEditor();
                 } catch (NoSuchMethodException | IOException e) { throw new RuntimeException(e); }
                 skillEditor.setQuery(text);
                 if (skillEditor.isQueryToEditSkill() && skillEditor.entry.getValue().getName().equals("addSkill")) {
@@ -179,12 +179,15 @@ public class HelloApplication extends Application {
                         textArea.setMinHeight(textArea.getMinHeight() + (textHeight + 3));
                         setConversationPaneScrollHeight();
                     }
-                } else if (!text.equals("")) {
+                } else {
                     try {
                         textArea.setMaxHeight((textHeight + (textHeight * 1.5)));
                         textArea.setMinHeight((textHeight + (textHeight * 1.5)));
                         setConversationPaneScrollHeight();
-                        sendMessageEventHandler();
+                        if (!text.equals(""))
+                            sendMessageEventHandler();
+                        else
+                            textArea.setText("");
                     } catch (IOException | InvocationTargetException | IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
@@ -203,6 +206,8 @@ public class HelloApplication extends Application {
         sendIconView.setOnMouseClicked(me -> {
             try {
                 textArea.setMaxHeight((textHeight + (textHeight * 1.5)));
+                textArea.setMinHeight((textHeight + (textHeight * 1.5)));
+                setConversationPaneScrollHeight();
                 sendMessageEventHandler();
             } catch (IOException | InvocationTargetException | IllegalAccessException e) {
                 throw new RuntimeException(e);
@@ -218,6 +223,22 @@ public class HelloApplication extends Application {
         return textAreaSend;
     }
 
+    public void addToTextArea(String text) {
+        textArea.setText(text);
+        int numberOfLines = text.split("\\n").length;
+        System.out.println("Number of lines: " + numberOfLines);
+        if (numberOfLines > maxNewLinesTextArea) {
+            textArea.setMaxHeight((textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3));
+            textArea.setMinHeight((textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3));
+            setConversationPaneScrollHeight();
+        }
+        else {
+            textArea.setMaxHeight((textHeight + (textHeight * 1.5)) + (numberOfLines - 1) * (textHeight + 3));
+            textArea.setMinHeight((textHeight + (textHeight * 1.5)) + (numberOfLines - 1) * (textHeight + 3));
+            setConversationPaneScrollHeight();
+        }
+    }
+
     public StackPane createPaneCenter(VBox eyeAndConversation) {
         StackPane paneCenter = new StackPane(eyeAndConversation);
         paneCenter.setMinWidth(sceneSize);
@@ -226,6 +247,10 @@ public class HelloApplication extends Application {
         paneCenter.setMaxHeight(sceneSize);
 
         return paneCenter;
+    }
+
+    public static HelloApplication getInstance() {
+        return instance;
     }
 
     public static void main(String[] args) throws IOException {
