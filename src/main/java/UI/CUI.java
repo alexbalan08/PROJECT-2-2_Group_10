@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class CUI {
     public final DA assistant;
     Scanner input;
-    CUI() throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    CUI() throws Exception {
        assistant = new DA();
        input = new Scanner(System.in);
        launch();
@@ -24,7 +24,7 @@ public class CUI {
         }
     }
 
-    public static void main(String[] args) throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static void main(String[] args) throws Exception {
        new CUI();
     }
 }

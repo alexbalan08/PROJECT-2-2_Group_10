@@ -8,9 +8,9 @@ import java.util.Objects;
  *
  * This class find slots for these examples :
  *
- * - Can you explain me what is <SUBJECT> ?
+ * - Can you explain to me what is <SUBJECT> ?
  * - What is the definition of <SUBJECT> ?
- * - What does Wikipedia says about <SUBJECT> ?
+ * - What does Wikipedia say about <SUBJECT> ?
  *
  * - RESULT : [<SUBJECT>]
  * */
