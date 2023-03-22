@@ -63,8 +63,8 @@ public class DA implements ActionQuery {
         // THEN CHECK IF IT'S AN API SKILL WANTED
         if (output.isEmpty()) {
             String determinedSkill = this.apiSkillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
-            for(SkillWrapper skill : this.skills.keySet()) {
-                if(skill.getClass().getSimpleName().equals(determinedSkill)) {
+            for (SkillWrapper skill : this.skills.keySet()) {
+                if (skill.getClass().getSimpleName().equals(determinedSkill)) {
                     String[] slots = this.skills.get(skill).findSlot(query);
                     skill.start(slots);
                     output.append(skill.getResponse());
@@ -75,8 +75,8 @@ public class DA implements ActionQuery {
 
         if (output.isEmpty()) {
             String determinedSkill = languageModel.determineSkill(query);
-            for(SkillWrapper skill : this.skills.keySet()) {
-                if(skill.getClass().getSimpleName().equals(determinedSkill)) {
+            for (SkillWrapper skill : this.skills.keySet()) {
+                if (skill.getClass().getSimpleName().equals(determinedSkill)) {
                     String[] slots = languageModel.findSlot(query);
                     output.append(languageModel.botResponse(slots));
                     if (slots != null) {
