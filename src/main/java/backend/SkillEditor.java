@@ -223,6 +223,7 @@ public class SkillEditor implements ActionQuery {
             lastSkillsAdded = query;
             return "The skills have been added";
         }
+        return "";
     }
 
     public String addAction() {
@@ -324,18 +325,9 @@ public class SkillEditor implements ActionQuery {
 
     public String editLastSkill() throws IOException {
         if (countMinSkillsAdded == 0) return "Sorry, you can not edit a skill you have not added yourself.";
-        addToTextArea("add the skill:\n" + getLastSkillAdded().strip());
+        HelloApplication.getInstance().addToTextArea("add the skill:\n" + getLastSkillAdded().strip());
         deleteLastAddedSkill();
         return "You can now edit the skill.";
-    }
-
-    public void addToTextArea(String text) {
-        textArea.setText(text);
-        int numberOfLines = text.split("\n").length;
-        System.out.println("Number of lines: " + numberOfLines);
-        if (numberOfLines > maxNewLinesTextArea)
-            textArea.setMaxHeight((textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3));
-        else textArea.setMaxHeight((textHeight + (textHeight * 1.5)) + (numberOfLines - 1) * (textHeight + 3));
     }
 
     private String writeNextLine(String start, String value, String end) {
