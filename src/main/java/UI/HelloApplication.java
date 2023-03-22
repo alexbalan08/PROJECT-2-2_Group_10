@@ -115,6 +115,7 @@ public class HelloApplication extends Application {
             outputUserMessage(text);
             textArea.clear();
             outputBotMessage(assistant.startQuery(text));
+            setConversationPaneScrollHeight();
         }
     }
 
@@ -132,7 +133,6 @@ public class HelloApplication extends Application {
         conversationScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         conversationScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         conversationScrollPane.setFitToWidth(true);
-        conversationScrollPane.vvalueProperty().bind(conversation.heightProperty());
 
         VBox eyeAndConversation = new VBox(eyeIcon, conversationScrollPane, textAreaSend);
         eyeAndConversation.setMargin(eyeIcon, new Insets(borderMargin, borderMargin, borderMargin, borderMargin));
@@ -146,6 +146,8 @@ public class HelloApplication extends Application {
         int maxHeight = sceneSize - (borderMargin + eyeIconHeight + borderMargin + topMarginTextAreaSend + (int) (textArea.getMaxHeight()) + borderMargin);
         conversationScrollPane.setMinHeight(maxHeight);
         conversationScrollPane.setMaxHeight(maxHeight);
+        conversationScrollPane.layout();
+        conversationScrollPane.setVvalue(1.0);
     }
 
     public HBox createTextAreaSend() throws NoSuchMethodException {
