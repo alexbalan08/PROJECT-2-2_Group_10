@@ -2,8 +2,28 @@ package utils;
 
 public class StringUtils {
 
-    // Levenshtein distance, from Chat GPT
     public static boolean areSimilarSentences(String input, String question) {
+        int firstIndex = question.indexOf("<");
+        while (firstIndex != -1) {
+            int secondIndex = question.indexOf(">") + 1;
+            if(input.length() > secondIndex + 1) {
+                question = question.substring(0, firstIndex) + question.substring(secondIndex + 1);
+                input = input.substring(0, firstIndex) + input.substring(secondIndex + 1);
+            } else {
+                if(input.length() < firstIndex) {
+                    break;
+                } else {
+                    question = question.substring(0, firstIndex) + question.substring(secondIndex + 1);
+                    input = input.substring(0, firstIndex) + input.substring(input.lastIndexOf(" ")).trim();
+                }
+            }
+            firstIndex = question.indexOf("<");
+        }
+        return checkLevenshteinDistance(input, question);
+    }
+
+    // Levenshtein distance to check if two sentences are similar, from Chat GPT
+    private static boolean checkLevenshteinDistance(String input, String question) {
         int n = input.length();
         int m = question.length();
         int[][] dp = new int[n + 1][m + 1];
@@ -30,6 +50,6 @@ public class StringUtils {
         int distance = dp[n][m];
         int maxLength = Math.max(n, m);
         double similarity = (double) (maxLength - distance) / maxLength;
-        return similarity >= 0.6;
+        return similarity >= 0.8;
     }
 }
