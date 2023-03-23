@@ -73,7 +73,7 @@ public class DA implements ActionQuery {
             }
         }
 
-        /*if (output.isEmpty()) {
+        if (output.isEmpty()) {
             String determinedSkill = languageModel.determineSkill(query);
             for (SkillWrapper skill : this.skills.keySet()) {
                 if (skill.getClass().getSimpleName().equals(determinedSkill)) {
@@ -86,7 +86,7 @@ public class DA implements ActionQuery {
                     break;
                 }
             }
-        }*/
+        }
 
         if (!output.isEmpty()) {
             return output.toString();

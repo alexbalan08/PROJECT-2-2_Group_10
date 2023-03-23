@@ -4,10 +4,7 @@ import UI.HelloApplication;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -155,11 +152,8 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             case "WeatherPlace" -> {
                 for (String city : cities) {
                     if (query.toLowerCase().contains(city)) {
-                        System.out.println("The city is: " + city);
                         slots = new String[]{city.substring(0, 1).toUpperCase() + city.substring(1)};
                     }
-                    else
-                        return slots;
                 }
             }
             case "WeatherPlaceTime" -> {
@@ -167,8 +161,6 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
                 for (String city : cities) {
                     if (query.toLowerCase().contains(city))
                         slots[0] = city.substring(0, 1).toUpperCase() + city.substring(1);
-                    else
-                        return slots;
                 }
                 Matcher matcher = Pattern.compile("\\d+am|\\d\\d+pm").matcher(query);
                 String time = "";
@@ -198,7 +190,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
         switch (skill) {
             case "Canvas" -> {
                 output = output.concat("find the slides where ");
-                if (slots != null) {
+                if (slots != null && slots[0] != null && slots[1] != null) {
                     output = output.concat("the topic '" + slots[0] + "' appears inside the given course.\n");
                 } else {
                     output = output.concat("a topic appears inside a certain course. Can you write it in the following form to know the desired course and topic to look for:\n");
@@ -208,7 +200,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             }
             case "SpotifyPlay" -> {
                 output = output.concat("play ");
-                if (slots != null) {
+                if (slots != null && slots[1] != null) {
                     output = output.concat("the song '" + slots[1] + "'.\n");
                 } else {
                     output = output.concat("a song.\nCan you write it in the form:\n");
@@ -218,7 +210,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             }
             case "SpotifyStop" -> {
                 output = output.concat("stop ");
-                if (slots != null) {
+                if (slots != null && slots[1] != null) {
                     output = output.concat("the song '" + slots[1] + "'.\n");
                 } else {
                     output = output.concat("a song.\nCan you write it in the form:\n");
@@ -228,7 +220,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             }
             case "SpotifyResume" -> {
                 output = output.concat("resume ");
-                if (slots != null) {
+                if (slots != null && slots[1] != null) {
                     output = output.concat("the song '" + slots[1] + "'.\n");
                 } else {
                     output = output.concat("a song.\nCan you write it in the form:\n");
@@ -239,7 +231,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             case "SpotifyInfo" -> output = output.concat("know about the music that is playing.\n");
             case "WeatherPlace" -> {
                 output = output.concat("know about the weather in ");
-                if (slots != null) {
+                if (slots != null && slots[0] != null) {
                     output = output.concat(slots[0] + ".\n");
                 } else {
                     output = output.concat("a certain place.\nCan you write it in the form:\n");
@@ -249,7 +241,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             }
             case "WeatherPlaceTime" -> {
                 output = output.concat("know about the weather in ");
-                if (slots != null) {
+                if (slots != null && slots[0] != null && slots[1] != null) {
                     output = output.concat(slots[0] + " at time " + slots[1] + ".\n");
                 } else {
                     output = output.concat("a certain place at a certain time.\nCan you write it in the form:\n");
@@ -259,7 +251,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             }
             case "Wikipedia" -> {
                 output = output.concat("know about ");
-                if (slots != null) {
+                if (slots != null && slots[0] != null) {
                     output = output.concat("the topic '" + slots[0] + "' that can be found in Wikipedia.\n");
                 } else {
                     output = output.concat("a certain topic that can be found in Wikipedia.\nCan you write it in the form:\n");
@@ -276,10 +268,53 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
     public String determineSkill(String query) throws IOException {
         Map<List<String>, String> skillsExamples = createSkillsExamples();
 
+        String embeddingsFilePath = "./src/main/java/backend/recognition/Embeddings.txt";
+        File embeddingsFile = new File(embeddingsFilePath);
+
         Map<List<List<Double>>, String> vectorizedSkillsExamples = new HashMap<>();
-        for (Map.Entry<List<String>, String> entry : skillsExamples.entrySet()) {
-            List<List<Double>> vectorizedSkillExamples = encode(entry.getKey());
-            vectorizedSkillsExamples.put(vectorizedSkillExamples, entry.getValue());
+        if (embeddingsFile.exists()) {
+            String[] separatedSkillsExamples = Files.readString(Path.of(embeddingsFilePath)).split("\\n");
+            for (String skillExamples : separatedSkillsExamples) {
+                String[] separatedSkillExamples = skillExamples.split("]");
+
+                String skillName = separatedSkillExamples[0].substring(0, separatedSkillExamples[0].indexOf(":"));
+
+                List<List<Double>> vectorizedSkillExamples = new ArrayList<>();
+                for (String skillExample : separatedSkillExamples) {
+                    skillExample = skillExample.substring(skillExample.indexOf("[") + 1);
+
+                    String[] vectorElements = skillExample.split(",");
+                    List<Double> vectorExample = new ArrayList<>();
+                    for (String vectorElement : vectorElements) {
+                        Double doubleElement = Double.parseDouble(vectorElement);
+                        vectorExample.add(doubleElement);
+                    }
+                    vectorizedSkillExamples.add(vectorExample);
+                }
+
+                vectorizedSkillsExamples.put(vectorizedSkillExamples, skillName);
+            }
+        } else {
+            String embeddingOutput = "";
+            for (Map.Entry<List<String>, String> entry : skillsExamples.entrySet()) {
+                List<List<Double>> vectorizedSkillExamples = encode(entry.getKey());
+                String vectorizedSkillExamplesOutput = entry.getValue() + ": ";
+                for (List<Double> vectorizedSkillExample : vectorizedSkillExamples) {
+                    vectorizedSkillExamplesOutput += "[";
+                    for (Double vectorElement : vectorizedSkillExample) {
+                        vectorizedSkillExamplesOutput += vectorElement + ",";
+                    }
+                    vectorizedSkillExamplesOutput = vectorizedSkillExamplesOutput.substring(0, vectorizedSkillExamplesOutput.length() - 1) + "],";
+                }
+                vectorizedSkillExamplesOutput = vectorizedSkillExamplesOutput.substring(0, vectorizedSkillExamplesOutput.length() - 1);
+                embeddingOutput += vectorizedSkillExamplesOutput + "\n";
+                vectorizedSkillsExamples.put(vectorizedSkillExamples, entry.getValue());
+            }
+            embeddingOutput = embeddingOutput.strip();
+
+            PrintWriter pw = new PrintWriter(embeddingsFile);
+            pw.append(embeddingOutput);
+            pw.flush();
         }
 
         List<List<Double>> vectorizedQuery = encode(List.of(new String[]{query}));
