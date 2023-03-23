@@ -27,6 +27,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
     static String[] weatherPlaceSkill = {"Can you tell me about the weather in Maastricht", "What weather does Amsterdam have now", "Tell me the forecast for Liege", "How cold is it in Paris", "What's the current temperature in Vienna", "Can you give me the weather condition for Rome", "How is the temperature now in Athens", "Is it hot in Madrid right now", "Gimme the current weather here in Stockholm", "London is freaking cold, what's the current temperature"};
     static String[] weatherPlaceTimeSkill = {"What will the weather be like in Liege at 9am", "What weather will Maastricht have at 2pm", "What will be the weather in Amsterdam at 3pm", "Can you tell me the forecast for Paris at 5pm", "How cold will it be in Madrid at 10am today", "Can you give me the weather condition for Rome at 11am", "Can you tell me the temperature in Vienna at 5am", "At 10pm, what will the temperature be like in Athens", "What will be the weather like in Stockholm at 7pm tonight", "How hot will it be at 12pm in Brussels"};
     static String[] wikipediaSkill = {"Can you explain to me what are genetically modified organism", "What is the definition of human genome", "What does Wikipedia say about 'the Renaissance'", "Can you explain to me what 'Artificial Intelligence' is", "Can you look up in Wikipedia what is gravitational force", "What are the characteristics for parabolas", "What can Wikipedia tell me about the topic 'evolution'", "Give me some info about 'fungi'", "I want to know what the heck is impressionism according to Wikipedia", "Tell me about 'simile'"};
+    static String[] randomSkill = {"yoyoyo", "what's up", "am I pretty", "you are boring", "fretwe cv4 5rv", "erfhgbhew", "erigbwr45tgryv", "are you human", "I like you", "I'm in the mood for going crazy", "I love playing tennis", "how are you doing", "I feel I need to go to the bathroom", "what if I'm hungry", "I want to travel somewhere", "what's the best place to drink", "am I older than you", "Mary went down to the farm"};
     static String[] cities = {"maastricht", "liege", "amsterdam", "brussels", "madrid", "paris", "milan", "athens", "rome", "london", "lisboa", "berlin", "prague", "stockholm", "vienna"};
 
 
@@ -111,6 +112,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
         skillsExamples.put(List.of(weatherPlaceSkill), "WeatherPlace");
         //skillsExamples.put(List.of(weatherPlaceTimeSkill), "WeatherPlaceTime");
         skillsExamples.put(List.of(wikipediaSkill), "Wikipedia");
+        skillsExamples.put(List.of(randomSkill), "");
 
         return skillsExamples;
     }
