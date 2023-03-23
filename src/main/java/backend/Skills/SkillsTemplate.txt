@@ -16,7 +16,6 @@ Question : Can you tell me the capital city of <COUNTRY> ?
 Question : What is <COUNTRY> capital city ?
 Action : France : Paris
 Action : Belgium : Brussels
-Action : HELLOO
 Answer : The capital of <COUNTRY> is <ANSWER>.
 Error : I don't know the capital of <COUNTRY>.
 

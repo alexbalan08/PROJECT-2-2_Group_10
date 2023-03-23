@@ -18,16 +18,22 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
     private String skill;
     private static String accessToken = "70752a229df0f14eacfde52a678b32b9";
     private static String clip_API_URL = "https://api.clip.jina.ai:8443/post";
-    static String[] canvasSkill = {"In which lecture slides of Theoretical Computer Science can you find about 'regular expressions' ?", "For the course Calculus where can you find about 'multivariate' ?", "Where can I find 'matrix multiplication' in Linear Algebra ?", "Can you find the topic 'MRI' in the course Computational and Cognitive Neuroscience ?"};
-    static String[] spotifyPlaySkill = {"Can you play the song 'Mad World' ?", "Can you play 'Bohemian Rhapsody' ?"};
-    static String[] spotifyStopSkill = {"Can you stop the song 'Mad World' ?", "Can you stop 'Bohemian Rhapsody' ?", "Can you pause the song 'Dancing Queen' ?", "Can you pause 'Love Tonight' ?"};
-    static String[] spotifyResumeSkill = {"Can you resume the song 'Mad World' ?", "Can you resume 'Bohemian Rhapsody' ?", "Can you replay the song 'Dancing Queen' ?", "Can you replay 'Love Tonight' ?"};
-    static String[] spotifyInfoSkill = {"What is the music at the moment ?", "What is the music playing ?", "What song does Spotify play ?"};
-    static String[] weatherPlaceSkill = {"Can you tell me about the weather in Maastricht ?", "What is the weather in Amsterdam ?", "Tell me the weather in Liege", "How is the weather in Paris ?"};
-    static String[] weatherPlaceTimeSkill = {"What will the weather be like in Liege at 9am ?", "What weather will Maastricht have at 2pm ?"};
-    static String[] wikipediaSkill = {"Can you explain to me what is genetically modified organism ?", "What is the definition of human genome ?", "What does Wikipedia say about the Renaissance ?", "Can you explain to me what Artificial Intelligence is ?"};
+    static String[] canvasSkill = {"In which lecture slides of Theoretical Computer Science can you find about regular expressions", "For the course Calculus where can you find about 'multivariate'", "Where can I find 'matrix multiplication' in Linear Algebra", "Can you find the topic MRI in the course Computational and Cognitive Neuroscience", "Where could multithreading be in Databases", "For Numerical Mathematics I want to find 'Euler method'", "Are there slides for 'recursion' in Computer Science 1", "Where does Software Engineering have slides for 'design patterns'", "Where to find 'best first search' in the Reasoning Techniques course", "What the heck is universal constant for Logic course"};
+    static String[] spotifyPlaySkill = {"Can you play the song 'Mad World'", "I would like you to play Bohemian Rhapsody", "I want to listen to The Logical Song", "Can 'Breakfast in America' be played", "Play 'Love Tonight'", "Please put 'Dancing Queen'", "Put 'Zombie' on", "Put Waka Waka by Shakira", "Could you play 'Something Just Like This' by Coldplay", "Play the song 'Thank You'"};
+    static String[] spotifyStopSkill = {"Can you stop Mad World", "Stop 'Bohemian Rhapsody'", "Can you pause 'Dancing Queen'", "Pause 'Love Tonight'", "Stop the music", "Stop the song", "Pause what's sounding", "Could you pause the song", "Stop playing the song", "Can you shut up the music"};
+    static String[] spotifyResumeSkill = {"Can you resume 'Mad World'", "Keep on playing 'Bohemian Rhapsody'", "Can you replay 'Dancing Queen'", "Replay 'Love Tonight'", "Resume the music", "Resume the song", "Keep playing what was sounding", "Could you replay the song", "Replay the song", "Keep playing Spotify"};
+    static String[] spotifyInfoSkill = {/*"What's the music at the moment", "What's that music playing", "What song is Spotify playing", */"What's the name of the track playing in the background in Spotify", "Can you tell me the artist of the song playing now in Spotify", "What's the album of the current track playing", "Who wrote and produced the song that is playing right now", "Can you give me some information about the current track"/*, "Give me some info about the current song", "Can I know more about this song"*/};
+    static String[] weatherPlaceSkill = {"Can you tell me about the weather in Maastricht", "What weather does Amsterdam have now", "Tell me the forecast for Liege", "How cold is it in Paris", "What's the current temperature in Vienna", "Can you give me the weather condition for Rome", "How is the temperature now in Athens", "Is it hot in Madrid right now", "Gimme the current weather here in Stockholm", "London is freaking cold, what's the current temperature"};
+    static String[] weatherPlaceTimeSkill = {"What will the weather be like in Liege at 9am", "What weather will Maastricht have at 2pm", "What will be the weather in Amsterdam at 3pm", "Can you tell me the forecast for Paris at 5pm", "How cold will it be in Madrid at 10am today", "Can you give me the weather condition for Rome at 11am", "Can you tell me the temperature in Vienna at 5am", "At 10pm, what will the temperature be like in Athens", "What will be the weather like in Stockholm at 7pm tonight", "How hot will it be at 12pm in Brussels"};
+    static String[] wikipediaSkill = {"Can you explain to me what are genetically modified organism", "What is the definition of human genome", "What does Wikipedia say about 'the Renaissance'", "Can you explain to me what 'Artificial Intelligence' is", "Can you look up in Wikipedia what is gravitational force", "What are the characteristics for parabolas", "What can Wikipedia tell me about the topic 'evolution'", "Give me some info about 'fungi'", "I want to know what the heck is impressionism according to Wikipedia", "Tell me about 'simile'"};
     static String[] cities = {"maastricht", "liege", "amsterdam", "brussels", "madrid", "paris", "milan", "athens", "rome", "london", "lisboa", "berlin", "prague", "stockholm", "vienna"};
 
+
+    public String appropriateQuery(String query) {
+        if (query.contains("\""))
+            return "Please use single quotes ('') instead of double quotes (\"\")";
+        return "";
+    }
 
     public List<List<Double>> encode(List<String> sentences) throws IOException {
         List<List<Double>> vectorRepresentations = new ArrayList<>();
@@ -108,7 +114,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
         skillsExamples.put(List.of(spotifyResumeSkill), "SpotifyResume");
         skillsExamples.put(List.of(spotifyInfoSkill), "SpotifyInfo");
         skillsExamples.put(List.of(weatherPlaceSkill), "WeatherPlace");
-        skillsExamples.put(List.of(weatherPlaceTimeSkill), "WeatherPlaceTime");
+        //skillsExamples.put(List.of(weatherPlaceTimeSkill), "WeatherPlaceTime");
         skillsExamples.put(List.of(wikipediaSkill), "Wikipedia");
 
         return skillsExamples;
@@ -117,13 +123,11 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
     public String[] findSlot(String query) {
         String[] slots = null;
         String stringInQuotes = "";
-        boolean areThereQuotesInQuery = query.indexOf("\"") != query.lastIndexOf("\"") && (query.indexOf("\"") != query.lastIndexOf("\"") - 1);
         boolean areThereSingleQuotesInQuery = query.indexOf("'") != query.lastIndexOf("'") && (query.indexOf("'") != query.lastIndexOf("'") - 1);
-        if (areThereQuotesInQuery || areThereSingleQuotesInQuery) {
-            String quote = areThereQuotesInQuery ? "\"" : "'";
-            stringInQuotes = query.substring(query.indexOf(quote) + 1, query.lastIndexOf(quote));
+        if (areThereSingleQuotesInQuery) {
+            stringInQuotes = query.substring(query.indexOf("'") + 1, query.lastIndexOf("'"));
         }
-        if (skill.equals("Canvas") || skill.equals("SpotifyPlay") || skill.equals("SpotifyStop") || skill.equals("SpotifyResume") || skill.equals("Wikipedia")) {
+        if (skill.equals("Canvas") || skill.equals("SpotifyPlay") || skill.equals("Wikipedia")) {
             int index;
             if (skill.equals("Wikipedia"))
                 index = 1;
@@ -146,8 +150,8 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
                     slots[0] = "Non existent";
             }
             case "SpotifyPlay" -> slots[0] = "play";
-            case "SpotifyStop" -> slots[0] = "stop";
-            case "SpotifyResume" -> slots[0] = "resume";
+            case "SpotifyStop" -> slots = new String[]{"stop"};
+            case "SpotifyResume" -> slots = new String[]{"resume"};
             case "SpotifyInfo" -> slots = new String[]{"info"};
             case "WeatherPlace" -> {
                 for (String city : cities) {
@@ -180,9 +184,9 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
         String output = "It seems like you want to ";
         Map<String, String> questionsTemplate = new HashMap<>();
         questionsTemplate.put("Canvas", "In which lecture slides of <COURSE> can you find <TOPIC> ?");
-        questionsTemplate.put("SpotifyPlay", "Play \"<TITLE>\" ?");
-        questionsTemplate.put("SpotifyStop", "Stop \"<TITLE>\" ?");
-        questionsTemplate.put("SpotifyResume", "Resume \"<TITLE>\" ?");
+        questionsTemplate.put("SpotifyPlay", "Can you play \"<TITLE>\"");
+        questionsTemplate.put("SpotifyStop", "Can you stop \"<TITLE>\"");
+        questionsTemplate.put("SpotifyResume", "Can you resume \"<TITLE>\"");
         questionsTemplate.put("WeatherPlace", "Can you tell me about the weather in <PLACE> ?");
         questionsTemplate.put("WeatherPlaceTime", "What will the weather be like in <PLACE> at <TIME> ?");
         questionsTemplate.put("Wikipedia", "What is the definition of <SUBJECT> ?");
@@ -323,15 +327,11 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
         String closestSkillToQuery = "";
         for (Map.Entry<List<List<Double>>, String> entry : vectorizedSkillsExamples.entrySet()) {
             List<List<Double>> vectorizedSkillExamples = entry.getKey();
-            double sum = 0;
-            for (List<Double> vectorizedSkillExample : vectorizedSkillExamples) {
-                sum += cosineSimilarity(vectorizedSkillExample, vectorizedQuery.get(0));
-            }
-            double averageCosimilarity = sum / vectorizedSkillExamples.size();
-            System.out.println("The average cosine similarity with the skill \'" + entry.getValue() + "\' is: " + averageCosimilarity);
 
-            if (averageCosimilarity > maxCosimilarity) {
-                maxCosimilarity = averageCosimilarity;
+            double cosimilarity = maxCosimilarity(vectorizedSkillExamples, vectorizedQuery);
+            System.out.println("The max cosine similarity with the skill \'" + entry.getValue() + "\' is: " + cosimilarity);
+            if (cosimilarity > maxCosimilarity) {
+                maxCosimilarity = cosimilarity;
                 closestSkillToQuery = entry.getValue();
             }
         }
@@ -344,6 +344,24 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             return "Weather";
 
         return closestSkillToQuery;
+    }
+
+    public double averageCosimilarity (List<List<Double>> vectorizedSkillExamples, List<List<Double>> vectorizedQuery) {
+        double sum = 0;
+        for (List<Double> vectorizedSkillExample : vectorizedSkillExamples) {
+            sum += cosineSimilarity(vectorizedSkillExample, vectorizedQuery.get(0));
+        }
+        return sum / vectorizedSkillExamples.size();
+    }
+
+    public double maxCosimilarity(List<List<Double>> vectorizedSkillExamples, List<List<Double>> vectorizedQuery) {
+        double maxSimilarity = 0;
+        for (List<Double> vectorizedSkillExample : vectorizedSkillExamples) {
+            double exampleQuerySimilarity = cosineSimilarity(vectorizedSkillExample, vectorizedQuery.get(0));
+            if (maxSimilarity < exampleQuerySimilarity)
+                maxSimilarity = exampleQuerySimilarity;
+        }
+        return maxSimilarity;
     }
 
     public static void main(String[] args) throws IOException {

@@ -150,10 +150,10 @@ public class HelloApplication extends Application {
         conversationScrollPane.setVvalue(1.0);
     }
 
-    public HBox createTextAreaSend() throws NoSuchMethodException {
+    public HBox createTextAreaSend() {
         textArea.setStyle("-fx-text-fill: white; -fx-font: " + font);
         // Design for scroll bar in text area
-        textArea.skinProperty().addListener(new ChangeListener<Skin<?>>() {
+        textArea.skinProperty().addListener(new ChangeListener<>() {
             @Override
             public void changed(
                     ObservableValue<? extends Skin<?>> ov, Skin<?> t, Skin<?> t1) {
