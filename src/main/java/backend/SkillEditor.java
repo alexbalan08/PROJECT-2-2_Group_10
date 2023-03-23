@@ -48,8 +48,6 @@ public class SkillEditor implements ActionQuery {
             addSkills.add("can you " + addSkillOption);
         }
 
-        addActionToSkill.add("Can you add the action to skill \\d+:");
-
         String[] getShow = {"get", "can you get", "get me", "can you get me", "show", "can you show", "show me", "can you show me"};
         String[] remove = {"remove", "please remove", "can you remove", "delete", "can you delete", "please delete"};
         String[] edit = {"edit", "can I edit", "may I edit", "let me edit", "please let me edit", "change", "can I change", "may I change", "let me change", "please let me change"};
@@ -58,6 +56,19 @@ public class SkillEditor implements ActionQuery {
         String[] addedSingular = {" that has been added", " that was added"};
         String[] addedPlural = {" that have been added", " that were added"};
         String[] skills = {" skills", " the skills", " all skills", " all the skills"};
+        String[] please = {" please", ""};
+        String[] canYou = {"can you", "could you", ""};
+
+        for (String theOption : the) {
+            for (String pleaseOption : please) {
+                for (String canYouOption : canYou) {
+                    addActionToSkill.add(canYouOption + pleaseOption + " add" + theOption + " action to" + theOption + " skill \\d+:");
+                    addActionToSkill.add(canYouOption + pleaseOption + " add" + theOption + " following action to" + theOption + " skill \\d+:");
+                    addActionToSkill.add(canYouOption + pleaseOption + " add to" + theOption + " skill \\d+" + theOption + " action:");
+                    addActionToSkill.add(canYouOption + pleaseOption + " add to" + theOption + " skill \\d+" + theOption + " following action:");
+                }
+            }
+        }
 
         for (String getShowOption : getShow) {
             for (String skillsOption : skills) {
