@@ -312,13 +312,8 @@ public class SkillEditor implements ActionQuery {
             skillNumber = Integer.parseInt(matcher.group());
         }
         String[] skills = getSkills().split("\\r?\\n\\r?\\n");
-        System.out.println("The separate skills are:");
-        for (String skill : skills) {
-            System.out.println("The skill:");
-            System.out.println(skill);
-        }
         String skill = skills[skillNumber - 1].strip();
-        if (!lastSkillsAdded.contains(skill)) return "Sorry, you can not edit a skill you have not added yourself.";
+        //if (!lastSkillsAdded.contains(skill)) return "Sorry, you can not edit a skill you have not added yourself.";
         HelloApplication.getInstance().addToTextArea("add the skill:\n" + skill);
         writeToSkillsFile(getSkills().replaceAll("\\n\\n" + skill, "").replaceAll("\\n\\n\\n", "\n\n"));
         return "You can now edit the skill.";
@@ -330,34 +325,4 @@ public class SkillEditor implements ActionQuery {
        deleteLastAddedSkill();
        return "You can now edit the skill.";
    }
-
-    /*public static void main(String[] args) throws IOException, NoSuchMethodException {
-        SkillEditor se = new SkillEditor();
-        String command = "Can you add the action to skill \\d+:";
-        if (command.contains("\\d+")) {
-            String[] commandSeparated = command.split(Pattern.quote("\\d+"));
-            System.out.println("The separated string is:");
-            for (String commandPart : commandSeparated) {
-                System.out.println("Command part: " + commandPart);
-            }
-            *//*if (Pattern.compile(command).matcher(query).find()) {
-                boolean doesQueryMatchToCommand = true;
-                // RECENTLY ADDED
-                for (String commandPart : commandSeparated) {
-                    if (!query.contains(commandPart)) {
-                        doesQueryMatchToCommand = false;
-                        break;
-                    }
-                }
-                if (doesQueryMatchToCommand) {
-                    this.entry = entry;
-                    this.key = command;
-                    this.isQueryToEditSkill = true;
-                }
-            }*//*
-        }
-        se.setQuery("Can you add the action to skill 2:\nAction : HELLOOO");
-        System.out.println("Is the query and edit skill? " + se.isQueryToEditSkill);
-        se.addActionToSkill();
-    }*/
 }

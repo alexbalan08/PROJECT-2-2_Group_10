@@ -75,8 +75,6 @@ public class DA implements ActionQuery {
             }
 
             if (output.isEmpty()) {
-                String appropriateQuery = languageModel.appropriateQuery(query);
-                if (!appropriateQuery.isEmpty()) return appropriateQuery;
                 String determinedSkill = languageModel.determineSkill(query);
                 for (SkillWrapper skill : this.skills.keySet()) {
                     if (skill.getClass().getSimpleName().equals(determinedSkill)) {

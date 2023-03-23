@@ -29,12 +29,6 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
     static String[] cities = {"maastricht", "liege", "amsterdam", "brussels", "madrid", "paris", "milan", "athens", "rome", "london", "lisboa", "berlin", "prague", "stockholm", "vienna"};
 
 
-    public String appropriateQuery(String query) {
-        if (query.contains("\""))
-            return "Please use single quotes ('') instead of double quotes (\"\")";
-        return "";
-    }
-
     public List<List<Double>> encode(List<String> sentences) throws IOException {
         List<List<Double>> vectorRepresentations = new ArrayList<>();
 
@@ -184,9 +178,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
         String output = "It seems like you want to ";
         Map<String, String> questionsTemplate = new HashMap<>();
         questionsTemplate.put("Canvas", "In which lecture slides of <COURSE> can you find <TOPIC> ?");
-        questionsTemplate.put("SpotifyPlay", "Can you play \"<TITLE>\"");
-        questionsTemplate.put("SpotifyStop", "Can you stop \"<TITLE>\"");
-        questionsTemplate.put("SpotifyResume", "Can you resume \"<TITLE>\"");
+        questionsTemplate.put("SpotifyPlay", "Can you play \'<TITLE>\'");
         questionsTemplate.put("WeatherPlace", "Can you tell me about the weather in <PLACE> ?");
         questionsTemplate.put("WeatherPlaceTime", "What will the weather be like in <PLACE> at <TIME> ?");
         questionsTemplate.put("Wikipedia", "What is the definition of <SUBJECT> ?");
@@ -213,24 +205,10 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
                 }
             }
             case "SpotifyStop" -> {
-                output = output.concat("stop ");
-                if (slots != null && slots[1] != null) {
-                    output = output.concat("the song '" + slots[1] + "'.\n");
-                } else {
-                    output = output.concat("a song.\nCan you write it in the form:\n");
-                    output = output.concat(questionsTemplate.get("SpotifyStop"));
-                    HelloApplication.getInstance().addToTextArea(questionsTemplate.get("SpotifyStop"));
-                }
+                output = output.concat("stop the music that is playing.\n");
             }
             case "SpotifyResume" -> {
-                output = output.concat("resume ");
-                if (slots != null && slots[1] != null) {
-                    output = output.concat("the song '" + slots[1] + "'.\n");
-                } else {
-                    output = output.concat("a song.\nCan you write it in the form:\n");
-                    output = output.concat(questionsTemplate.get("SpotifyResume"));
-                    HelloApplication.getInstance().addToTextArea(questionsTemplate.get("SpotifyResume"));
-                }
+                output = output.concat("resume the music that is playing.\n");
             }
             case "SpotifyInfo" -> output = output.concat("know about the music that is playing.\n");
             case "WeatherPlace" -> {
@@ -271,6 +249,8 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
     // Detect what skill does the query want
     public String determineSkill(String query) throws IOException {
         Map<List<String>, String> skillsExamples = createSkillsExamples();
+        query = query.replaceAll("\"", "'");
+        query = query.replaceAll("\\|/", "");
 
         String embeddingsFilePath = "./src/main/java/backend/recognition/Embeddings.txt";
         File embeddingsFile = new File(embeddingsFilePath);
