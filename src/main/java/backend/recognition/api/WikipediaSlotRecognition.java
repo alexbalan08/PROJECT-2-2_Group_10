@@ -21,6 +21,16 @@ public class WikipediaSlotRecognition implements SlotRecognition {
 
     public WikipediaSlotRecognition() { }
 
+    /**
+     *
+     * Takes an input string and tries to extract relevant information (slots) from it.
+     *
+     * In this case, it looks for information related to location or place, using the words "about", "of" or "is" as markers.
+     * It first looks for a theme using the "about" keyword, then "of", and finally "is".
+     * If none of these are found, it returns an empty string as the subject.
+     * It then returns a list containing the subject as its only element.
+     *
+     * */
     @Override
     public List<String> findSlot(String input) {
         String subject = findTheme(" about ", input);
@@ -33,6 +43,11 @@ public class WikipediaSlotRecognition implements SlotRecognition {
         return new ArrayList<>(List.of(subject));
     }
 
+    /**
+     *
+     * It returns the theme that appears after the key keyword in the input.
+     *
+     * */
     private String findTheme(String key, String input) {
         int index = input.indexOf(key);
         if(index != -1) {
@@ -41,6 +56,11 @@ public class WikipediaSlotRecognition implements SlotRecognition {
         return "";
     }
 
+    /**
+     *
+     * Clean up the extracted theme from the user input before using it.
+     *
+     * */
     private String cleanTheme(String theme) {
         theme = theme.replace("?", "").replace(".", "")
                 .replace("\n", "").replace(" ", "%20");

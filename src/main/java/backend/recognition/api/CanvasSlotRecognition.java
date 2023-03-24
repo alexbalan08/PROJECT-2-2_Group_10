@@ -31,6 +31,11 @@ public class CanvasSlotRecognition implements SlotRecognition {
 
     public CanvasSlotRecognition() { }
 
+    /**
+     *
+     * Extract the course and the topic of the input.
+     *
+     * */
     @Override
     public List<String> findSlot(String input) {
         String course = findCourse(input);

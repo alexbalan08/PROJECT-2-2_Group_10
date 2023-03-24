@@ -4,6 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ *
+ * This is a class that reads a file containing skill templates and creates SkillTemplate objects from them.
+ *
+ * */
 public class SkillTemplateReader {
 
     private final String fileURL;
@@ -14,12 +19,22 @@ public class SkillTemplateReader {
         this.skillTemplates = new ArrayList<>();
     }
 
+    /**
+     *
+     * Method that reads the file and returns a list of SkillTemplate objects.
+     *
+     * */
     public List<SkillTemplate> getSkillTemplates() {
         this.skillTemplates.clear();
         this.readFile();
         return this.skillTemplates;
     }
 
+    /**
+     *
+     * Private method that reads the file line by line and creates SkillTemplate objects from it.
+     *
+     * */
     private void readFile() {
         try (BufferedReader br = new BufferedReader(new java.io.FileReader(this.fileURL))) {
             String line;
@@ -53,12 +68,23 @@ public class SkillTemplateReader {
         }
     }
 
+
+    /**
+     *
+     * Private method that adds a new SkillTemplate object to the skillTemplates list.
+     *
+     * */
     private void addTemplate(List<String> questions, Map<String, String> actions, String answer, String error) {
         if(questions.size() > 0 && actions.size() > 0 && !Objects.equals(answer, "") && !Objects.equals(error, "")) {
             this.skillTemplates.add(new SkillTemplate(questions, actions, answer, error));
         }
     }
 
+    /**
+     *
+     * Private method that removes the key word (ex: Question, Action, Answer, Error) from a line of text.
+     *
+     * */
     private String removeKeyWord(String line) {
         int index = line.lastIndexOf(":");
         return line.substring(index + 2);

@@ -5,10 +5,11 @@ import backend.recognition.SkillRecognition;
 import java.util.List;
 import java.util.Objects;
 
-/*
- * Which lectures are there on Monday at 9 ?
- * What is the capital of Belgium ?
- * Which transport do I take to go to Liege ?
+/**
+ *
+ * This code snippet is a class UserSkillRecognition that implements the SkillRecognition interface.
+ * The class takes a list of SkillTemplate objects in its constructor.
+ *
  * */
 
 public class UserSkillRecognition implements SkillRecognition {
@@ -19,6 +20,14 @@ public class UserSkillRecognition implements SkillRecognition {
         this.skillTemplates = list;
     }
 
+    /**
+     *
+     * The determineSkill method is implemented in the class to find the skill required for a particular task or problem based on the input text.
+     *
+     * The method iterates over the list of SkillTemplate objects passed to the constructor and calls the findAnswer method of each SkillTemplate to determine if the input text matches the template for a particular skill.
+     * If a match is found, the method returns the answer associated with that skill. If no match is found, an empty string is returned.
+     *
+     * */
     @Override
     public String determineSkill(String input) {
         for(SkillTemplate skill : this.skillTemplates) {

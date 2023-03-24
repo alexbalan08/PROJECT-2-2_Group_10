@@ -6,6 +6,8 @@ import java.util.*;
 
 /**
  *
+ * This is the implementation of the ApiSkillRecognition class, which is used to determine which API-based skill to use based on the user's input.
+ *
  * This class recognise the skill wanted.
  *
  * It has a LIST of interrogative words to be sur that the user want something.
@@ -54,10 +56,22 @@ public class ApiSkillRecognition implements SkillRecognition {
         this.themes.put("wikipedia", "Wikipedia");
     }
 
+    /**
+     *
+     * Takes a string input, and it returns the name of the API-based skill that matches the user's query.
+     *
+     * If neither determineRequest nor determineTheme returns a match, then the determineSkill method returns an empty string.
+     *
+     * */
     public String determineSkill(String input) {
         return this.determineRequest(input);
     }
 
+    /**
+     *
+     * Iterates through the request list and returns the name of the corresponding skill if the input contains one of the strings in request.
+     *
+     * */
     private String determineRequest(String input) {
         for (String request : this.request) {
             if(input.contains(request)) {
@@ -67,6 +81,11 @@ public class ApiSkillRecognition implements SkillRecognition {
         return "";
     }
 
+    /**
+     *
+     * Iterates through the themes mapping and returns the name of the corresponding skill if the input contains one of the keywords in the mapping.
+     *
+     * */
     private String determineTheme(String input) {
         for (String theme : this.themes.keySet()) {
             if(input.contains(theme)) {

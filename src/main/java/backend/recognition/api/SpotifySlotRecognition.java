@@ -41,6 +41,11 @@ public class SpotifySlotRecognition implements SlotRecognition {
         this.actions.add("replay");
     }
 
+    /**
+     *
+     * Extract the title and the action from the input.
+     *
+     * */
     @Override
     public List<String> findSlot(String input) {
         String title = findTitle(input);
@@ -60,8 +65,6 @@ public class SpotifySlotRecognition implements SlotRecognition {
     }
 
     private String findTitle(String input) {
-        int indexOfFirstQM = input.indexOf("\'");
-        int indexOfLastQM = input.lastIndexOf("\'");
-        return input.substring(indexOfFirstQM + 1, indexOfLastQM);
+        return input.substring(input.indexOf("\'") + 1, input.lastIndexOf("\'"));
     }
 }

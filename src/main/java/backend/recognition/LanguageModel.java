@@ -174,10 +174,14 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
                     slots[1] = time;
             }
         }
-        return List.of(slots);
+        if (slots != null) {
+            return List.of(slots);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
-    public String botResponse(String[] slots) {
+    public String botResponse(List<String> slots) {
         String output = "It seems like you want to ";
         Map<String, String> questionsTemplate = new HashMap<>();
         questionsTemplate.put("Canvas", "In which lecture slides of <COURSE> can you find <TOPIC> ?");
@@ -189,8 +193,8 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
         switch (skill) {
             case "Canvas" -> {
                 output = output.concat("find the slides where ");
-                if (slots != null && slots[0] != null && slots[1] != null) {
-                    output = output.concat("the topic '" + slots[0] + "' appears inside the given course.\n");
+                if (slots != null && slots.get(0) != null && slots.get(1) != null) {
+                    output = output.concat("the topic '" + slots.get(0) + "' appears inside the given course.\n");
                 } else {
                     output = output.concat("a topic appears inside a certain course. Can you write it in the following form to know the desired course and topic to look for:\n");
                     output = output.concat(questionsTemplate.get("Canvas"));
@@ -199,8 +203,8 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             }
             case "SpotifyPlay" -> {
                 output = output.concat("play ");
-                if (slots != null && slots[1] != null) {
-                    output = output.concat("the song '" + slots[1] + "'.\n");
+                if (slots != null && slots.get(1) != null) {
+                    output = output.concat("the song '" + slots.get(1) + "'.\n");
                 } else {
                     output = output.concat("a song.\nCan you write it in the form:\n");
                     output = output.concat(questionsTemplate.get("SpotifyPlay"));
@@ -216,8 +220,8 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             case "SpotifyInfo" -> output = output.concat("know about the music that is playing.\n");
             case "WeatherPlace" -> {
                 output = output.concat("know about the weather in ");
-                if (slots != null && slots[0] != null) {
-                    output = output.concat(slots[0] + ".\n");
+                if (slots != null && slots.get(0) != null) {
+                    output = output.concat(slots.get(0) + ".\n");
                 } else {
                     output = output.concat("a certain place.\nCan you write it in the form:\n");
                     output = output.concat(questionsTemplate.get("WeatherPlace"));
@@ -226,8 +230,8 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             }
             case "WeatherPlaceTime" -> {
                 output = output.concat("know about the weather in ");
-                if (slots != null && slots[0] != null && slots[1] != null) {
-                    output = output.concat(slots[0] + " at time " + slots[1] + ".\n");
+                if (slots != null && slots.get(0) != null && slots.get(1) != null) {
+                    output = output.concat(slots.get(0) + " at time " + slots.get(1) + ".\n");
                 } else {
                     output = output.concat("a certain place at a certain time.\nCan you write it in the form:\n");
                     output = output.concat(questionsTemplate.get("WeatherPlaceTime"));
@@ -236,8 +240,8 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             }
             case "Wikipedia" -> {
                 output = output.concat("know about ");
-                if (slots != null && slots[0] != null) {
-                    output = output.concat("the topic '" + slots[0] + "' that can be found in Wikipedia.\n");
+                if (slots != null && slots.get(0) != null) {
+                    output = output.concat("the topic '" + slots.get(0) + "' that can be found in Wikipedia.\n");
                 } else {
                     output = output.concat("a certain topic that can be found in Wikipedia.\nCan you write it in the form:\n");
                     output = output.concat(questionsTemplate.get("Wikipedia"));

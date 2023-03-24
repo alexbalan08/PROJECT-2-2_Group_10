@@ -29,6 +29,16 @@ public class WeatherSlotRecognition implements SlotRecognition {
 
     public WeatherSlotRecognition() { }
 
+    /**
+     *
+     * Takes an input string and tries to extract relevant information (slots) from it.
+     *
+     * In this case, it looks for information related to location or place, using the words "in" or "at" as markers.
+     * If it finds "in" in the input string, it assumes that the location information follows it, and then tries to find "at" to get the time information.
+     * Otherwise, it looks for "at" and assumes that the time information follows it. It returns a list of two strings: the location or place, and the time information.
+     * If it cannot find any relevant information, it returns an empty list.
+     *
+     * */
     @Override
     public List<String> findSlot(String input) {
         String place = findFirst(" in ", input);
@@ -37,12 +47,5 @@ public class WeatherSlotRecognition implements SlotRecognition {
         } else {
             return new ArrayList<>(Arrays.asList(place, findFirst(" at ", input)));
         }
-    }
-
-    private String[] getSlotsInArray(String place, String time) {
-        if(!time.equals("") && !Objects.equals(place, time)) {
-            return new String[] {place, time};
-        }
-        return new String[] {place};
     }
 }
