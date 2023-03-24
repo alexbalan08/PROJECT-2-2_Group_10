@@ -1,7 +1,6 @@
 package backend.recognition.user;
 
 import backend.recognition.SlotRecognition;
-import backend.recognition.user.UserSlotRecognition;
 import utils.StringUtils;
 
 import java.util.*;
@@ -11,18 +10,10 @@ public class SkillTemplate {
     private final List<String> questions;
     private final Map<String, String> actions;
 
-    private String answer;
-    private String error;
+    private final String answer;
+    private final String error;
 
     private final SlotRecognition slotRecognition;
-
-    public SkillTemplate() {
-        this.questions = new ArrayList<>();
-        this.actions = new HashMap<>();
-        this.answer = "";
-        this.error = "";
-        this.slotRecognition = new UserSlotRecognition();
-    }
 
     public SkillTemplate(List<String> questions, Map<String, String> actions, String answer, String error) {
         this.questions = questions;
@@ -30,27 +21,6 @@ public class SkillTemplate {
         this.answer = answer;
         this.error = error;
         this.slotRecognition = new UserSlotRecognition();
-    }
-
-    public boolean isFinished() {
-        return this.questions.size() > 0 && this.actions.size() > 0
-                && !Objects.equals(this.answer, "") && !Objects.equals(this.error, "");
-    }
-
-    public void addQuestion(String question) {
-        this.questions.add(question);
-    }
-
-    public void addAction(String key, String action) {
-        this.actions.put(key, action);
-    }
-
-    public void changeAnswer(String answer) {
-        this.answer = answer;
-    }
-
-    public void changeError(String error) {
-        this.error = error;
     }
 
     public String findAnswer(String question) {
@@ -78,8 +48,6 @@ public class SkillTemplate {
             }
             if (count == slots.length) {
                 return this.actions.get(key);
-            } else {
-                count = 0;
             }
         }
         return "";

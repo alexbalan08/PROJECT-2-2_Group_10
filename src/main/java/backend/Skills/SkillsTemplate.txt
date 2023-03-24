@@ -38,3 +38,4 @@ Action :  Maastricht, Heerlen, 9 : by train
 Action : Maastricht, Heerlen, 11 : by car
 Action : Maastricht, Sittard, 11 : by bike
 Answer : You can go to <CITYB> from <CITYA>, at <TIME>, <ANSWER>.
+Error : I don't know how you can go to <CITYA> from <CITYB> at <TIME>
