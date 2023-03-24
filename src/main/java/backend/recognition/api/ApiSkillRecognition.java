@@ -40,6 +40,7 @@ public class ApiSkillRecognition implements SkillRecognition {
 
         this.themes = new HashMap<>();
         this.themes.put("the weather", "Weather");
+        this.themes.put("the temperature", "Weather");
         this.themes.put("the climate", "Weather");
         this.themes.put("forecast", "Weather");
         this.themes.put("music", "Spotify");
