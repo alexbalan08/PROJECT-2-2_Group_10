@@ -29,6 +29,4 @@ public class UserSkillRecognition implements SkillRecognition {
         }
         return "";
     }
-
-
 }

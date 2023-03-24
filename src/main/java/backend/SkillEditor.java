@@ -1,7 +1,6 @@
 package backend;
 
 import UI.HelloApplication;
-import javafx.scene.control.TextArea;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;

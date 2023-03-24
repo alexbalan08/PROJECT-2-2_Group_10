@@ -18,7 +18,6 @@ public class SkillTemplateReader {
         this.readFile();
     }
 
-
     public List<SkillTemplate> getSkillTemplates() {
         return this.skillTemplates;
     }

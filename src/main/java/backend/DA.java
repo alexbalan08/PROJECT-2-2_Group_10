@@ -6,6 +6,7 @@ import backend.recognition.LanguageModel;
 import backend.recognition.SkillRecognition;
 import backend.recognition.SlotRecognition;
 import backend.recognition.api.*;
+import backend.recognition.user.SkillTemplate;
 import backend.recognition.user.SkillTemplateReader;
 import backend.recognition.user.UserSkillRecognition;
 import javafx.scene.control.TextArea;
@@ -23,6 +24,7 @@ public class DA implements ActionQuery {
     private final SkillTemplateReader fileReader;
     private final LanguageModel languageModel;
 
+    private List<SkillTemplate> skillTemplates;
     private SkillEditor skillEditor;
 
     public DA() throws Exception {
@@ -32,12 +34,13 @@ public class DA implements ActionQuery {
         this.addSkill(new Canvas(), new CanvasSlotRecognition());
         this.addSkill(new Wikipedia(), new WikipediaSlotRecognition());
 
-        this.skillEditor = new SkillEditor();
-
         this.fileReader = new SkillTemplateReader("./src/main/java/backend/Skills/SkillsTemplate.txt");
         this.apiSkillRecognition = new ApiSkillRecognition();
         this.userSkillRecognition = new UserSkillRecognition(fileReader.getSkillTemplates());
         this.languageModel = new LanguageModel();
+
+        this.skillTemplates = null;
+        this.skillEditor = new SkillEditor();
     }
 
     private void addSkill(SkillWrapper skill, SlotRecognition slotRecognition) {
