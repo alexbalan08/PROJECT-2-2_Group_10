@@ -34,8 +34,8 @@ Answer : On <DAY>, at <TIME>, you have <ANSWER>.
 Error : You didn't have a course on <DAY> at <TIME>.
 
 Question : How do I get from <CITYA> to <CITYB> at <TIME> ?
-Action :  Maastricht, Heerlen, 9 : By train
-Action : Maastricht, Heerlen, 11 : By car
-Action : Maastricht, Sittard, 11 : By bike
-Answer : You can go to <CITYB> from <CITYA> at <TIME> <ANSWER>
-Error : I don't know how you can go to <CITYA> from <CITYB> at <TIME>
+Action :  Maastricht, Heerlen, 9 : by train
+Action : Maastricht, Heerlen, 11 : by car
+Action : Maastricht, Sittard, 11 : by bike
+Answer : You can go to <CITYB> from <CITYA>, at <TIME>, <ANSWER>.
+

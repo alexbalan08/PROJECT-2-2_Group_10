@@ -1,6 +1,7 @@
 package backend;
 
 import UI.HelloApplication;
+import javafx.scene.control.TextArea;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -45,24 +46,6 @@ public class SkillEditor implements ActionQuery {
         for (String addSkillOption : addSkill) {
             addSkills.add(addSkillOption);
             addSkills.add("can you " + addSkillOption);
-        }
-
-        String [] addAction = {"add action:", "add this action:", "add the following action:"};
-        for (String action : addAction) {
-            addActions.add(action);
-            addActions.add("can you " + action);
-        }
-
-        String [] addAnswer = {"add answer:", "add this answer:", "add the following answer:"};
-        for (String answer : addAnswer) {
-            addAnswers.add(answer);
-            addAnswers.add("can you " + answer);
-        }
-
-        String [] addError = {"add error:", "add this error:", "add the following error:"};
-        for (String error : addError) {
-            addErrors.add(error);
-            addErrors.add("can you " + error);
         }
 
         String[] getShow = {"get", "can you get", "get me", "can you get me", "show", "can you show", "show me", "can you show me"};
@@ -223,25 +206,30 @@ public class SkillEditor implements ActionQuery {
     }
 
     // Adds the skill to the text file and returns a String saying if adding the skill to the SkillsTemplate was successful
-    public String addSkill() {
-        int index = query.indexOf(":");
-        if (index != -1) {
-            String command = query.substring(0, index + 1).trim();
-            boolean addMoreThanOneSkill = command.contains("skills");
+    public String addSkill() throws IOException {
+        try (FileWriter fw = new FileWriter("./src/main/java/backend/Skills/SkillsTemplate.txt", true)) {
+            try (BufferedWriter bw = new BufferedWriter(fw)) {
+                try (PrintWriter pw = new PrintWriter(bw)) {
+                    String command = query.substring(0, query.indexOf("\n"));
+                    boolean addMoreThanOneSkill = command.contains("skills");
+                    query = query.replace(command, "");
+                    countMinSkillsAdded++;
+                    lastSkillsAdded = lastSkillsAdded.concat("\n" + query);
+                    pw.print(query + "\n");
 
-            query = query.replace(command, "");
-            countMinSkillsAdded++;
-            lastSkillsAdded = lastSkillsAdded.concat("\n" + query);
+                    if (!addMoreThanOneSkill)
+                        return "The skill has been added";
 
-            this.writeNextLine("Question : ", query, "");
-            if (!addMoreThanOneSkill) {
-                return "The skill has been added";
+                    countMinSkillsAdded += 2;
+                    lastSkillsAdded = query;
+                    return "The skills have been added";
+                }
+            } catch (IOException io) {
+                return "Error with the BufferedWriter";
             }
-            countMinSkillsAdded += 2;
-            lastSkillsAdded = query;
-            return "The skills have been added";
+        } catch (IOException io) {
+            return "Error with the FileWritter";
         }
-        return "";
     }
 
     public String addSkillTemplate() {
@@ -278,15 +266,14 @@ public class SkillEditor implements ActionQuery {
         return "\nAction : ";
     }
 
-   public String getSkills() throws IOException {
+    public String getSkills() throws IOException {
         return Files.readString(Path.of("./src/main/java/backend/Skills/SkillsTemplate.txt"));
     }
 
     public String getLastSkill() throws IOException {
         String skillsTemplateText = getSkills();
         String lastSkill;
-        if (skillsTemplateText.strip().contains("\n"))
-            lastSkill = skillsTemplateText.strip().substring(skillsTemplateText.strip().lastIndexOf("\n\n") + 2);
+        if (skillsTemplateText.strip().contains("\n")) lastSkill = skillsTemplateText.strip().substring(skillsTemplateText.strip().lastIndexOf("\n\n") + 2);
         else lastSkill = skillsTemplateText;
         return lastSkill;
     }
@@ -298,7 +285,7 @@ public class SkillEditor implements ActionQuery {
     }
 
     public String getLastSkillsAdded() {
-        if (countMinSkillsAdded == 0) return "No skills have been recently added.";
+        if(countMinSkillsAdded == 0) return "No skills have been recently added.";
         else if (countMinSkillsAdded == 1) {
             return "One skill has been added:\n".concat(lastSkillsAdded.strip());
         }
@@ -306,22 +293,22 @@ public class SkillEditor implements ActionQuery {
     }
 
     public String deleteAllAddedSkills() throws IOException {
-        if (countMinSkillsAdded == 0) return "No skills have been recently added.";
+        if(countMinSkillsAdded == 0) return "No skills have been recently added.";
         writeToSkillsFile(originalSkillsTemplate);
         countMinSkillsAdded = 0;
         lastSkillsAdded = "";
         return "All the added skills were deleted successfully.";
     }
 
-   public String deleteLastAddedSkill() throws IOException {
-       if(countMinSkillsAdded == 0) return "No skills have been recently added.";
-       String lastSkillAdded = getLastSkillAdded().strip();
-       String textWithDeletedSkill = getSkills().substring(0, getSkills().indexOf(lastSkillAdded));
-       writeToSkillsFile(textWithDeletedSkill.strip().concat("\n"));
-       countMinSkillsAdded--;
-       lastSkillsAdded = lastSkillsAdded.replaceAll(lastSkillAdded, "");
-       return "The last added skill was deleted successfully.";
-   }
+    public String deleteLastAddedSkill() throws IOException {
+        if(countMinSkillsAdded == 0) return "No skills have been recently added.";
+        String lastSkillAdded = getLastSkillAdded().strip();
+        String textWithDeletedSkill = getSkills().substring(0, getSkills().indexOf(lastSkillAdded));
+        writeToSkillsFile(textWithDeletedSkill.strip().concat("\n"));
+        countMinSkillsAdded--;
+        lastSkillsAdded = lastSkillsAdded.replaceAll(lastSkillAdded, "");
+        return "The last added skill was deleted successfully.";
+    }
 
     public void writeToSkillsFile(String text) throws FileNotFoundException {
         PrintWriter pw = new PrintWriter(new File(skillsFilePath));
@@ -343,10 +330,10 @@ public class SkillEditor implements ActionQuery {
         return "You can now edit the skill.";
     }
 
-   public String editLastSkill() throws IOException {
-       if(countMinSkillsAdded == 0) return "Sorry, you can not edit a skill you have not added yourself.";
-       HelloApplication.getInstance().addToTextArea("add the skill:\n" + getLastSkillAdded().strip());
-       deleteLastAddedSkill();
-       return "You can now edit the skill.";
-   }
+    public String editLastSkill() throws IOException {
+        if(countMinSkillsAdded == 0) return "Sorry, you can not edit a skill you have not added yourself.";
+        HelloApplication.getInstance().addToTextArea("add the skill:\n" + getLastSkillAdded().strip());
+        deleteLastAddedSkill();
+        return "You can now edit the skill.";
+    }
 }

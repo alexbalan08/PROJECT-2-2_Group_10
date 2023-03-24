@@ -81,6 +81,7 @@ public class DA implements ActionQuery {
                 }
             }
 
+            /*
             if (output.isEmpty()) {
                 String determinedSkill = languageModel.determineSkill(query);
                 if (determinedSkill.isEmpty())
@@ -97,6 +98,7 @@ public class DA implements ActionQuery {
                     }
                 }
             }
+             */
 
             if (!output.isEmpty()) {
                 return output.toString();
