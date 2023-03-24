@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -25,7 +26,7 @@ public class Canvas extends SkillWrapper {
     public Canvas() throws IOException { }
 
     @Override
-    public void start(String[] slots) {
+    public void start(List<String> slots) {
         /*if (!Objects.equals(slots[0], "course")) {
             String course = slots[0];
             String topic = slots[1];
@@ -33,7 +34,7 @@ public class Canvas extends SkillWrapper {
         } else {
             outputs.add("Sorry, I didn't understand the course or the topic. Try another one.");
         }*/
-        outputs.add(find(slots[0], slots[1]));
+        outputs.add(find(slots.get(0), slots.get(1)));
     }
 
     private String find(String courseName, String topic) {

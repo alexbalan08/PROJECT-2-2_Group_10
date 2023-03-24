@@ -10,7 +10,7 @@ public class UserSlotRecognition implements SlotRecognition {
     public UserSlotRecognition() { }
 
     @Override
-    public String[] findSlot(String input) {
+    public List<String> findSlot(String input) {
         String question = getInformation(input, true);
         input = getInformation(input, false);
 
@@ -27,7 +27,7 @@ public class UserSlotRecognition implements SlotRecognition {
             result.add(inputSlot);
             index = question.indexOf("<");
         }
-        return result.toArray(new String[0]);
+        return result;
     }
 
     private String getSlotForQuestion(String question) {

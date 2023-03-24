@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 public class Weather extends SkillWrapper {
 
@@ -16,13 +17,13 @@ public class Weather extends SkillWrapper {
     public String city;
 
     @Override
-    public void start(String[] slots) {
+    public void start(List<String> slots) {
         try {
-            if(slots.length == 1) {
-                city = slots[0];
+            if(slots.size() == 1) {
+                city = slots.get(0);
             } else {
-                city = slots[0];
-                String time = slots[1];
+                city = slots.get(0);
+                String time = slots.get(1);
             }
 
             String API_URL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + APIkey + "&units=metric";

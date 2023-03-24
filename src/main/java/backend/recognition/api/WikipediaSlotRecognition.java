@@ -2,6 +2,8 @@ package backend.recognition.api;
 
 import backend.recognition.SlotRecognition;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -20,7 +22,7 @@ public class WikipediaSlotRecognition implements SlotRecognition {
     public WikipediaSlotRecognition() { }
 
     @Override
-    public String[] findSlot(String input) {
+    public List<String> findSlot(String input) {
         String subject = findTheme(" about ", input);
         if(Objects.equals(subject, "")) {
             subject = findTheme(" of ", input);
@@ -28,7 +30,7 @@ public class WikipediaSlotRecognition implements SlotRecognition {
                 subject = findTheme(" is ", input);
             }
         }
-        return new String[] { subject };
+        return new ArrayList<>(List.of(subject));
     }
 
     private String findTheme(String key, String input) {

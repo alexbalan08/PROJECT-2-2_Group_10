@@ -14,6 +14,7 @@ import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequ
 import se.michaelthelin.spotify.requests.data.tracks.GetTrackRequest;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -31,10 +32,10 @@ public class Spotify extends SkillWrapper {
 
     // slots : [<ACTION>, optional <TITLE>]
     @Override
-    public void start(String[] slots) {
-        String action = slots[0];
-        if (slots.length == 2) {
-            this.actualMusic = slots[1];
+    public void start(List<String> slots) {
+        String action = slots.get(0);
+        if (slots.size() == 2) {
+            this.actualMusic = slots.get(1);
         }
 
         if (Objects.equals(action, "play")) {

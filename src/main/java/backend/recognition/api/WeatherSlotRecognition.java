@@ -2,6 +2,9 @@ package backend.recognition.api;
 
 import backend.recognition.SlotRecognition;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -27,12 +30,12 @@ public class WeatherSlotRecognition implements SlotRecognition {
     public WeatherSlotRecognition() { }
 
     @Override
-    public String[] findSlot(String input) {
+    public List<String> findSlot(String input) {
         String place = findFirst(" in ", input);
         if(Objects.equals(place, "")) {
-            return getSlotsInArray(findFirst(" at ", input), findLast(" at ", input));
+            return new ArrayList<>(Arrays.asList(findFirst(" at ", input), findLast(" at ", input)));
         } else {
-            return getSlotsInArray(place, findFirst(" at ", input));
+            return new ArrayList<>(Arrays.asList(place, findFirst(" at ", input)));
         }
     }
 

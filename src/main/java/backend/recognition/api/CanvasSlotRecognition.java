@@ -2,6 +2,10 @@ package backend.recognition.api;
 
 import backend.recognition.SlotRecognition;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -28,14 +32,14 @@ public class CanvasSlotRecognition implements SlotRecognition {
     public CanvasSlotRecognition() { }
 
     @Override
-    public String[] findSlot(String input) {
+    public List<String> findSlot(String input) {
         String course = findCourse(input);
         String topic = findFirst(" find ", input);
 
         if(Objects.equals(course, "") || Objects.equals(topic, "")) {
-            return new String[] { "course", "topic" };
+            return new ArrayList<>(Arrays.asList("course", "topic"));
         }
-        return new String[] { course, topic };
+        return new ArrayList<>(Arrays.asList(course, topic));
     }
 
     private String findCourse(String input) {

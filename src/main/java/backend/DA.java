@@ -73,7 +73,7 @@ public class DA implements ActionQuery {
                 String determinedSkill = this.apiSkillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
                 for (SkillWrapper skill : this.skills.keySet()) {
                     if (skill.getClass().getSimpleName().equals(determinedSkill)) {
-                        String[] slots = this.skills.get(skill).findSlot(query);
+                        List<String> slots = this.skills.get(skill).findSlot(query);
                         skill.start(slots);
                         output.append(skill.getResponse());
                         break;

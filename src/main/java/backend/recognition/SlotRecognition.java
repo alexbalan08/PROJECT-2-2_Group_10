@@ -1,8 +1,10 @@
 package backend.recognition;
 
+import java.util.List;
+
 public interface SlotRecognition {
 
-    String[] findSlot(String input);
+    List<String> findSlot(String input);
 
     default String findFirst(String key, String input) {
         int index = input.indexOf(key);

@@ -26,7 +26,7 @@ public class SkillTemplate {
     public String findAnswer(String question) {
         for (String next : this.questions) {
             if (StringUtils.areSimilarSentences(question, next)) {
-                String[] slots = this.slotRecognition.findSlot(question + " / " + next);
+                List<String> slots = this.slotRecognition.findSlot(question + " / " + next);
                 String result = this.findAction(slots);
                 if (!Objects.equals(result, "")) {
                     return getAnswerTemplate(result, slots);
@@ -38,7 +38,7 @@ public class SkillTemplate {
         return "";
     }
 
-    private String findAction(String[] slots) {
+    private String findAction(List<String> slots) {
         for (String key : this.actions.keySet()) {
             int count = 0;
             for (String slot : slots) {
@@ -46,14 +46,14 @@ public class SkillTemplate {
                     count++;
                 }
             }
-            if (count == slots.length) {
+            if (count == slots.size()) {
                 return this.actions.get(key);
             }
         }
         return "";
     }
 
-    private String getAnswerTemplate(String result, String[] slots) {
+    private String getAnswerTemplate(String result, List<String> slots) {
         String template = this.answer.replace("<ANSWER>", result);
         for (String slot : slots) {
             template = replaceSlot(template, slot);
@@ -61,7 +61,7 @@ public class SkillTemplate {
         return template;
     }
 
-    private String getErrorTemplate(String[] slots) {
+    private String getErrorTemplate(List<String> slots) {
         String template = this.error;
         for (String slot : slots) {
             template = replaceSlot(template, slot);

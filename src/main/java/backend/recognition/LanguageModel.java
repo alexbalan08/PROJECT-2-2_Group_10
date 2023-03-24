@@ -43,19 +43,19 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
         con.setDoOutput(true);
 
         String jsonInputString = "{\"data\":[";
-        for (String sentence: sentences) {
+        for (String sentence : sentences) {
             jsonInputString += "{\"text\": \"" + sentence + "\"}, ";
         }
         jsonInputString = jsonInputString.strip().substring(0, jsonInputString.length() - 2);
         jsonInputString += "], \"execEndpoint\":\"/\"}";
 
         System.out.println("out:\n" + jsonInputString);
-        try(OutputStream os = con.getOutputStream()) {
+        try (OutputStream os = con.getOutputStream()) {
             byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
         StringBuilder response;
-        try(BufferedReader br = new BufferedReader(
+        try (BufferedReader br = new BufferedReader(
                 new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8))) {
             response = new StringBuilder();
             String responseLine;
@@ -117,7 +117,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
         return skillsExamples;
     }
 
-    public String[] findSlot(String query) {
+    public List<String> findSlot(String query) {
         String[] slots = null;
         String stringInQuotes = "";
         boolean areThereSingleQuotesInQuery = query.indexOf("'") != query.lastIndexOf("'") && (query.indexOf("'") != query.lastIndexOf("'") - 1);
@@ -134,7 +134,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             if (!stringInQuotes.isEmpty())
                 slots[index - 1] = stringInQuotes;
             else
-                return slots;
+                return List.of(slots);
         }
         switch (skill) {
             case "Canvas" -> {
@@ -174,7 +174,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
                     slots[1] = time;
             }
         }
-        return slots;
+        return List.of(slots);
     }
 
     public String botResponse(String[] slots) {
@@ -334,7 +334,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
         return closestSkillToQuery;
     }
 
-    public double averageCosimilarity (List<List<Double>> vectorizedSkillExamples, List<List<Double>> vectorizedQuery) {
+    public double averageCosimilarity(List<List<Double>> vectorizedSkillExamples, List<List<Double>> vectorizedQuery) {
         double sum = 0;
         for (List<Double> vectorizedSkillExample : vectorizedSkillExamples) {
             sum += cosineSimilarity(vectorizedSkillExample, vectorizedQuery.get(0));

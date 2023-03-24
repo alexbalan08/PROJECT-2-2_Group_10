@@ -3,6 +3,7 @@ package backend.recognition.api;
 import backend.recognition.SlotRecognition;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -41,12 +42,12 @@ public class SpotifySlotRecognition implements SlotRecognition {
     }
 
     @Override
-    public String[] findSlot(String input) {
+    public List<String> findSlot(String input) {
         String title = findTitle(input);
         if(!title.equals("")) {
-            return new String[] { findAction(input, title), title };
+            return new ArrayList<>(Arrays.asList(findAction(input, title), title));
         }
-        return new String[] { "info" };
+        return new ArrayList<>(List.of("info"));
     }
 
     private String findAction(String input, String title) {
