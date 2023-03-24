@@ -32,6 +32,7 @@ public class SkillEditor implements ActionQuery {
     public ArrayList<String> getLastSkillsAdded = new ArrayList<>();
     public ArrayList<String> deleteAllAddedSkills = new ArrayList<>();
     public ArrayList<String> deleteLastAddedSkill = new ArrayList<>();
+    public ArrayList<String> deleteSkill = new ArrayList<>();
     public ArrayList<String> editLastSkill = new ArrayList<>();
     public ArrayList<String> editSkill = new ArrayList<>();
 
@@ -78,7 +79,7 @@ public class SkillEditor implements ActionQuery {
 
         for (String removeOption : remove) {
             for (String skillsOption : skills) {
-                deleteAllAddedSkills.add(removeOption + " the " + skillsOption);
+                deleteAllAddedSkills.add(removeOption + " the" + skillsOption);
                 deleteAllAddedSkills.add(removeOption + skillsOption);
                 deleteAllAddedSkills.add(removeOption + " added skills");
                 deleteAllAddedSkills.add(removeOption + " the added skills");
@@ -121,6 +122,16 @@ public class SkillEditor implements ActionQuery {
             }
         }
 
+        for (String removeOption : remove) {
+            for (String theOption : the) {
+                deleteSkill.add(removeOption + theOption + " skill \\d+");
+                deleteSkill.add(removeOption + theOption + " skill \\d+ from the text file");
+                for (String addedOption : added) {
+                    deleteSkill.add(removeOption + theOption + " skill \\d+" + addedOption);
+                }
+            }
+        }
+
         for (String getShowOption : getShow) {
             for (String theOption : the) {
                 for (String add : added) {
@@ -157,6 +168,7 @@ public class SkillEditor implements ActionQuery {
         mapFunctions.put(getLastSkillAdded, SkillEditor.class.getMethod("getLastSkillAdded"));
         mapFunctions.put(deleteLastAddedSkill, SkillEditor.class.getMethod("deleteLastAddedSkill"));
         mapFunctions.put(deleteAllAddedSkills, SkillEditor.class.getMethod("deleteAllAddedSkills"));
+        mapFunctions.put(deleteSkill, SkillEditor.class.getMethod("deleteSkill"));
         mapFunctions.put(editLastSkill, SkillEditor.class.getMethod("editLastSkill"));
         mapFunctions.put(editSkill, SkillEditor.class.getMethod("editSkill"));
     }
@@ -206,7 +218,7 @@ public class SkillEditor implements ActionQuery {
     }
 
     // Adds the skill to the text file and returns a String saying if adding the skill to the SkillsTemplate was successful
-    public String addSkill() throws IOException {
+    public String addSkill() {
         try (FileWriter fw = new FileWriter("./src/main/java/backend/Skills/SkillsTemplate.txt", true)) {
             try (BufferedWriter bw = new BufferedWriter(fw)) {
                 try (PrintWriter pw = new PrintWriter(bw)) {
@@ -317,18 +329,32 @@ public class SkillEditor implements ActionQuery {
    }
 
    public String editSkill() throws IOException {
-        Matcher matcher = Pattern.compile("\\d+").matcher(query);
-        int skillNumber = 0;
-        if (matcher.find()) {
-            skillNumber = Integer.parseInt(matcher.group());
-        }
-        String[] skills = getSkills().split("\\r?\\n\\r?\\n");
-        String skill = skills[skillNumber - 1].strip();
-        //if (!lastSkillsAdded.contains(skill)) return "Sorry, you can not edit a skill you have not added yourself.";
-        HelloApplication.getInstance().addToTextArea("add the skill:\n" + skill);
-        writeToSkillsFile(getSkills().replaceAll("\\n\\n" + skill, "").replaceAll("\\n\\n\\n", "\n\n"));
-        return "You can now edit the skill.";
+        return modifySkill(true);
    }
+
+    public String deleteSkill() throws IOException {
+        return modifySkill(false);
+    }
+
+   public String modifySkill(boolean addToTextArea) throws IOException {
+       Matcher matcher = Pattern.compile("\\d+").matcher(query);
+       int skillNumber = 0;
+       if (matcher.find()) {
+           skillNumber = Integer.parseInt(matcher.group());
+       }
+       String[] skills = getSkills().split("\\r?\\n\\r?\\n");
+       if (skillNumber > skills.length)
+           return "Skill " + skillNumber + " does not exist.";
+       String skill = skills[skillNumber - 1].strip();
+       //if (!lastSkillsAdded.contains(skill)) return "Sorry, you can not edit a skill you have not added yourself.";
+       String newFileContent = getSkills().replace("\r\n\r\n" + skill, "");
+       writeToSkillsFile(newFileContent);
+       if (addToTextArea) {
+           HelloApplication.getInstance().addToTextArea("add the skill:\n" + skill);
+           return "You can now edit the skill.";
+       }
+       return "The skill was deleted successfully";
+    }
 
    public String editLastSkill() throws IOException {
        if(countMinSkillsAdded == 0) return "Sorry, you can not edit a skill you have not added yourself.";

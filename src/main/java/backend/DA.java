@@ -76,7 +76,7 @@ public class DA implements ActionQuery {
 
             if (output.isEmpty()) {
                 String determinedSkill = languageModel.determineSkill(query);
-                if (determinedSkill.isEmpty())
+                if (determinedSkill.equals("Random"))
                     return "Sorry, I'm not sure I understood ...";
                 for (SkillWrapper skill : this.skills.keySet()) {
                     if (skill.getClass().getSimpleName().equals(determinedSkill)) {
