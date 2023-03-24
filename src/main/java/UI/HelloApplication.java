@@ -115,6 +115,7 @@ public class HelloApplication extends Application {
             outputUserMessage(text);
             textArea.clear();
             outputBotMessage(assistant.startQuery(text));
+            setConversationPaneScrollHeight();
         }
     }
 
@@ -132,7 +133,6 @@ public class HelloApplication extends Application {
         conversationScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         conversationScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         conversationScrollPane.setFitToWidth(true);
-        conversationScrollPane.vvalueProperty().bind(conversation.heightProperty());
 
         VBox eyeAndConversation = new VBox(eyeIcon, conversationScrollPane, textAreaSend);
         eyeAndConversation.setMargin(eyeIcon, new Insets(borderMargin, borderMargin, borderMargin, borderMargin));
@@ -146,12 +146,14 @@ public class HelloApplication extends Application {
         int maxHeight = sceneSize - (borderMargin + eyeIconHeight + borderMargin + topMarginTextAreaSend + (int) (textArea.getMaxHeight()) + borderMargin);
         conversationScrollPane.setMinHeight(maxHeight);
         conversationScrollPane.setMaxHeight(maxHeight);
+        conversationScrollPane.layout();
+        conversationScrollPane.setVvalue(1.0);
     }
 
-    public HBox createTextAreaSend() throws NoSuchMethodException {
+    public HBox createTextAreaSend() {
         textArea.setStyle("-fx-text-fill: white; -fx-font: " + font);
         // Design for scroll bar in text area
-        textArea.skinProperty().addListener(new ChangeListener<Skin<?>>() {
+        textArea.skinProperty().addListener(new ChangeListener<>() {
             @Override
             public void changed(
                     ObservableValue<? extends Skin<?>> ov, Skin<?> t, Skin<?> t1) {
@@ -173,8 +175,12 @@ public class HelloApplication extends Application {
                 try { skillEditor = new SkillEditor();
                 } catch (NoSuchMethodException | IOException e) { throw new RuntimeException(e); }
                 skillEditor.setQuery(text);
-                if (skillEditor.isQueryToEditSkill() && skillEditor.entry.getValue().getName().equals("addSkill")) {
-                    if (textArea.getMaxHeight() <= (textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3)) {
+                if (skillEditor.isQueryToEditSkill() && (skillEditor.entry.getValue().getName().equals("addSkill") || skillEditor.entry.getValue().getName().equals("addActionToSkill"))) {
+                    if (skillEditor.entry.getValue().getName().equals("addSkill") && !text.contains("Question"))
+                        addToTextArea(text + skillEditor.addSkillTemplate());
+                    else if (skillEditor.entry.getValue().getName().equals("addActionToSkill") && !text.contains("Question"))
+                        addToTextArea(text + skillEditor.addActionToSkillTemplate());
+                    else if (textArea.getMaxHeight() <= (textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3)) {
                         textArea.setMaxHeight(textArea.getMaxHeight() + (textHeight + 3));
                         textArea.setMinHeight(textArea.getMinHeight() + (textHeight + 3));
                         setConversationPaneScrollHeight();

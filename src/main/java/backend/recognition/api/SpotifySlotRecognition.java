@@ -59,8 +59,8 @@ public class SpotifySlotRecognition implements SlotRecognition {
     }
 
     private String findTitle(String input) {
-        int indexOfFirstQM = input.indexOf("\"");
-        int indexOfLastQM = input.lastIndexOf("\"");
+        int indexOfFirstQM = input.indexOf("\'");
+        int indexOfLastQM = input.lastIndexOf("\'");
         return input.substring(indexOfFirstQM + 1, indexOfLastQM);
     }
 }

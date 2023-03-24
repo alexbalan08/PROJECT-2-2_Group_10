@@ -14,6 +14,9 @@ public class StringUtils {
                     break;
                 } else {
                     question = question.substring(0, firstIndex) + question.substring(secondIndex + 1);
+                    // Quick hack otherwise it crashes with "aaa bbb"
+                    if (input.lastIndexOf(" ") == -1)
+                        return false;
                     input = input.substring(0, firstIndex) + input.substring(input.lastIndexOf(" ")).trim();
                 }
             }

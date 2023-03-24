@@ -5,6 +5,7 @@
 
 .text-area .scroll-pane {
     -fx-background-color: transparent;
+    -fx-hbar-policy: never;
 }
 
 .text-area .scroll-pane .viewport{

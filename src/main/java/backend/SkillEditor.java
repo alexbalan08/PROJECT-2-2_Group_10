@@ -24,9 +24,7 @@ public class SkillEditor implements ActionQuery {
     boolean isQueryToEditSkill;
     public HashMap.Entry<ArrayList<String>, Method> entry;
     public ArrayList<String> addSkills = new ArrayList<>();
-    public ArrayList<String> addActions = new ArrayList<>();
-    public ArrayList<String> addAnswers = new ArrayList<>();
-    public ArrayList<String> addErrors = new ArrayList<>();
+    public ArrayList<String> addActionToSkill = new ArrayList<>();
     public ArrayList<String> showSkills = new ArrayList<>();
     public ArrayList<String> getLastSkill = new ArrayList<>();
     public ArrayList<String> getLastSkillAdded = new ArrayList<>();
@@ -75,6 +73,19 @@ public class SkillEditor implements ActionQuery {
         String[] addedSingular = {" that has been added", " that was added"};
         String[] addedPlural = {" that have been added", " that were added"};
         String[] skills = {" skills", " the skills", " all skills", " all the skills"};
+        String[] please = {" please", ""};
+        String[] canYou = {"can you", "could you", ""};
+
+        for (String theOption : the) {
+            for (String pleaseOption : please) {
+                for (String canYouOption : canYou) {
+                    addActionToSkill.add(canYouOption + pleaseOption + " add" + theOption + " action to" + theOption + " skill \\d+:");
+                    addActionToSkill.add(canYouOption + pleaseOption + " add" + theOption + " following action to" + theOption + " skill \\d+:");
+                    addActionToSkill.add(canYouOption + pleaseOption + " add to" + theOption + " skill \\d+" + theOption + " action:");
+                    addActionToSkill.add(canYouOption + pleaseOption + " add to" + theOption + " skill \\d+" + theOption + " following action:");
+                }
+            }
+        }
 
         for (String getShowOption : getShow) {
             for (String skillsOption : skills) {
@@ -156,10 +167,7 @@ public class SkillEditor implements ActionQuery {
         }
 
         mapFunctions.put(addSkills, SkillEditor.class.getMethod("addSkill"));
-        mapFunctions.put(addActions, SkillEditor.class.getMethod("addAction"));
-        mapFunctions.put(addAnswers, SkillEditor.class.getMethod("addAnswer"));
-        mapFunctions.put(addErrors, SkillEditor.class.getMethod("addError"));
-
+        mapFunctions.put(addActionToSkill, SkillEditor.class.getMethod("addActionToSkill"));
         mapFunctions.put(showSkills, SkillEditor.class.getMethod("getSkills"));
         mapFunctions.put(getLastSkill, SkillEditor.class.getMethod("getLastSkill"));
         mapFunctions.put(getLastSkillsAdded, SkillEditor.class.getMethod("getLastSkillsAdded"));
@@ -177,10 +185,21 @@ public class SkillEditor implements ActionQuery {
             ArrayList<String> commands = entry.getKey();
             for (String command : commands) {
                 if (command.contains("\\d+")) {
+                    String[] commandSeparated = command.split(Pattern.quote("\\d+"));
                     if (Pattern.compile(command).matcher(query).find()) {
-                        this.entry = entry;
-                        this.key = command;
-                        this.isQueryToEditSkill = true;
+                        boolean doesQueryMatchToCommand = true;
+                        // RECENTLY ADDED
+                        for (String commandPart : commandSeparated) {
+                            if (!query.contains(commandPart)) {
+                                doesQueryMatchToCommand = false;
+                                break;
+                            }
+                        }
+                        if (doesQueryMatchToCommand) {
+                            this.entry = entry;
+                            this.key = command;
+                            this.isQueryToEditSkill = true;
+                        }
                     }
                 } else {
                     if (query.toLowerCase().contains(command)) {
@@ -225,34 +244,41 @@ public class SkillEditor implements ActionQuery {
         return "";
     }
 
-    public String addAction() {
-        int index = query.indexOf(":");
-        if (index != -1) {
-            query = query.substring(index + 1);
-            return this.writeNextLine("Action : ", query, "");
-        }
-        return "I can't add an action with this input.";
+    public String addSkillTemplate() {
+        return "\nQuestion :  ?\nAction : \nAnswer : \nError : ";
     }
 
-    public String addAnswer() {
-        int index = query.indexOf(":");
-        if (index != -1) {
-            query = query.substring(index + 1);
-            return this.writeNextLine("Answer : ", query, "");
+    public String addActionToSkill() throws IOException {
+        Matcher matcher = Pattern.compile("\\d+").matcher(query);
+        int skillNumber = 0;
+        if (matcher.find()) {
+            skillNumber = Integer.parseInt(matcher.group());
         }
-        return "I can't add an answer with this input.";
+        String[] skills = getSkills().split("\\r?\\n\\r?\\n");
+        String skill = skills[skillNumber - 1].strip();
+        int lastIndexOfAction = skill.lastIndexOf("Action");
+        int newLineAfterActionIndex = skill.substring(lastIndexOfAction).indexOf("\n");
+        int indexToPrintAction = lastIndexOfAction + newLineAfterActionIndex + 1;
+        String command = query.substring(0, query.indexOf("\n"));
+        query = query.replace(command, "");
+
+        skills[skillNumber - 1] = skill.substring(0, indexToPrintAction - 1) + query + "\n" + skill.substring(indexToPrintAction);
+
+        String output = "";
+        for (String skillPart : skills) {
+            output += skillPart + "\r\n\r\n";
+        }
+        output = output.substring(0, output.length() - 1);
+
+        writeToSkillsFile(output.strip() + "\n");
+        return "The action has been added";
     }
 
-    public String addError() {
-        int index = query.indexOf(":");
-        if (index != -1) {
-            query = query.substring(index + 1);
-            return this.writeNextLine("Error : ", query, "\n");
-        }
-        return "I can't add an error with this input.";
+    public String addActionToSkillTemplate() {
+        return "\nAction : ";
     }
 
-    public String getSkills() throws IOException {
+   public String getSkills() throws IOException {
         return Files.readString(Path.of("./src/main/java/backend/Skills/SkillsTemplate.txt"));
     }
 
@@ -310,35 +336,17 @@ public class SkillEditor implements ActionQuery {
             skillNumber = Integer.parseInt(matcher.group());
         }
         String[] skills = getSkills().split("\\r?\\n\\r?\\n");
-        System.out.println("The separate skills are:");
-        for (String skill : skills) {
-            System.out.println("The skill:");
-            System.out.println(skill);
-        }
         String skill = skills[skillNumber - 1].strip();
-        if (!lastSkillsAdded.contains(skill)) return "Sorry, you can not edit a skill you have not added yourself.";
+        //if (!lastSkillsAdded.contains(skill)) return "Sorry, you can not edit a skill you have not added yourself.";
         HelloApplication.getInstance().addToTextArea("add the skill:\n" + skill);
         writeToSkillsFile(getSkills().replaceAll("\\n\\n" + skill, "").replaceAll("\\n\\n\\n", "\n\n"));
         return "You can now edit the skill.";
     }
 
-    public String editLastSkill() throws IOException {
-        if (countMinSkillsAdded == 0) return "Sorry, you can not edit a skill you have not added yourself.";
-        HelloApplication.getInstance().addToTextArea("add the skill:\n" + getLastSkillAdded().strip());
-        deleteLastAddedSkill();
-        return "You can now edit the skill.";
-    }
-
-    private String writeNextLine(String start, String value, String end) {
-        try (FileWriter fw = new FileWriter("./src/main/java/backend/Skills/SkillsTemplate.txt", true)) {
-            try (BufferedWriter bw = new BufferedWriter(fw)) {
-                try (PrintWriter pw = new PrintWriter(bw)) {
-                    pw.println(start + value + end);
-                    return "Line \"" + start + value + end + "\" added.";
-                }
-            }
-        } catch (IOException e) {
-            return "Line \"" + start + value + end + "\" not added.";
-        }
-    }
+   public String editLastSkill() throws IOException {
+       if(countMinSkillsAdded == 0) return "Sorry, you can not edit a skill you have not added yourself.";
+       HelloApplication.getInstance().addToTextArea("add the skill:\n" + getLastSkillAdded().strip());
+       deleteLastAddedSkill();
+       return "You can now edit the skill.";
+   }
 }

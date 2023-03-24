@@ -64,44 +64,48 @@ public class DA implements ActionQuery {
         // CHECK IF IT'S SKILL EDITOR
         // TODO (or did before calling this function)
 
-        // CHECK IF IT'S A SKILL ADDED BY THE USER (in a file)
-        output.append(this.userSkillRecognition.determineSkill(query));
+        try {
+            // CHECK IF IT'S A SKILL ADDED BY THE USER (in a file)
+            output.append(this.userSkillRecognition.determineSkill(query));
 
-        // THEN CHECK IF IT'S AN API SKILL WANTED
-        if (output.isEmpty()) {
-            String determinedSkill = this.apiSkillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
-            for (SkillWrapper skill : this.skills.keySet()) {
-                if (skill.getClass().getSimpleName().equals(determinedSkill)) {
-                    String[] slots = this.skills.get(skill).findSlot(query);
-                    skill.start(slots);
-                    output.append(skill.getResponse());
-                    break;
-                }
-            }
-        }
-
-        /*
-        if (output.isEmpty()) {
-            String determinedSkill = languageModel.determineSkill(query);
-            for (SkillWrapper skill : this.skills.keySet()) {
-                if (skill.getClass().getSimpleName().equals(determinedSkill)) {
-                    String[] slots = languageModel.findSlot(query);
-                    output.append(languageModel.botResponse(slots));
-                    if (slots != null) {
+            // THEN CHECK IF IT'S AN API SKILL WANTED
+            if (output.isEmpty()) {
+                String determinedSkill = this.apiSkillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
+                for (SkillWrapper skill : this.skills.keySet()) {
+                    if (skill.getClass().getSimpleName().equals(determinedSkill)) {
+                        String[] slots = this.skills.get(skill).findSlot(query);
                         skill.start(slots);
                         output.append(skill.getResponse());
+                        break;
                     }
-                    break;
                 }
             }
-        }
-        */
 
+            if (output.isEmpty()) {
+                String determinedSkill = languageModel.determineSkill(query);
+                if (determinedSkill.isEmpty())
+                    return "Sorry, I'm not sure I understood ...";
+                for (SkillWrapper skill : this.skills.keySet()) {
+                    if (skill.getClass().getSimpleName().equals(determinedSkill)) {
+                        String[] slots = languageModel.findSlot(query);
+                        output.append(languageModel.botResponse(slots));
+                        if (slots != null && slots[0] != null) {
+                            skill.start(slots);
+                            output.append(skill.getResponse());
+                        }
+                        break;
+                    }
+                }
+            }
 
-        if (!output.isEmpty()) {
-            return output.toString();
-        } else {
-            return "Sorry, I didn't understand you ...";
+            if (!output.isEmpty()) {
+                return output.toString();
+            } else {
+                return "Sorry, I didn't understand you ...";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Sorry, that confused me ...";
         }
 
     }
