@@ -19,13 +19,12 @@ public class DA implements ActionQuery {
 
     private final Map<SkillWrapper, SlotRecognition> skills;
     private final SkillRecognition apiSkillRecognition;
-    private final SkillRecognition userSkillRecognition;
+    private SkillRecognition userSkillRecognition;
     
     private final SkillTemplateReader fileReader;
     private final LanguageModel languageModel;
-
     private List<SkillTemplate> skillTemplates;
-    private SkillEditor skillEditor;
+    private final SkillEditor skillEditor;
 
     public DA() throws Exception {
         this.skills = new HashMap<>();
@@ -35,11 +34,12 @@ public class DA implements ActionQuery {
         this.addSkill(new Wikipedia(), new WikipediaSlotRecognition());
 
         this.fileReader = new SkillTemplateReader("./src/main/java/backend/Skills/SkillsTemplate.txt");
-        this.apiSkillRecognition = new ApiSkillRecognition();
-        this.userSkillRecognition = new UserSkillRecognition(fileReader.getSkillTemplates());
-        this.languageModel = new LanguageModel();
+        this.skillTemplates = fileReader.getSkillTemplates();
 
-        this.skillTemplates = null;
+        this.apiSkillRecognition = new ApiSkillRecognition();
+        this.userSkillRecognition = new UserSkillRecognition(this.skillTemplates);
+
+        this.languageModel = new LanguageModel();
         this.skillEditor = new SkillEditor();
     }
 
@@ -50,9 +50,12 @@ public class DA implements ActionQuery {
 
     public String startQuery(String query) throws IOException, InvocationTargetException, IllegalAccessException {
         this.skillEditor.setQuery(query);
-        if (this.skillEditor.isQueryToEditSkill())
-            return this.skillEditor.startQuery(query);
-        else {
+        if (this.skillEditor.isQueryToEditSkill()) {
+            String answer = this.skillEditor.startQuery(query);
+            this.skillTemplates = fileReader.getSkillTemplates();
+            this.userSkillRecognition = new UserSkillRecognition(this.skillTemplates);
+            return answer;
+        } else {
             query = query.replace("\n", "").trim();
             return doSkill(query);
         }
@@ -60,9 +63,6 @@ public class DA implements ActionQuery {
 
     private String doSkill(String query) throws IOException {
         StringBuilder output = new StringBuilder();
-
-        // CHECK IF IT'S SKILL EDITOR
-        // TODO (or did before calling this function)
 
         try {
             // CHECK IF IT'S A SKILL ADDED BY THE USER (in a file)

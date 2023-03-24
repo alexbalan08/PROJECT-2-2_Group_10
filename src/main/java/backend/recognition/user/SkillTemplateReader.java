@@ -12,10 +12,11 @@ public class SkillTemplateReader {
     public SkillTemplateReader(String url) {
         this.fileURL = url;
         this.skillTemplates = new ArrayList<>();
-        this.readFile();
     }
 
     public List<SkillTemplate> getSkillTemplates() {
+        this.skillTemplates.clear();
+        this.readFile();
         return this.skillTemplates;
     }
 

@@ -19,10 +19,10 @@ public class UserSlotRecognition implements SlotRecognition {
         int index = question.indexOf("<");
         while (index != -1) {
             String questionSlot = getSlotForQuestion(question);
-            question = question.substring(index + questionSlot.length() + 1);
+            question = question.substring(index + questionSlot.length() + 1).trim();
 
             String inputSlot = getSlotForInput(input, index, getNextWord(question));
-            input = input.substring(index + inputSlot.length() + 1);
+            input = input.substring(index + inputSlot.length() + 1).trim();
 
             result.add(inputSlot);
             index = question.indexOf("<");
