@@ -19,8 +19,19 @@ public class StringUtils {
                     input = input.substring(0, firstIndex) + input.substring(input.lastIndexOf(" ")).trim();
                 }
             } else {
-                String remain = question.substring(firstIndex);
-                input = input.substring(0, firstIndex) + remain.substring(remain.indexOf(" ") + 1);
+                String remain = question.substring(secondIndex + 1);
+                if (remain.contains(" ")) {
+                    remain = remain.substring(0, remain.indexOf(" "));
+                    var firstSub = input.substring(0, firstIndex);
+                    var secondSub = input.substring(secondIndex);
+                    if (secondSub.contains(remain)) {
+                        input = firstSub + secondSub.substring(secondSub.indexOf(remain));
+                    } else {
+                        return false;
+                    }
+                } else {
+                    input = input.substring(0, firstIndex) + remain;
+                }
             }
             question = question.substring(0, firstIndex) + question.substring(secondIndex + 1);
             firstIndex = question.indexOf("<");
