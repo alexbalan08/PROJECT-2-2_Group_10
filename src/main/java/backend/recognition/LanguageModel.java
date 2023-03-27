@@ -134,7 +134,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             if (!stringInQuotes.isEmpty())
                 slots[index - 1] = stringInQuotes;
             else
-                return List.of(slots);
+                return new ArrayList<>();
         }
         switch (skill) {
             case "Canvas" -> {
@@ -193,8 +193,8 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
         switch (skill) {
             case "Canvas" -> {
                 output = output.concat("find the slides where ");
-                if (slots != null && slots.get(0) != null && slots.get(1) != null) {
-                    output = output.concat("the topic '" + slots.get(0) + "' appears inside the given course.\n");
+                if (slots != null && slots.size() == 2 && !slots.get(0).equals("") && slots.get(0) != null && !slots.get(1).equals("") && slots.get(1) != null) {
+                    output = output.concat("the topic '" + slots.get(1) + "' appears inside the given course.\n");
                 } else {
                     output = output.concat("a topic appears inside a certain course. Can you write it in the following form to know the desired course and topic to look for:\n");
                     output = output.concat(questionsTemplate.get("Canvas"));
@@ -203,7 +203,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             }
             case "SpotifyPlay" -> {
                 output = output.concat("play ");
-                if (slots != null && slots.get(1) != null) {
+                if (slots != null && slots.size() == 2 && !slots.get(1).equals("") && slots.get(1) != null) {
                     output = output.concat("the song '" + slots.get(1) + "'.\n");
                 } else {
                     output = output.concat("a song.\nCan you write it in the form:\n");
@@ -220,7 +220,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             case "SpotifyInfo" -> output = output.concat("know about the music that is playing.\n");
             case "WeatherPlace" -> {
                 output = output.concat("know about the weather in ");
-                if (slots != null && slots.get(0) != null) {
+                if (slots != null && slots.size() == 1 && !slots.get(0).equals("") && slots.get(0) != null) {
                     output = output.concat(slots.get(0) + ".\n");
                 } else {
                     output = output.concat("a certain place.\nCan you write it in the form:\n");
@@ -240,7 +240,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             }
             case "Wikipedia" -> {
                 output = output.concat("know about ");
-                if (slots != null && slots.get(0) != null) {
+                if (slots != null && slots.size() == 1 && !slots.get(0).equals("") && slots.get(0) != null) {
                     output = output.concat("the topic '" + slots.get(0) + "' that can be found in Wikipedia.\n");
                 } else {
                     output = output.concat("a certain topic that can be found in Wikipedia.\nCan you write it in the form:\n");
@@ -354,13 +354,5 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
                 maxSimilarity = exampleQuerySimilarity;
         }
         return maxSimilarity;
-    }
-
-    public static void main(String[] args) throws IOException {
-        LanguageModel lm = new LanguageModel();
-        String[] spotifyPlaySkill = {"Can you play the song 'Mad World' ?", "Can you play 'Bohemian Rhapsody' ?"};
-        String query = "what weather does Maastricht have right now?";
-        //lm.determineSkill(query);
-        lm.encode(List.of(spotifyPlaySkill));
     }
 }

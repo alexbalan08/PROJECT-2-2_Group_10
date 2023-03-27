@@ -41,6 +41,18 @@ public class WeatherSlotRecognition implements SlotRecognition {
      * */
     @Override
     public List<String> findSlot(String input) {
+        boolean isItWeatherSkill = false;
+        String inputTemp = input.toLowerCase();
+        if (inputTemp.contains("can you tell me about the weather in "))
+            isItWeatherSkill = true;
+        else if (inputTemp.contains("what is the weather in "))
+            isItWeatherSkill = true;
+        else if (inputTemp.contains("how is the weather in "))
+            isItWeatherSkill = true;
+        else if (inputTemp.contains("what is the weather like in "))
+            isItWeatherSkill = true;
+        if(!isItWeatherSkill)
+            return null;
         String place = input.substring(input.indexOf("\'") + 1, input.lastIndexOf("\'"));
         if(Objects.equals(place, "")) {
             return new ArrayList<>(Arrays.asList(findFirst(" at ", input), findLast(" at ", input)));

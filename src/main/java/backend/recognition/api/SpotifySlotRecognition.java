@@ -12,7 +12,7 @@ import java.util.List;
  *
  * - What is the music at the moment ?
  * - What is the music playing ?
- * - What song does Spotify play?
+ * - What song does Spotify play ?
  * - Can you <ACTION> this song "<TITLE>" ?
  * - Can you <ACTION> "<TITLE>" ?
  * - <ACTION> "<TITLE>"
@@ -48,6 +48,18 @@ public class SpotifySlotRecognition implements SlotRecognition {
      * */
     @Override
     public List<String> findSlot(String input) {
+        boolean isItSpotifySkill = false;
+        String inputTemp = input.toLowerCase();
+        if (inputTemp.equals("what is the music at the moment ?"))
+            isItSpotifySkill = true;
+        else if (inputTemp.equals("what is the music playing ?"))
+            isItSpotifySkill = true;
+        else if (inputTemp.contains("what song does spotify play ?"))
+            isItSpotifySkill = true;
+        else if (inputTemp.contains("can you "))
+            isItSpotifySkill = true;
+        if(!isItSpotifySkill)
+            return null;
         String title = findTitle(input);
         if(!title.equals("")) {
             return new ArrayList<>(Arrays.asList(findAction(input, title), title));
@@ -65,6 +77,6 @@ public class SpotifySlotRecognition implements SlotRecognition {
     }
 
     private String findTitle(String input) {
-        return input.substring(input.indexOf("\"") + 1, input.lastIndexOf("\""));
+        return input.substring(input.indexOf("\'") + 1, input.lastIndexOf("\'"));
     }
 }

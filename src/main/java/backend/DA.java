@@ -86,6 +86,8 @@ public class DA implements ActionQuery {
                 for (SkillWrapper skill : this.skills.keySet()) {
                     if (skill.getClass().getSimpleName().equals(determinedSkill)) {
                         List<String> slots = this.skills.get(skill).findSlot(query);
+                        if (slots == null)
+                            break;
                         skill.start(slots);
                         output.append(skill.getResponse());
                         break;
@@ -101,10 +103,10 @@ public class DA implements ActionQuery {
                     if (skill.getClass().getSimpleName().equals(determinedSkill)) {
                         List<String> slots = languageModel.findSlot(query);
                         output.append(languageModel.botResponse(slots));
-                        if (slots != null && slots.get(0) != null) {
+                        if (slots != null && !slots.isEmpty() && !slots.get(0).equals("") && slots.get(0) != null) {
                             skill.start(slots);
                             output.append(skill.getResponse());
-                        }
+                        } else if (slots.isEmpty())
                         break;
                     }
                 }

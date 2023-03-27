@@ -51,6 +51,8 @@ public class TemplateSlotRecognition implements SlotRecognition {
      *
      * */
     private String getSlotForQuestion(String question) {
+        if (!question.contains("<") || !question.contains(">"))
+            return "";
         return question.substring(question.indexOf("<"), question.indexOf(">") + 1);
     }
 
