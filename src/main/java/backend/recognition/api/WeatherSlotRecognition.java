@@ -41,7 +41,7 @@ public class WeatherSlotRecognition implements SlotRecognition {
      * */
     @Override
     public List<String> findSlot(String input) {
-        String place = findFirst(" in ", input);
+        String place = input.substring(input.indexOf("\'") + 1, input.lastIndexOf("\'"));
         if(Objects.equals(place, "")) {
             return new ArrayList<>(Arrays.asList(findFirst(" at ", input), findLast(" at ", input)));
         } else {
