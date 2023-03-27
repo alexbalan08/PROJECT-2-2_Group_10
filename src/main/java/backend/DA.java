@@ -7,7 +7,7 @@ import backend.recognition.SlotRecognition;
 import backend.recognition.api.*;
 import backend.recognition.user.SkillTemplate;
 import backend.recognition.user.SkillTemplateReader;
-import backend.recognition.user.UserSkillRecognition;
+import backend.recognition.user.TemplateSkillRecognition;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -35,7 +35,7 @@ public class DA implements ActionQuery {
         this.skillTemplates = fileReader.getSkillTemplates();
 
         this.apiSkillRecognition = new ApiSkillRecognition();
-        this.userSkillRecognition = new UserSkillRecognition(this.skillTemplates);
+        this.userSkillRecognition = new TemplateSkillRecognition(this.skillTemplates);
 
         this.languageModel = new LanguageModel();
         this.skillEditor = new SkillEditor();
@@ -51,7 +51,7 @@ public class DA implements ActionQuery {
         if (this.skillEditor.isQueryToEditSkill()) {
             String answer = this.skillEditor.startQuery(query);
             this.skillTemplates = fileReader.getSkillTemplates();
-            this.userSkillRecognition = new UserSkillRecognition(this.skillTemplates);
+            this.userSkillRecognition = new TemplateSkillRecognition(this.skillTemplates);
             return answer;
         } else {
             query = query.replace("\n", "").trim();

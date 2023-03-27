@@ -11,9 +11,9 @@ import java.util.List;
  *
  * */
 
-public class UserSlotRecognition implements SlotRecognition {
+public class TemplateSlotRecognition implements SlotRecognition {
 
-    public UserSlotRecognition() { }
+    public TemplateSlotRecognition() { }
 
     /**
      *

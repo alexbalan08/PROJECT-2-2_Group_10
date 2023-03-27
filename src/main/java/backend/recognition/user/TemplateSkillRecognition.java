@@ -12,11 +12,11 @@ import java.util.Objects;
  *
  * */
 
-public class UserSkillRecognition implements SkillRecognition {
+public class TemplateSkillRecognition implements SkillRecognition {
 
     private final List<SkillTemplate> skillTemplates;
 
-    public UserSkillRecognition(List<SkillTemplate> list) {
+    public TemplateSkillRecognition(List<SkillTemplate> list) {
         this.skillTemplates = list;
     }
 
