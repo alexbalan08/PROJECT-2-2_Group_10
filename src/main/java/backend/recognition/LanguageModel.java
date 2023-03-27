@@ -134,7 +134,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
             if (!stringInQuotes.isEmpty())
                 slots[index - 1] = stringInQuotes;
             else
-                return List.of(slots);
+                return new ArrayList<>();
         }
         switch (skill) {
             case "Canvas" -> {

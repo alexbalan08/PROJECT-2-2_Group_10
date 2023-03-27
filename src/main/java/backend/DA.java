@@ -106,7 +106,7 @@ public class DA implements ActionQuery {
                         if (slots != null && !slots.isEmpty() && !slots.get(0).equals("") && slots.get(0) != null) {
                             skill.start(slots);
                             output.append(skill.getResponse());
-                        }
+                        } else if (slots.isEmpty())
                         break;
                     }
                 }
