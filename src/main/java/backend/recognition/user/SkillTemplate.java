@@ -31,7 +31,7 @@ public class SkillTemplate {
         this.actions = actions;
         this.answer = answer;
         this.error = error;
-        this.slotRecognition = new UserSlotRecognition();
+        this.slotRecognition = new TemplateSlotRecognition();
     }
 
     /**
