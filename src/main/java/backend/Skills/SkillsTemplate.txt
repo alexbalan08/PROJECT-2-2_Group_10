@@ -4,7 +4,7 @@ Question : What transport do I take to go to <CITY> ?
 Question : For going to <CITY> which transport should I take ?
 Question : How can I transport myself to <CITY> ?
 Action : Maastricht : bike
-Action : De Heague : bus
+Action : The Hague : bus
 Action : Amsterdam : train
 Action : Liege : car
 Action : Madrid : plane
@@ -37,5 +37,6 @@ Question : How do I get from <CITYA> to <CITYB> at <TIME> ?
 Action : Maastricht, Heerlen, 9 : by train
 Action : Maastricht, Heerlen, 11 : by car
 Action : Maastricht, Sittard, 11 : by bike
+Action : Maastricht, The Hague, 9 : by train
 Answer : You can go to <CITYB> from <CITYA>, at <TIME>, <ANSWER>.
 Error : I don't know how you can go to <CITYA> from <CITYB> at <TIME>
