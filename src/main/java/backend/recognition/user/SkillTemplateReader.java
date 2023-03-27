@@ -1,6 +1,7 @@
 package backend.recognition.user;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
@@ -36,7 +37,7 @@ public class SkillTemplateReader {
      *
      * */
     private void readFile() {
-        try (BufferedReader br = new BufferedReader(new java.io.FileReader(this.fileURL))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(this.fileURL))) {
             String line;
             List<String> questions = new ArrayList<>();
             Map<String, String> actions = new HashMap<>();
