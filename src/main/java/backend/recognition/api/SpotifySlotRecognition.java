@@ -67,7 +67,7 @@ public class SpotifySlotRecognition implements SlotRecognition {
         if(!title.equals("")) {
             return new ArrayList<>(Arrays.asList(findAction(input, title), title));
         }
-        return new ArrayList<>(List.of("info"));
+        return new ArrayList<>(List.of(input.substring(8)));
     }
 
     private String findAction(String input, String title) {

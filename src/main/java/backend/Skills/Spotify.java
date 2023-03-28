@@ -5,9 +5,13 @@ import com.google.gson.JsonParser;
 import org.apache.hc.core5.http.ParseException;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.exceptions.SpotifyWebApiException;
+import se.michaelthelin.spotify.model_objects.credentials.AuthorizationCodeCredentials;
+import se.michaelthelin.spotify.model_objects.miscellaneous.CurrentlyPlaying;
 import se.michaelthelin.spotify.model_objects.specification.ArtistSimplified;
 import se.michaelthelin.spotify.model_objects.specification.Paging;
 import se.michaelthelin.spotify.model_objects.specification.Track;
+import se.michaelthelin.spotify.requests.authorization.authorization_code.AuthorizationCodeRefreshRequest;
+import se.michaelthelin.spotify.requests.data.player.GetUsersCurrentlyPlayingTrackRequest;
 import se.michaelthelin.spotify.requests.data.player.PauseUsersPlaybackRequest;
 import se.michaelthelin.spotify.requests.data.player.StartResumeUsersPlaybackRequest;
 import se.michaelthelin.spotify.requests.data.search.simplified.SearchTracksRequest;
@@ -21,18 +25,28 @@ import java.util.concurrent.Future;
 
 // I = "18942c9e84434efbb15ad08c82cd1ee3";
 // S = "6e25829074f54e10a4811b5cb39e5622";
-// TODO: REFRESH TOKENS OR AVAILABILITY FOR ALL DEVICES
 // Getting tokens: https://alecchen.dev/spotify-refresh-token/
 
 public class Spotify extends SkillWrapper {
-
+    private static final String clientId = "18942c9e84434efbb15ad08c82cd1ee3";
+    private static final String clientSecret = "6e25829074f54e10a4811b5cb39e5622";
+    private static final String refreshToken = "AQCEzgHohbiM7wwGIcLsi3_dFJCXY3uxuF2Vt4HVyYJY6-7o0Q3ybS75NohwtVczVsfFJ3TcMLsndUMQnhc0sX7BXBc67FAPv1Ozj5HwPubcQqR_l5Q_aXn3ixLouwSsTuU";
+    public Spotify(){
+        AuthorizationCodeRefreshRequest codeRefresh = spotifyApi.authorizationCodeRefresh().build();
+        try {
+            AuthorizationCodeCredentials authorizationCodeCredentials = codeRefresh.execute();
+            spotifyApi.setAccessToken(authorizationCodeCredentials.getAccessToken());
+        } catch (IOException | SpotifyWebApiException | ParseException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
     private String actualMusic = "";
-    private final String accessToken = "BQBQMbLo3dh6MzESpW9UdmEujszrSJx8qlgxuK95uv-Rp5zCwP0B8F0Zctx3D997Y--j_CXRQjWNVWdKAcqYSyCR4DysoM0pjBJYz23m_8BJ6LoDl5Cx8l1j-ymXtezL6fsr3Aw9TOc2xz4aCttYY5-A0UV4SxyjGSccaakiuPeVzDq8Yicd6ZJIwlzE-Sz0ectK-FAmXjhnJhVVJITHyMkPd79S78T371VckJwgsVnpLXPnsHmCcEndppLid2VJJGx1haTfm1Td5CTYYv1z06WZejz0cuEzgp1LuC1EdsbtgYtmxDEJHskAM6jfswWZ4lU4WROg6Ole1gnCKmTGBg";
-    private final SpotifyApi spotifyApi = new SpotifyApi.Builder()/*.setRefreshToken("refreshtokenhere")*/.setAccessToken(this.accessToken).build();
+    private final SpotifyApi spotifyApi = new SpotifyApi.Builder().setClientId(clientId).setClientSecret(clientSecret).setRefreshToken(refreshToken).build();
 
     // slots : [<ACTION>, optional <TITLE>]
     @Override
     public void start(List<String> slots) {
+        System.out.println(slots.toString());
         String action = slots.get(0);
         if (slots.size() == 2) {
             this.actualMusic = slots.get(1);
@@ -99,7 +113,7 @@ public class Spotify extends SkillWrapper {
     private String resumeMusic() {
        try {
            startResumeUsersPlayback_Sync(spotifyApi.startResumeUsersPlayback().build());
-           return "The actual music is resumed";
+           return "The music is resumed";
        } catch (Exception e) {
            return "I can't resume the music. It's maybe because there isn't a music at the moment.";
        }
@@ -117,12 +131,17 @@ public class Spotify extends SkillWrapper {
 
     private String getActualMusicInformation() {
         try {
-            GetTrackRequest request = spotifyApi.getTrack(getSongID(this.actualMusic)).build();
-            Future<Track> future = request.executeAsync();
-            Track track = future.get();
-            return "The actual music is \"" + track.getName() + "\", by " + getFormattedArtists(track.getArtists()) + ".";
-        } catch (InterruptedException | ExecutionException e) {
-            return "There is no music at the moment.";
+            GetUsersCurrentlyPlayingTrackRequest request = spotifyApi.getUsersCurrentlyPlayingTrack().build();
+            CurrentlyPlaying currentlyPlaying = request.execute();
+            String artist = currentlyPlaying.getItem().toString();
+            int a = artist.indexOf("ArtistSimplified(name=");
+            int b = artist.indexOf(", external");
+
+
+            artist = artist.substring(a+22,b);
+            return "The music is \"" + currentlyPlaying.getItem().getName() + "\", by " + artist + ".";
+        } catch (IOException | SpotifyWebApiException | ParseException e) {
+            throw new RuntimeException(e);
         }
     }
 

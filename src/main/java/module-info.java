@@ -18,4 +18,5 @@ module UI {
 
     opens UI to javafx.fxml;
     exports UI;
+    exports backend.Skills;
 }
