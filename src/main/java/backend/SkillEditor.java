@@ -245,7 +245,7 @@ public class SkillEditor implements ActionQuery {
     }
 
     public String addSkillTemplate() {
-        return "\nQuestion :  ?\nAction : \nAnswer : \nError : ";
+        return "\nQuestion :  ?\nAction :  : \nAnswer : \nError : ";
     }
 
     public String addActionToSkill() throws IOException {
@@ -278,7 +278,7 @@ public class SkillEditor implements ActionQuery {
     }
 
     public String addActionToSkillTemplate() {
-        return "\nAction : ";
+        return "\nAction :  : ";
     }
 
     public String getSkills() throws IOException {
@@ -360,9 +360,10 @@ public class SkillEditor implements ActionQuery {
     }
 
    public String editLastSkill() throws IOException {
-       if(countMinSkillsAdded == 0) return "Sorry, you can not edit a skill you have not added yourself.";
-       HelloApplication.getInstance().addToTextArea("add the skill:\n" + getLastSkillAdded().strip());
-       deleteLastAddedSkill();
-       return "You can now edit the skill.";
+       //if(countMinSkillsAdded == 0) return "Sorry, you can not edit a skill you have not added yourself.";
+       String[] skills = getSkills().split("\\r?\\n\\r?\\n");
+       int lastSkill = skills.length;
+       this.query = "edit the skill " + lastSkill;
+       return modifySkill(true);
    }
 }
