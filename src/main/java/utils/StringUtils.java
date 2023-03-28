@@ -19,24 +19,47 @@ public class StringUtils {
                     input = input.substring(0, firstIndex) + input.substring(input.lastIndexOf(" ")).trim();
                 }
             } else {
-                String remain = question.substring(secondIndex + 1);
-                if (remain.contains(" ")) {
-                    remain = remain.substring(0, remain.indexOf(" "));
-                    var firstSub = input.substring(0, firstIndex);
-                    var secondSub = input.substring(secondIndex);
-                    if (secondSub.contains(remain)) {
-                        input = firstSub + secondSub.substring(secondSub.indexOf(remain));
-                    } else {
-                        return false;
-                    }
-                } else {
-                    input = input.substring(0, firstIndex) + remain;
+                input = removeSlot(input, question, firstIndex, secondIndex);
+                if(input.equals("")) {
+                    return false;
                 }
             }
             question = question.substring(0, firstIndex) + question.substring(secondIndex + 1);
             firstIndex = question.indexOf("<");
         }
         return checkLevenshteinDistance(input, question);
+    }
+
+    /**
+     *
+     * Removes a certain slot value from the input string based on its position within the question string.
+     *
+     * First extracts a substring from question starting from the character after the secondIndex position until the first space character encountered.
+     * This substring represents the slot value that needs to be removed from input.
+     *
+     * If the slot value is found within the input string after the firstIndex position, the method removes the slot
+     * value and any characters before it from the input string and returns the modified input.
+     *
+     * If the slot value is not found in the input string, the method returns an empty string.
+     *
+     * If the slot value is the last word in the question string, the method removes it from the input string and
+     * returns the modified input.
+     *
+     * */
+    private static String removeSlot(String input, String question, int firstIndex, int secondIndex) {
+        String remain = question.substring(secondIndex + 1);
+        if (remain.contains(" ")) {
+            String nextWord = remain.substring(0, remain.indexOf(" "));
+            String sub = input.substring(secondIndex);
+            if (sub.contains(nextWord)) {
+                input = input.substring(0, firstIndex) + sub.substring(sub.indexOf(nextWord));
+            } else {
+                return "";
+            }
+        } else {
+            input = input.substring(0, firstIndex) + remain;
+        }
+        return input;
     }
 
 
