@@ -48,9 +48,13 @@ public class SkillTemplateReader {
                 if(line.startsWith("Question :")) {
                     questions.add(removeKeyWord(line));
                 } else if(line.startsWith("Action :")) {
-                    String key = line.substring(line.indexOf(" ") + 2, line.lastIndexOf(":")).trim();
-                    String value = line.substring(line.lastIndexOf(":") + 2).trim();
-                    actions.put(key, value);
+                    if(line.contains(" ")) {
+                        String key = line.substring(line.indexOf(" ") + 2, line.lastIndexOf(":")).trim();
+                        String value = line.substring(line.lastIndexOf(":") + 2).trim();
+                        actions.put(key, value);
+                    } else {
+                        actions.put(line, "");
+                    }
                 } else if(line.startsWith("Answer :")) {
                     answer = removeKeyWord(line);
                 } else if(line.startsWith("Error :")) {
