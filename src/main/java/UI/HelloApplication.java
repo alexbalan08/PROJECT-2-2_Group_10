@@ -114,7 +114,9 @@ public class HelloApplication extends Application {
             String text = textArea.getText().strip();
             outputUserMessage(text);
             textArea.clear();
-            outputBotMessage(assistant.startQuery(text));
+            String output = assistant.startQuery(text);
+            System.out.println("OUTPUT: " + output);
+            outputBotMessage(output);
             setConversationPaneScrollHeight();
         }
     }

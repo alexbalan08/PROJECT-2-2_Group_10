@@ -57,16 +57,16 @@ public class SkillEditor implements ActionQuery {
         String[] addedSingular = {" that has been added", " that was added"};
         String[] addedPlural = {" that have been added", " that were added"};
         String[] skills = {" skills", " the skills", " all skills", " all the skills"};
-        String[] please = {" please", ""};
-        String[] canYou = {"can you", "could you", ""};
+        String[] please = {"please ", ""};
+        String[] canYou = {"can you ", "could you ", ""};
 
         for (String theOption : the) {
             for (String pleaseOption : please) {
                 for (String canYouOption : canYou) {
-                    addActionToSkill.add(canYouOption + pleaseOption + " add" + theOption + " action to" + theOption + " skill \\d+:");
-                    addActionToSkill.add(canYouOption + pleaseOption + " add" + theOption + " following action to" + theOption + " skill \\d+:");
-                    addActionToSkill.add(canYouOption + pleaseOption + " add to" + theOption + " skill \\d+" + theOption + " action:");
-                    addActionToSkill.add(canYouOption + pleaseOption + " add to" + theOption + " skill \\d+" + theOption + " following action:");
+                    addActionToSkill.add(canYouOption + pleaseOption + "add" + theOption + " action to" + theOption + " skill \\d+:");
+                    addActionToSkill.add(canYouOption + pleaseOption + "add" + theOption + " following action to" + theOption + " skill \\d+:");
+                    addActionToSkill.add(canYouOption + pleaseOption + "add to" + theOption + " skill \\d+" + theOption + " action:");
+                    addActionToSkill.add(canYouOption + pleaseOption + "add to" + theOption + " skill \\d+" + theOption + " following action:");
                 }
             }
         }
@@ -181,11 +181,11 @@ public class SkillEditor implements ActionQuery {
             for (String command : commands) {
                 if (command.contains("\\d+")) {
                     String[] commandSeparated = command.split(Pattern.quote("\\d+"));
-                    if (Pattern.compile(command).matcher(query).find()) {
+                    if (Pattern.compile(command).matcher(query.toLowerCase()).find()) {
                         boolean doesQueryMatchToCommand = true;
                         // RECENTLY ADDED
                         for (String commandPart : commandSeparated) {
-                            if (!query.contains(commandPart)) {
+                            if (!query.toLowerCase().contains(commandPart)) {
                                 doesQueryMatchToCommand = false;
                                 break;
                             }
@@ -249,6 +249,9 @@ public class SkillEditor implements ActionQuery {
     }
 
     public String addActionToSkill() throws IOException {
+        String action = query.substring(query.indexOf("\n"));
+        if (!action.contains("Action :") || action.indexOf(":") == action.lastIndexOf(":"))
+            return "Please write the action(s) with te right template";
         Matcher matcher = Pattern.compile("\\d+").matcher(query);
         int skillNumber = 0;
         if (matcher.find()) {

@@ -20,7 +20,6 @@ public class CUI {
             System.out.println("What can I help you with?");
             String query = input.nextLine();
             assistant.startQuery(query);
-
         }
     }
 

@@ -280,6 +280,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
                         Double doubleElement = Double.parseDouble(vectorElement);
                         vectorExample.add(doubleElement);
                     }
+                    System.out.println("DIMENSIONS: " + vectorExample.size());
                     vectorizedSkillExamples.add(vectorExample);
                 }
 

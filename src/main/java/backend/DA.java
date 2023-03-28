@@ -49,6 +49,7 @@ public class DA implements ActionQuery {
         this.skillEditor.setQuery(query);
         if (this.skillEditor.isQueryToEditSkill()) {
             String answer = this.skillEditor.startQuery(query);
+            System.out.println("THE ANSWER IS: " + answer);
             this.skillTemplates = fileReader.getSkillTemplates();
             this.userSkillRecognition = new TemplateSkillRecognition(this.skillTemplates);
             return answer;
