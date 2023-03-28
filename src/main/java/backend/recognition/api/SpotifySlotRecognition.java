@@ -15,7 +15,6 @@ import java.util.List;
  * - What song does Spotify play ?
  * - Can you <ACTION> this song "<TITLE>" ?
  * - Can you <ACTION> "<TITLE>" ?
- * - <ACTION> "<TITLE>"
  *
  * - <ACTION> : Play | Pause | Stop | Resume | Replay
  * - <TITLE> : title of one music, has to be between quotation marks
