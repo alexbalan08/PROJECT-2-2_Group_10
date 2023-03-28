@@ -14,11 +14,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class DA implements ActionQuery {
-
+    boolean hardCoded = true;
     private final Map<SkillWrapper, SlotRecognition> skills;
     private final SkillRecognition apiSkillRecognition;
     private SkillRecognition userSkillRecognition;
-    
     private final SkillTemplateReader fileReader;
     private final LanguageModel languageModel;
     private List<SkillTemplate> skillTemplates;
@@ -26,10 +25,10 @@ public class DA implements ActionQuery {
 
     public DA() throws Exception {
         this.skills = new HashMap<>();
-        this.addSkill(new Weather(), new WeatherSlotRecognition());
-        this.addSkill(new Spotify(), new SpotifySlotRecognition());
-        this.addSkill(new Canvas(), new CanvasSlotRecognition());
-        this.addSkill(new Wikipedia(), new WikipediaSlotRecognition());
+        this.addSkill(new Weather(), new WeatherSlotRecognition(hardCoded));
+        this.addSkill(new Spotify(), new SpotifySlotRecognition(hardCoded));
+        this.addSkill(new Canvas(), new CanvasSlotRecognition(hardCoded));
+        this.addSkill(new Wikipedia(), new WikipediaSlotRecognition(hardCoded));
 
         this.fileReader = new SkillTemplateReader("./src/main/java/backend/Skills/SkillsTemplate.txt");
         this.skillTemplates = fileReader.getSkillTemplates();

@@ -29,10 +29,11 @@ import java.util.List;
  * */
 
 public class SpotifySlotRecognition implements SlotRecognition {
-
+    boolean hardCoded;
     private final List<String> actions;
 
-    public SpotifySlotRecognition() {
+    public SpotifySlotRecognition(boolean hardCoded) {
+        this.hardCoded = hardCoded;
         this.actions = new ArrayList<>();
         this.actions.add("play");
         this.actions.add("stop");
@@ -48,18 +49,21 @@ public class SpotifySlotRecognition implements SlotRecognition {
      * */
     @Override
     public List<String> findSlot(String input) {
-        boolean isItSpotifySkill = false;
-        String inputTemp = input.toLowerCase();
-        if (inputTemp.equals("what is the music at the moment ?"))
-            isItSpotifySkill = true;
-        else if (inputTemp.equals("what is the music playing ?"))
-            isItSpotifySkill = true;
-        else if (inputTemp.contains("what song does spotify play ?"))
-            isItSpotifySkill = true;
-        else if (inputTemp.contains("can you "))
-            isItSpotifySkill = true;
-        if(!isItSpotifySkill)
-            return null;
+        if (hardCoded) {
+            boolean isItSpotifySkill = false;
+            String inputTemp = input.toLowerCase();
+            if (inputTemp.equals("what is the music at the moment ?"))
+                isItSpotifySkill = true;
+            else if (inputTemp.equals("what is the music playing ?"))
+                isItSpotifySkill = true;
+            else if (inputTemp.contains("what song does spotify play ?"))
+                isItSpotifySkill = true;
+            else if (inputTemp.contains("can you "))
+                isItSpotifySkill = true;
+            if(!isItSpotifySkill)
+                return null;
+        }
+
         String title = findTitle(input);
         if(!title.equals("")) {
             return new ArrayList<>(Arrays.asList(findAction(input, title), title));

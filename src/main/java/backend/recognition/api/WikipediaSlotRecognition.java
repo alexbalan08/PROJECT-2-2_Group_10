@@ -18,8 +18,11 @@ import java.util.Objects;
  * */
 
 public class WikipediaSlotRecognition implements SlotRecognition {
+    boolean hardCoded;
 
-    public WikipediaSlotRecognition() { }
+    public WikipediaSlotRecognition(boolean hardCoded) {
+        this.hardCoded = hardCoded;
+    }
 
     /**
      *
@@ -33,16 +36,19 @@ public class WikipediaSlotRecognition implements SlotRecognition {
      * */
     @Override
     public List<String> findSlot(String input) {
-        boolean isItWikipediaSkill = false;
-        String inputTemp = input.toLowerCase();
-        if (inputTemp.contains("can you explain to me what is "))
-            isItWikipediaSkill = true;
-        else if (inputTemp.contains("what is the definition of "))
-            isItWikipediaSkill = true;
-        else if (inputTemp.contains("what does wikipedia say about "))
-            isItWikipediaSkill = true;
-        if(!isItWikipediaSkill)
-            return null;
+        if (hardCoded) {
+            boolean isItWikipediaSkill = false;
+            String inputTemp = input.toLowerCase();
+            if (inputTemp.contains("can you explain to me what is "))
+                isItWikipediaSkill = true;
+            else if (inputTemp.contains("what is the definition of "))
+                isItWikipediaSkill = true;
+            else if (inputTemp.contains("what does wikipedia say about "))
+                isItWikipediaSkill = true;
+            if(!isItWikipediaSkill)
+                return null;
+        }
+
         String subject = findTheme(" about ", input);
         if(Objects.equals(subject, "")) {
             subject = findTheme(" of ", input);

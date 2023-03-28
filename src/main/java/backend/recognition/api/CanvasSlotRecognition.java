@@ -27,24 +27,29 @@ import java.util.Objects;
  * */
 
 public class CanvasSlotRecognition implements SlotRecognition {
+    boolean hardCoded;
     String[] courses = {"calculus", "neuroscience", "data structures", "databases", "discrete math", "graph theory", "human computer interaction", "ict", "computer science 1", "computer science 2", "data science", "algebra", "logic", "machine learning", "mathematical modelling", "numerical math", "probability and statistic", "project 1-1", "project 1-2", "project 2-1", "project 2-2", "reasoning", "statistical analysis", "software", "theoretical"};
 
-    public CanvasSlotRecognition() { }
+    public CanvasSlotRecognition(boolean hardCoded) {
+        this.hardCoded = hardCoded;
+    }
 
     @Override
     public List<String> findSlot(String input) {
-        boolean isItCanvasSkill = false;
-        String inputTemp = input.toLowerCase();
-        if (inputTemp.contains("in which lecture slides of") && inputTemp.contains("can you find '"))
-            isItCanvasSkill = true;
-        else if (inputTemp.contains("for the course") && inputTemp.contains("can you find '"))
-            isItCanvasSkill = true;
-        else if (inputTemp.contains("where can I find '") && inputTemp.contains("' in "))
-            isItCanvasSkill = true;
-        else if (inputTemp.contains("can you find '") && inputTemp.contains("' in the course "))
-            isItCanvasSkill = true;
-        if(!isItCanvasSkill)
-            return null;
+        if (hardCoded) {
+            boolean isItCanvasSkill = false;
+            String inputTemp = input.toLowerCase();
+            if (inputTemp.contains("in which lecture slides of") && inputTemp.contains("can you find '"))
+                isItCanvasSkill = true;
+            else if (inputTemp.contains("for the course") && inputTemp.contains("can you find '"))
+                isItCanvasSkill = true;
+            else if (inputTemp.contains("where can I find '") && inputTemp.contains("' in "))
+                isItCanvasSkill = true;
+            else if (inputTemp.contains("can you find '") && inputTemp.contains("' in the course "))
+                isItCanvasSkill = true;
+            if(!isItCanvasSkill)
+                return null;
+        }
         String course = findCourse(input);
         String topic = "";
         if (input.contains("\'"))
