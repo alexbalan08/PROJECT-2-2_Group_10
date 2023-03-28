@@ -5,7 +5,7 @@ Group 10
 
 Welcome to our assistant!
 
-How to run the code: 
+How to run the code: <br />
 -Extract the files from the Zip folder
 -Install Java FX library from: https://openjfx.io/ 
 -Avoid using VSC for running JAVA FX files
