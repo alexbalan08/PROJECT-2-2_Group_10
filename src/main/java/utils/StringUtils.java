@@ -50,7 +50,7 @@ public class StringUtils {
         String remain = question.substring(secondIndex + 1);
         if (remain.contains(" ")) {
             String nextWord = remain.substring(0, remain.indexOf(" "));
-            String sub = input.substring(secondIndex);
+            String sub = input.substring(firstIndex);
             if (sub.contains(nextWord)) {
                 input = input.substring(0, firstIndex) + sub.substring(sub.indexOf(nextWord));
             } else {
