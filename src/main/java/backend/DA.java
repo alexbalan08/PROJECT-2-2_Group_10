@@ -1,5 +1,6 @@
 package backend;
 
+import backend.CFG.CFG;
 import backend.Skills.*;
 import backend.recognition.LanguageModel;
 import backend.recognition.SkillRecognition;
@@ -38,6 +39,8 @@ public class DA implements ActionQuery {
 
         this.languageModel = new LanguageModel();
         this.skillEditor = new SkillEditor();
+
+        var cfg = new CFG();
     }
 
     private void addSkill(SkillWrapper skill, SlotRecognition slotRecognition) {
