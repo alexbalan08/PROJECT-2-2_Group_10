@@ -2,21 +2,23 @@ package backend.CFG;
 
 import backend.Skills.WeatherData.Sys;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CFG {
-    private Map<String, List<String>> rules;
+    private final Map<String, List<String>> rules;
+    private final List<String> sentences;
+    private final String questionToken;
 
     public CFG() {
         this.rules = new HashMap<>();
+        this.sentences = new ArrayList<>();
+        this.questionToken = " ?";
         this.addRules();
-        System.out.println(this.generateSentence2("S"));
+        this.generateSentence();
+        this.printSentences();
     }
 
-    /**
+    /* *
      *
      *         this.rules.put("S", List.of("NP VP"));
      *         this.rules.put("NP", Arrays.asList("DET NOUN PP", "NUM NOUN"));
@@ -27,55 +29,71 @@ public class CFG {
      *         this.rules.put("PREP", List.of("in"));
      *         this.rules.put("VERB", List.of("is"));
      *         this.rules.put("NUM", List.of("30"));
+     *
      * */
+
     private void addRules() {
         this.rules.put("S", List.of("ACTION"));
-        this.rules.put("ACTION", Arrays.asList("SCHEDULE", "LOCATION"));
+        this.rules.put("ACTION", Arrays.asList("LOCATION", "SCHEDULE"));
         this.rules.put("SCHEDULE", List.of("Which lectures are there <TIMEEXPRESSION>"));
         this.rules.put("TIMEEXPRESSION", List.of("on <DAY> at <TIME>", "at <TIME> on <DAY>"));
         this.rules.put("TIME", List.of("9", "12"));
         this.rules.put("DAY", List.of("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"));
         this.rules.put("LOCATION", List.of("Where is <ROOM>",  "How do <PRO> get to <ROOM>"));
         this.rules.put("ROOM", List.of("DeepSpace", "SpaceBox"));
-        this.rules.put("PRO", List.of("I", "You", "He", "She"));
+        this.rules.put("PRO", List.of("I", "you", "he", "she"));
+    }
+
+    private void printSentences() {
+        System.out.println();
+        System.out.println("CFG :");
+        for(String sentence : this.sentences) {
+            System.out.println(sentence);
+        }
+        System.out.println();
     }
 
     public void generateSentence() {
-        StringBuilder sentence = new StringBuilder();
-        for(String entry : this.rules.get("S")) {
-            sentence.append("--- ").append(replace(entry)).append(" \n");
+        for(String entry : this.rules.get("ACTION")) {
+            replace(entry);
         }
-        System.out.println("CFG :");
-        System.out.println(sentence);
     }
 
-    private String replace(String entry) {
-        StringBuilder sentence = new StringBuilder();
-        // CHECK IF <> in ?
-        if(entry.contains("<")) {
-
-        } else {
-            // SPLIT ON SPACE
-            for(String split : entry.split(" ")) {
-                if(this.rules.containsKey(split)) {
-                    List<String> nextEntry = this.rules.get(split);
-                    for(String next : nextEntry) {
-                        sentence.append("(").append(this.replace(next)).append(")").append(" ");
-                    }
-                } else {
-                    sentence.append(" ").append(split);
-                }
+    private void replace(String entry) {
+        if(this.rules.containsKey(entry)) {
+            for(String next : this.rules.get(entry)) {
+                replace(next);
             }
         }
-        return sentence.toString();
+        replaceRule(entry);
+    }
+
+    private void replaceRule(String entry) {
+        while (entry.contains("<")) {
+            entry = replaceChevron(entry);
+        }
     }
 
     private String replaceChevron(String entry) {
         String chevron = entry.substring(entry.indexOf("<") + 1, entry.indexOf(">"));
         if(this.rules.containsKey(chevron)) {
-            return entry.substring(0, entry.indexOf("<")) + this.rules.get(chevron).get(0) + entry.substring(entry.indexOf(">") + 1);
+            for(String next : this.rules.get(chevron)) {
+                String temp = entry.substring(0, entry.indexOf("<")) + next + entry.substring(entry.indexOf(">") + 1);
+                if(temp.contains("<")) {
+                    replaceChevron(temp);
+                } else {
+                    addIfNotExist(temp.trim() + this.questionToken);
+                }
+            }
+            entry = entry.substring(0, entry.indexOf("<")) + entry.substring(entry.indexOf(">") + 1);
         }
         return entry;
+    }
+
+    private void addIfNotExist(String sentence) {
+        if(!this.sentences.contains(sentence)) {
+            this.sentences.add(sentence);
+        }
     }
 
     private String generateSentence2(String symbol) {
@@ -93,9 +111,17 @@ public class CFG {
         }
 
         if(result.toString().contains("<")) {
-            result = new StringBuilder(replaceChevron(result.toString()));
+            result = new StringBuilder(replaceChevron2(result.toString()));
         }
 
         return result.toString().trim();
+    }
+
+    private String replaceChevron2(String entry) {
+        String chevron = entry.substring(entry.indexOf("<") + 1, entry.indexOf(">"));
+        if(this.rules.containsKey(chevron)) {
+            return entry.substring(0, entry.indexOf("<")) + this.rules.get(chevron).get(0) + entry.substring(entry.indexOf(">") + 1);
+        }
+        return entry;
     }
 }
