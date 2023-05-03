@@ -77,7 +77,7 @@ public class Canvas extends SkillWrapper {
             String moduleName = module.get("name").asText().replace(":", "");
             File moduleFolder = new File(courseFolder.getPath() + "/" + moduleName);
             moduleFolder.mkdir();
-            System.out.println("The module directory \'" + module.get("name").asText() + "\' has been created? " + moduleFolder.exists());
+            System.out.println("The module directory \'" + module.get("name").asText() + "\' has been created? " + moduleFolder.exists()); // HELP
             String courseModuleItems = response(module.get("items_url").asText() + accessToken);
             JsonNode rootModuleItems = om.readTree(courseModuleItems);
 

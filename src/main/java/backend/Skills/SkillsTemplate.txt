@@ -41,8 +41,8 @@ Action : Maastricht, The Hague, 9 : by train
 Answer : You can go to <CITYB> from <CITYA>, at <TIME>, <ANSWER>.
 Error : I don't know how you can go to <CITYA> from <CITYB> at <TIME>
 
-Question : What can i do with <INGREDIANT1> and <INGREDIANT2> ?
-Action : banana, eggs : Banana bread
-Action : salt, eggs : Omelette 
-Answer : You can have <ANSWER> with <INGREDIANT1> and <INGREDIANT2>.
-Error : I don't know with <INGREDIANT1> and <INGREDIANT2>
+Question : What can I make out of <INGREDIENT1> and <INGREDIENT2> ?
+Action : Banana, Eggs : Banana bread
+Action : Eggs, Salt : Omelette
+Answer : You can have <ANSWER> with <INGREDIENT1> and <INGREDIENT2>.
+Error : I don't know with <INGREDIENT1> and <INGREDIENT2>

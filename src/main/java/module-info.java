@@ -12,7 +12,7 @@ module UI {
     requires com.fasterxml.jackson.databind;
     requires org.apache.pdfbox;
     requires org.json;
-   
+    requires opencv;
 
     exports backend.Skills.WeatherData;
 
