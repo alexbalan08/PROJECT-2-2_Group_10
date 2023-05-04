@@ -48,7 +48,7 @@ public class CFG {
     }
 
     private String replaceChevron(String entry) {
-        String chevron = entry.substring(entry.indexOf("<") + 1, entry.indexOf(">"));
+        String chevron = entry.substring(entry.indexOf("<"), entry.indexOf(">") + 1);
         if(this.rules.containsKey(chevron)) {
             for(String next : this.rules.get(chevron)) {
                 String temp = entry.substring(0, entry.indexOf("<")) + next + entry.substring(entry.indexOf(">") + 1);

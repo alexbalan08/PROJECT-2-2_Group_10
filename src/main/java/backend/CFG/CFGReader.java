@@ -24,14 +24,24 @@ public class CFGReader {
                 if(line.startsWith("Rule")) {
                     line = line.substring(line.indexOf(" ") + 1);
                     String key = line.substring(0, line.indexOf(">") + 1);
-                    String value = line.substring(line.indexOf(">") + 2);
+                    String value = line.substring(line.indexOf(">") + 1);
                     List<String> values = new ArrayList<>(Arrays.asList(value.split("\\|")));
                     this.rules.put(key, values);
                 } else if(line.startsWith("Action")) {
                     line = line.substring(line.indexOf(" ") + 1);
                     String key = line.substring(0, line.indexOf(">") + 1);
-                    String value = line.substring(line.indexOf("*") + 1, line.lastIndexOf("*") - 1);
+                    String value = line.substring(line.indexOf("*") + 2, line.lastIndexOf("*") - 1);
                     String answer = line.substring(line.lastIndexOf("*") + 2);
+                    if(getValues(value).equals("")) {
+                        List<String> pol = this.rules.get(value);
+                        for(String p : pol) {
+                            if(!this.actions.get(key).containsKey(p)) {
+                                value += " " + p;
+                                answer = p + " " + answer;
+
+                            }
+                        }
+                    }
                     this.addInSecondMap(key, getValues(value), answer);
                 }
             }
