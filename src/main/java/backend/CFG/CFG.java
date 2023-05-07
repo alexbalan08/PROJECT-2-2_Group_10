@@ -55,7 +55,7 @@ public class CFG {
                 if(temp.contains("<")) {
                     replaceChevron(temp);
                 } else {
-                    addIfNotExist(temp.trim() + this.questionToken);
+                    addIfNotExist(temp);
                 }
             }
             entry = entry.substring(0, entry.indexOf("<")) + entry.substring(entry.indexOf(">") + 1);
@@ -64,6 +64,7 @@ public class CFG {
     }
 
     private void addIfNotExist(String sentence) {
+        sentence = sentence.trim().replace("  ", " ").replace("  ", " ") + this.questionToken;
         if(!this.sentences.contains(sentence)) {
             this.sentences.add(sentence);
         }
