@@ -1,18 +1,17 @@
 package backend.CFG;
-
-import backend.Skills.WeatherData.Sys;
-
 import java.util.*;
 
 public class CFG {
     private final Map<String, List<String>> rules;
-    private final List<String> sentences;
+    private final Map<String, List<String>> sentences;
     private final String questionToken;
+    private String type;
 
     public CFG(Map<String, List<String>> rules) {
         this.rules = rules;
-        this.sentences = new ArrayList<>();
+        this.sentences = new HashMap<>();
         this.questionToken = " ?";
+        this.type = "";
         this.generateSentence();
         this.printSentences();
     }
@@ -20,14 +19,19 @@ public class CFG {
     private void printSentences() {
         System.out.println();
         System.out.println("CFG :");
-        for(String sentence : this.sentences) {
-            System.out.println(sentence);
+        for(var entry : this.sentences.entrySet()) {
+            System.out.println(entry.getKey() + " : ");
+            for(String next : entry.getValue()) {
+                System.out.println("--- " + next);
+            }
+            System.out.println();
         }
         System.out.println();
     }
 
     public void generateSentence() {
         for(String entry : this.rules.get("<ACTION>")) {
+            this.type = entry.trim();
             replace(entry);
         }
     }
@@ -65,8 +69,13 @@ public class CFG {
 
     private void addIfNotExist(String sentence) {
         sentence = sentence.trim().replace("  ", " ").replace("  ", " ") + this.questionToken;
-        if(!this.sentences.contains(sentence)) {
-            this.sentences.add(sentence);
+        if(this.sentences.containsKey(this.type)) {
+            List<String> second = this.sentences.get(this.type);
+            second.add(sentence);
+        } else {
+            List<String> second = new ArrayList<>();
+            second.add(sentence);
+            this.sentences.put(this.type, second);
         }
     }
 }
