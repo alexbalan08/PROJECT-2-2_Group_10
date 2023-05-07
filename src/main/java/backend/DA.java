@@ -42,7 +42,6 @@ public class DA implements ActionQuery {
         this.skillEditor = new SkillEditor();
 
         var cfgReader = new CFGReader("./src/main/java/backend/CFG/CFG.txt");
-        cfgReader.readFile();
         var cfg = new CFG(cfgReader.getRules());
     }
 

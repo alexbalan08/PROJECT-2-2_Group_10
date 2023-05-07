@@ -69,33 +69,4 @@ public class CFG {
             this.sentences.add(sentence);
         }
     }
-
-    private String generateSentence2(String symbol) {
-        if (!this.rules.containsKey(symbol)) {
-            return symbol;
-        }
-
-        List<String> productionOptions = this.rules.get(symbol);
-        String chosenProduction = productionOptions.get(0);
-        String[] symbols = chosenProduction.split(" ");
-
-        StringBuilder result = new StringBuilder();
-        for (String s : symbols) {
-            result.append(generateSentence2(s)).append(" ");
-        }
-
-        if(result.toString().contains("<")) {
-            result = new StringBuilder(replaceChevron2(result.toString()));
-        }
-
-        return result.toString().trim();
-    }
-
-    private String replaceChevron2(String entry) {
-        String chevron = entry.substring(entry.indexOf("<") + 1, entry.indexOf(">"));
-        if(this.rules.containsKey(chevron)) {
-            return entry.substring(0, entry.indexOf("<")) + this.rules.get(chevron).get(0) + entry.substring(entry.indexOf(">") + 1);
-        }
-        return entry;
-    }
 }

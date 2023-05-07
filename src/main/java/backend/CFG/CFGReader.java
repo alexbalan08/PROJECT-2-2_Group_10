@@ -15,9 +15,10 @@ public class CFGReader {
         this.fileURL = url;
         this.rules = new HashMap<>();
         this.actions = new HashMap<>();
+        this.readFile();
     }
 
-    public void readFile() {
+    private void readFile() {
         try (BufferedReader br = new BufferedReader(new FileReader(this.fileURL))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -52,6 +53,10 @@ public class CFGReader {
 
     public Map<String, List<String>> getRules() {
         return this.rules;
+    }
+
+    public Map<String, Map<String, String>> getActions() {
+        return this.actions;
     }
 
     private void addInSecondMap(String key, String value, String answer) {
