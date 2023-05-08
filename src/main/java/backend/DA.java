@@ -24,6 +24,7 @@ public class DA implements ActionQuery {
     private final LanguageModel languageModel;
     private List<SkillTemplate> skillTemplates;
     private final SkillEditor skillEditor;
+    private final CFG cfg;
 
     public DA() throws Exception {
         this.skills = new HashMap<>();
@@ -41,12 +42,7 @@ public class DA implements ActionQuery {
         this.languageModel = new LanguageModel();
         this.skillEditor = new SkillEditor();
 
-        var cfg = new CFG("./src/main/java/backend/CFG/CFG.txt");
-        String question = "on Monday at 9 which lecture are there ?";
-        // String question = "Where is TestBox located ?";
-        // String question = "What's the temperature in Dubai ?";
-        String answer = cfg.getAnswer(question.toLowerCase());
-        System.out.println("ANSWER : " + answer);
+        this.cfg = new CFG("./src/main/java/backend/CFG/CFG.txt");
     }
 
     private void addSkill(SkillWrapper skill, SlotRecognition slotRecognition) {
@@ -83,6 +79,8 @@ public class DA implements ActionQuery {
      *
      * */
     private String doSkill(String query) throws IOException {
+        return this.cfg.getAnswer(query.toLowerCase());
+        /*
         StringBuilder output = new StringBuilder();
 
         try {
@@ -130,6 +128,6 @@ public class DA implements ActionQuery {
             e.printStackTrace();
             return "Sorry, that confused me ...";
         }
-
+        */
     }
 }
