@@ -41,8 +41,12 @@ public class DA implements ActionQuery {
         this.languageModel = new LanguageModel();
         this.skillEditor = new SkillEditor();
 
-        var cfgReader = new CFGReader("./src/main/java/backend/CFG/CFG.txt");
-        var cfg = new CFG(cfgReader.getRules());
+        var cfg = new CFG("./src/main/java/backend/CFG/CFG.txt");
+        String question = "on Monday at 9 which lecture are there ?";
+        // String question = "Where is TestBox located ?";
+        // String question = "What's the temperature in Dubai ?";
+        String answer = cfg.getAnswer(question.toLowerCase());
+        System.out.println("ANSWER : " + answer);
     }
 
     private void addSkill(SkillWrapper skill, SlotRecognition slotRecognition) {

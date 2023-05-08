@@ -6,10 +6,11 @@ Rule <TIME> 9 | 12
 Rule <DAY> Monday | Tuesday | Wednesday | Thursday | Friday | Saturday | Sunday
 Rule <LOCATION> Where is <ROOM> | How do <PRO> get to <ROOM> | Where is <ROOM> located
 Rule <PRO> I | you | he | she
-Rule <ROOM> DeepSpace| SpaceBox
+Rule <ROOM> DeepSpace | SpaceBox | TestBox
 
-Action <SCHEDULE> * <DAY> Saturday * There are no lectures on Saturday
-Action <SCHEDULE> * <DAY> Monday <TIME> 9 * We start the week with math
-Action <SCHEDULE> * <DAY> Monday <TIME> 12 * On Monday noon we have Theoretical Computer
-Action <LOCATION> * <ROOM> DeepSpace * DeepSpace is the first room after the entrance
-Action <LOCATION> * <ROOM> * is in the first floor
+Action <SCHEDULE> * <DAY> Saturday * There are no lectures on Saturday.
+Action <SCHEDULE> * <DAY> Monday <TIME> 9 * We start the week with math.
+Action <SCHEDULE> * <DAY> Monday <TIME> 12 * On Monday noon we have Theoretical Computer.
+Action <LOCATION> * <ROOM> DeepSpace * DeepSpace is the first room after the entrance.
+Action <LOCATION> * <ROOM> * is in the first floor.
+Action <LOCATION> *  * I don't know this room.

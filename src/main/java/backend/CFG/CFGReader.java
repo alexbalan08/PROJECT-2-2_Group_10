@@ -18,39 +18,6 @@ public class CFGReader {
         this.readFile();
     }
 
-    private void readFile() {
-        try (BufferedReader br = new BufferedReader(new FileReader(this.fileURL))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if(line.startsWith("Rule")) {
-                    line = line.substring(line.indexOf(" ") + 1);
-                    String key = line.substring(0, line.indexOf(">") + 1);
-                    String value = line.substring(line.indexOf(">") + 1);
-                    List<String> values = new ArrayList<>(Arrays.asList(value.split("\\|")));
-                    this.rules.put(key, values);
-                } else if(line.startsWith("Action")) {
-                    line = line.substring(line.indexOf(" ") + 1);
-                    String key = line.substring(0, line.indexOf(">") + 1);
-                    String value = line.substring(line.indexOf("*") + 2, line.lastIndexOf("*") - 1);
-                    String answer = line.substring(line.lastIndexOf("*") + 2);
-                    if(getValues(value).equals("")) {
-                        List<String> pol = this.rules.get(value);
-                        for(String p : pol) {
-                            if(!this.actions.get(key).containsKey(p)) {
-                                value += " " + p;
-                                answer = p + " " + answer;
-
-                            }
-                        }
-                    }
-                    this.addInSecondMap(key, getValues(value), answer);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Error with the file : " + this.fileURL);
-        }
-    }
-
     public Map<String, List<String>> getRules() {
         return this.rules;
     }
@@ -59,18 +26,55 @@ public class CFGReader {
         return this.actions;
     }
 
-    private void addInSecondMap(String key, String value, String answer) {
-        if(this.actions.containsKey(key)) {
-            Map<String, String> second = this.actions.get(key);
-            second.put(value, answer);
-        } else {
-            Map<String, String> second = new HashMap<>();
-            second.put(value, answer);
-            this.actions.put(key, second);
+    private void readFile() {
+        try (BufferedReader br = new BufferedReader(new FileReader(this.fileURL))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if(line.startsWith("Rule")) {
+                    this.addARule(line.substring(line.indexOf(" ") + 1));
+                } else if(line.startsWith("Action")) {
+                    this.addAnAction(line.substring(line.indexOf(" ") + 1));
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error with the file : " + this.fileURL);
         }
     }
 
-    private String getValues(String value) {
+    /*** RULES ***/
+    private void addARule(String line) {
+        String key = line.substring(0, line.indexOf(">") + 1);
+        String value = line.substring(line.indexOf(">") + 1);
+        List<String> values = new ArrayList<>(Arrays.asList(value.split("\\|")));
+        this.rules.put(key, values);
+    }
+
+    /*** ACTIONS ***/
+    private void addAnAction(String line) {
+        String key = line.substring(0, line.indexOf(">") + 1);
+        String value = line.substring(line.indexOf("*") + 2, line.lastIndexOf("*") - 1);
+        String answer = line.substring(line.lastIndexOf("*") + 2);
+        String secondKey = getSecondKeyFromValue(value);
+        if(secondKey.equals("")) {
+            List<String> pol = this.rules.get(value);
+            if(pol == null) {
+                this.addInSecondMap(key, "*KEY*", answer);
+            } else {
+                for(String p : pol) {
+                    if(!this.actions.get(key.trim()).containsKey(p.trim())) {
+                        // value += (" " + p).trim();
+                        secondKey = p.trim();
+                        String temp = (p.trim() + " " + answer.trim()).trim();
+                        this.addInSecondMap(key, secondKey, temp);
+                    }
+                }
+            }
+        } else {
+            this.addInSecondMap(key, secondKey, answer);
+        }
+    }
+
+    private String getSecondKeyFromValue(String value) {
         int index = value.indexOf("<");
         String temp = "";
         while (index != -1) {
@@ -82,6 +86,18 @@ public class CFGReader {
                 temp += value;
             }
         }
-        return temp;
+        return temp.trim();
+    }
+
+    private void addInSecondMap(String key, String secondKey, String answer) {
+        secondKey = secondKey.toLowerCase();
+        if(this.actions.containsKey(key)) {
+            Map<String, String> second = this.actions.get(key);
+            second.put(secondKey, answer);
+        } else {
+            Map<String, String> second = new HashMap<>();
+            second.put(secondKey, answer);
+            this.actions.put(key, second);
+        }
     }
 }
