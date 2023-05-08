@@ -64,17 +64,17 @@ public class Sentences {
 
     private void replaceRule(String entry) {
         while (entry.contains("<")) {
-            entry = replaceChevron(entry);
+            entry = replaceArrows(entry);
         }
     }
 
-    private String replaceChevron(String entry) {
+    private String replaceArrows(String entry) {
         String chevron = entry.substring(entry.indexOf("<"), entry.indexOf(">") + 1);
         if(this.rules.containsKey(chevron)) {
             for(String next : this.rules.get(chevron)) {
                 String temp = entry.substring(0, entry.indexOf("<")) + next + entry.substring(entry.indexOf(">") + 1);
                 if(temp.contains("<")) {
-                    replaceChevron(temp);
+                    replaceArrows(temp);
                 } else {
                     addIfNotExist(temp);
                 }
