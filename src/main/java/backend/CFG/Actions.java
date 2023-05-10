@@ -17,8 +17,11 @@ public class Actions {
                     return entry.getValue().trim();
                 }
             }
+            if(secondMap.containsKey("*key*")) {
+               return secondMap.get("*key*");
+            }
         }
-        return "I dont' know.";
+        return "I don't know.";
     }
 
     private boolean keysElementsAreInInput(String key, String input) {

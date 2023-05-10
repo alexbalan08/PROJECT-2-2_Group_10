@@ -19,13 +19,24 @@ public class Sentences {
         this.questionToken = " ?";
         this.type = "";
         this.generateSentence();
-        // this.printSentences();
+        this.printSentences();
     }
 
     public String findSentence(String input) {
         for(var entry : this.sentences.entrySet()) {
             for(String next : entry.getValue()) {
-                if(StringUtils.areSimilarSentences(input, next)) {
+                if(StringUtils.areSimilarSentences(input, next, 1)) {
+                    return entry.getKey();
+                }
+            }
+        }
+        return this.findSentenceWithFewerPercentage(input);
+    }
+
+    private String findSentenceWithFewerPercentage(String input) {
+        for(var entry : this.sentences.entrySet()) {
+            for(String next : entry.getValue()) {
+                if(StringUtils.areSimilarSentences(input, next, 0.5)) {
                     return entry.getKey();
                 }
             }

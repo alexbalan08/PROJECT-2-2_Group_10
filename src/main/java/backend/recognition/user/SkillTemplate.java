@@ -47,7 +47,7 @@ public class SkillTemplate {
      * */
     public String findAnswer(String question) {
         for (String next : this.questions) {
-            if (StringUtils.areSimilarSentences(question, next)) {
+            if (StringUtils.areSimilarSentences(question, next, 0.9)) {
                 List<String> slots = this.slotRecognition.findSlot(question + " / " + next);
                 String result = this.findAction(slots);
                 if (!Objects.equals(result, "")) {
