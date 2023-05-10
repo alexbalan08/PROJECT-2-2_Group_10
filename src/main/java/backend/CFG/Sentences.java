@@ -16,10 +16,9 @@ public class Sentences {
     public Sentences(Map<String, List<String>> rules) {
         this.rules = rules;
         this.sentences = new HashMap<>();
-        this.questionToken = " ?";
+        this.questionToken = "?";
         this.type = "";
         this.generateSentence();
-        this.printSentences();
     }
 
     public String findSentence(String input) {
@@ -28,33 +27,12 @@ public class Sentences {
                 if(StringUtils.areSimilarSentences(input, next, 1)) {
                     return entry.getKey();
                 }
-            }
-        }
-        return this.findSentenceWithFewerPercentage(input);
-    }
-
-    private String findSentenceWithFewerPercentage(String input) {
-        for(var entry : this.sentences.entrySet()) {
-            for(String next : entry.getValue()) {
                 if(StringUtils.areSimilarSentences(input, next, 0.5)) {
                     return entry.getKey();
                 }
             }
         }
-        return "";
-    }
-
-    private void printSentences() {
-        System.out.println();
-        System.out.println("CFG :");
-        for(var entry : this.sentences.entrySet()) {
-            System.out.println(entry.getKey() + " : ");
-            for(String next : entry.getValue()) {
-                System.out.println("--- " + next);
-            }
-            System.out.println();
-        }
-        System.out.println();
+        return "I don't know.";
     }
 
     public void generateSentence() {

@@ -62,7 +62,6 @@ public class CFGReader {
             } else {
                 for(String p : pol) {
                     if(!this.actions.get(key.trim()).containsKey(p.trim().toLowerCase())) {
-                        // value += (" " + p).trim();
                         secondKey = p.trim();
                         String temp = answer.trim();
                         this.addInSecondMap(key, secondKey, temp);

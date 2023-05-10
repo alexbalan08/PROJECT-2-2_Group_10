@@ -17,6 +17,7 @@ Action <SCHEDULE> * <DAY> Monday <TIME> 9 * We start the week with math.
 Action <SCHEDULE> * <DAY> Monday <TIME> 12 * On Monday noon we have Theoretical Computer.
 Action <SCHEDULE> * <DAY> * I don't know which lecture are on this day.
 Action <SCHEDULE> * <TIME> * I can't answer because I don't know the day.
+Action <SCHEDULE> * <TIME> <DAY> * I don't know the lecture at this hour for this day.
 Action <SCHEDULE> *  * I have no idea, you didn't give me a day or a time.
 Action <LOCATION> * <ROOM> DeepSpace * DeepSpace is the first room after the entrance.
 Action <LOCATION> * <ROOM> * is in the first floor.

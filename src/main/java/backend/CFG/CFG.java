@@ -10,7 +10,6 @@ public class CFG {
         CFGReader reader = new CFGReader(path);
         this.sentences = new Sentences(reader.getRules());
         this.actions = new Actions(reader.getActions());
-        var t ="";
     }
 
     public String getAnswer(String input) {
