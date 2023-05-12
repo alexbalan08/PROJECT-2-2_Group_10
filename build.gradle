@@ -42,7 +42,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 
-    implementation files('C:/opencv/build/java/opencv-470.jar')
+    //implementation files('C:/opencv/build/java/opencv-470.jar')
+    implementation 'org.bytedeco:javacpp-presets-platform:1.5.8'
 }
 
 test {
