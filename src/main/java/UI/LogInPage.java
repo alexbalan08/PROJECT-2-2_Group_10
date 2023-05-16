@@ -23,12 +23,18 @@ import org.bytedeco.opencv.opencv_java;
 import org.opencv.core.*;
 import org.opencv.face.FaceRecognizer;
 import org.opencv.face.LBPHFaceRecognizer;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ScheduledExecutorService;
@@ -43,9 +49,17 @@ public class LogInPage extends Application {
     private VideoCapture capture;
     private ScheduledExecutorService executor;
     private boolean windowOpened = false;
-    private boolean faceRecognition = false;
+    private boolean faceRecognition = true;
     private boolean recognizedFace = false;
     private boolean logIn = true;
+    private boolean cameraVisible = true;
+    private boolean saveFace = false;
+    private boolean savedImage = false; // only applied for cancel button
+    private int saveFaceImages = 10;
+    private int saveFaceCount = 0;
+    private int picTimeDelay = 0;
+    private String personNamePath = "";
+    private int label;
     private StackPane topPane;
     private Label message;
     private VBox content;
@@ -55,9 +69,13 @@ public class LogInPage extends Application {
     private Label name;
     private TextField nameInfo;
     private HBox registerName;
+    private Button next;
     private Button cancel;
     private Button finish;
+    private Map<Integer, String> personNameLabel = new HashMap<>();
     private FaceRecognizer faceRecognizer;
+    private List<Mat> faceImages = new ArrayList<>();
+    private List<Integer> faceLabels = new ArrayList<>();
 
     public static void main(String[] args) {
         Loader.load(opencv_java.class);
@@ -94,7 +112,13 @@ public class LogInPage extends Application {
 
         imageView = new ImageView();
 
-        cameraPane = new StackPane(imageView);
+        next = new Button("Next");
+        next.setFont(Font.font(font, 14));
+        next.setStyle("-fx-background-color: rgba(55, 180, 220, 0.0); -fx-text-fill: transparent");
+
+        cameraPane = new StackPane(imageView, next);
+        cameraPane.setAlignment(next, Pos.TOP_LEFT);
+        cameraPane.setMargin(next, new Insets(0, 0, 0, 44));
 
         message = new Label();
         message.setText("Approach your face to log in.");
@@ -127,11 +151,12 @@ public class LogInPage extends Application {
         nameFinish = new HBox(171);
         nameFinish.getChildren().addAll(registerName, cancelFinish);
 
-        content = new VBox(20);
+        content = new VBox();
         content.getChildren().addAll(topPane, nameFinish, cameraPane, message);
         StackPane stackPane = new StackPane();
         stackPane.getChildren().addAll(backgroundPane, content);
         stackPane.setAlignment(signUp, Pos.BOTTOM_RIGHT);
+        content.setMargin(cameraPane, new Insets(20, 0, 20, 0));
         content.setMargin(message, new Insets(0, 0, 0, topEye.getFitHeight() * 0.7));
 
         signUp.setOnAction(event -> signUp());
@@ -142,12 +167,36 @@ public class LogInPage extends Application {
 
         primaryStage.getIcons().add(new Image("file:src\\main\\resources\\login\\login\\img.png"));
 
+        primaryStage.setResizable(false);
+
         primaryStage.show();
 
         if (faceRecognition) {
             // Load the face recognizer model
             faceRecognizer = LBPHFaceRecognizer.create();
-            faceRecognizer.read("C:\\opencv\\sources\\samples\\dnn\\models.yml"); // path/to/face_recognizer_model.yml
+
+            File[] peopleDirectories = (new File("src/main/resources/faceImages")).listFiles();
+
+            assert peopleDirectories != null;
+            label = 0;
+            for (File personDirectory : peopleDirectories) {
+                personNameLabel.put(label, personDirectory.getName());
+
+                File[] images = personDirectory.listFiles();
+
+                for (File image : images) {
+                    Mat imageMat = Imgcodecs.imread(image.getPath());
+                    Mat grayscaleImage = new Mat();
+                    Imgproc.cvtColor(imageMat, grayscaleImage, Imgproc.COLOR_BGR2GRAY);
+
+                    faceImages.add(grayscaleImage);
+                    faceLabels.add(label);
+                }
+
+                label++;
+            }
+
+            if (!faceImages.isEmpty()) trainFaceRecognizer();
         }
 
         startCapture();
@@ -164,36 +213,111 @@ public class LogInPage extends Application {
         nameInfo.setFont(Font.font(font, 16));
         nameInfo.setStyle("-fx-background-color: rgba(55, 180, 220, 0.15); -fx-text-fill: white");
 
+        next.setStyle("-fx-background-color: rgba(55, 180, 220, 0.15); -fx-text-fill: white");
+        cameraVisible = false;
+
+        next.setOnAction(e -> {
+            if (!nameInfo.getText().isEmpty()) {
+                cameraVisible = true;
+
+                next.setStyle("-fx-background-color: rgba(55, 180, 220, 0.0); -fx-text-fill: transparent");
+
+                content.setMargin(nameFinish, new Insets(20, 0, 0, 44));
+                cameraPane.setMargin(next, new Insets(0, 0, 0, 44));
+
+                message.setTextFill(Color.WHITE);
+
+                saveFace = true;
+            }
+        });
+
         cancel.setFont(Font.font(font, 14));
         cancel.setStyle("-fx-background-color: rgba(55, 180, 220, 0.15); -fx-text-fill: white");
 
-        finish.setFont(Font.font(font, 14));
-        finish.setStyle("-fx-background-color: rgba(55, 180, 220, 0.15); -fx-text-fill: white");
-
         message.setText("Slowly move your face in all directions");
+        message.setTextFill(Color.TRANSPARENT);
+
+        content.setMargin(nameFinish, new Insets(40, 0, 0, 44));
+        cameraPane.setMargin(next, new Insets(10, 0, 0, 44));
+
+        cancel.setOnAction(event -> {
+            try {
+                backToLoginWindow(true);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private void backToLoginWindow(boolean cancelButton) throws IOException {
+        logIn = true;
+
+        cameraVisible = true;
+
+        next.setStyle("-fx-background-color: rgba(55, 180, 220, 0.0); -fx-text-fill: transparent");
 
         content.setMargin(nameFinish, new Insets(0, 0, 0, 44));
 
-        cancel.setOnAction(event -> {
-            logIn = true;
+        name.setFont(Font.font(font, 1));
+        name.setTextFill(Color.TRANSPARENT);
 
-            name.setFont(Font.font(font, 1));
-            name.setTextFill(Color.TRANSPARENT);
+        nameInfo.setText("");
+        nameInfo.setFont(Font.font(font, 1));
+        nameInfo.setStyle("-fx-background-color: rgba(55, 180, 220, 0.0); -fx-text-fill: transparent");
 
-            nameInfo.setText("");
-            nameInfo.setFont(Font.font(font, 1));
-            nameInfo.setStyle("-fx-background-color: rgba(55, 180, 220, 0.0); -fx-text-fill: transparent");
+        cancel.setFont(Font.font(font, 1));
+        cancel.setStyle("-fx-background-color: rgba(55, 180, 220, 0.0); -fx-text-fill: transparent");
 
-            cancel.setFont(Font.font(font, 1));
-            cancel.setStyle("-fx-background-color: rgba(55, 180, 220, 0.0); -fx-text-fill: transparent");
+        finish.setFont(Font.font(font, 1));
+        finish.setStyle("-fx-background-color: rgba(55, 180, 220, 0.0); -fx-text-fill: transparent");
 
-            finish.setFont(Font.font(font, 1));
-            finish.setStyle("-fx-background-color: rgba(55, 180, 220, 0.0); -fx-text-fill: transparent");
+        message.setText("Approach your face to log in.");
 
-            message.setText("Approach your face to log in.");
+        signUp.setStyle("-fx-background-color: rgba(55, 180, 220, 0.15); -fx-text-fill: white");
 
-            signUp.setStyle("-fx-background-color: rgba(55, 180, 220, 0.15); -fx-text-fill: white");
-        });
+        if (cancelButton) {
+            if (savedImage) {
+
+                Path directoryPath = Path.of("src/main/resources/faceImages/" + personNamePath);
+
+                Files.walk(directoryPath)
+                        .sorted((p1, p2) -> -p1.compareTo(p2))
+                        .forEach(path -> {
+                            try {
+                                Files.delete(path);
+                            } catch (IOException e) {
+                                System.out.println("Failed to delete file: " + path.toString());
+                            }
+                        });
+
+                try {
+                    Files.deleteIfExists(directoryPath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                File[] files = (new File("src/main/resources/faceImages")).listFiles();
+                int labelTemp = files.length;
+                List<Mat> faceImagesCopy = new ArrayList<>(List.copyOf(faceImages));
+                List<Integer> faceLabelsCopy = new ArrayList<>(List.copyOf(faceLabels));
+                System.out.println("LOOK AT LIST LABELS COPY:");
+                System.out.println(faceLabelsCopy);
+                for (Integer faceLabel : faceLabels) {
+                    if (faceLabel != labelTemp) continue;
+                    int index = faceLabels.indexOf(faceLabel);
+
+                    faceImagesCopy.remove(index);
+                    faceLabelsCopy.remove(index);
+                }
+
+                faceImages = faceImagesCopy;
+                faceLabels = faceLabelsCopy;
+            }
+
+            trainFaceRecognizer();
+        }
+
+        savedImage = false;
     }
 
     private void startCapture() {
@@ -224,15 +348,76 @@ public class LogInPage extends Application {
 //            System.out.println(String.format("Detected faces: %d", faceDetection.toArray().length));
 
             for (Rect rect : faceDetection.toArray()) {
-                Imgproc.rectangle(frame, rect.tl(), rect.br(), new Scalar(0, 255, 0), 2);
+                Imgproc.rectangle(frame, rect.tl(), rect.br(), new Scalar(240, 190, 55), 2);
                 if (logIn) logIn(rect, grayFrame, frame);
-                else signUp();
+                if (saveFace) saveFace(rect, grayFrame);
             }
 
             // Convert the frame to JavaFX Image for display
             Image image = matToJavaFXImage(frame, 0.8);
 
+            imageView.setVisible(cameraVisible);
+
             Platform.runLater(() -> imageView.setImage(image));
+        }
+    }
+
+    public void saveFace(Rect rect, Mat grayFrame) {
+        if (saveFaceCount == 0) {
+            File[] files = (new File("src/main/resources/faceImages")).listFiles();
+            label = files.length;
+            personNamePath = nameInfo.getText().replace(" ", "");
+            File personImages = new File("src/main/resources/faceImages/" + personNamePath);
+            personImages.mkdir();
+        }
+
+        if (saveFaceCount < 30) {
+            if (picTimeDelay % 10 == 0 && picTimeDelay != 0) {
+                // Save the face region as an image
+                Mat faceRegion = grayFrame.submat(rect);
+                String pathName = "src/main/resources/faceImages/" + personNamePath + "/Img" + saveFaceCount + ".jpg";
+                savedImage = true;
+                Imgcodecs.imwrite(pathName, faceRegion);
+                saveFaceCount++;
+            }
+
+            picTimeDelay++;
+        } else {
+            saveFace = false;
+            saveFaceCount = 0;
+            picTimeDelay = 0;
+
+            File personDirectory = new File("src/main/resources/faceImages/" + personNamePath);
+
+            File[] files = personDirectory.listFiles();
+
+            for (File file : files) {
+                Mat imageMat = Imgcodecs.imread(file.getPath());
+                Mat grayscaleImage = new Mat();
+                Imgproc.cvtColor(imageMat, grayscaleImage, Imgproc.COLOR_BGR2GRAY);
+
+                faceImages.add(grayscaleImage);
+                faceLabels.add(label);
+            }
+
+            trainFaceRecognizer();
+
+            finish.setFont(Font.font(font, 14));
+            finish.setStyle("-fx-background-color: rgba(55, 180, 220, 0.15); -fx-text-fill: white");
+            finish.setOnAction(event -> {
+                if (!(nameInfo.getText().equals(personDirectory.getName()))) {
+                    personNamePath = nameInfo.getText();
+                    personDirectory.renameTo(new File("src/main/resources/faceImages/" + personNamePath));
+                }
+
+                personNameLabel.put(label, personNamePath);
+
+                try {
+                    backToLoginWindow(false);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         }
     }
 
@@ -257,21 +442,6 @@ public class LogInPage extends Application {
     }
 
     private void trainFaceRecognizer() {
-        List<Mat> faceImages = new ArrayList<>();
-        List<Integer> faceLabels = new ArrayList<>();
-
-        // Add face images and labels for each person
-        // For example:
-        // faceImages.add(person1FaceImage1);
-        // faceLabels.add(0); // Assign label 0 to person 1
-        // faceImages.add(person1FaceImage2);
-        // faceLabels.add(0); // Assign label 0 to person 1
-        // faceImages.add(person2FaceImage1);
-        // faceLabels.add(1); // Assign label 1 to person 2
-        // ...
-
-        FaceRecognizer faceRecognizer = LBPHFaceRecognizer.create();
-
         MatOfInt labelsMat = new MatOfInt();
         labelsMat.fromList(faceLabels);
 
@@ -294,13 +464,21 @@ public class LogInPage extends Application {
         double confidence = confidenceBuffer[0];
 
         // Display the recognized label and confidence
+//        System.out.println(confidence);
         String label = "Unknown";
-        if (confidence < 70) {
+        if (confidence < 90) {
             recognizedFace = true;
-            label = "Person " + predictedLabel;
+
+            label = personNameLabel.get(predictedLabel);
         }
 
-        Imgproc.putText(frame, label, new Point(rect.x, rect.y - 10), Imgproc.FONT_HERSHEY_SIMPLEX, 0.9, new Scalar(0, 255, 0), 2);
+        if (label.equals("Unknown")) {
+            Imgproc.putText(frame, label, new Point(rect.x, rect.y - 10), Imgproc.FONT_HERSHEY_SIMPLEX, 0.9, new Scalar(45, 180, 245), 2);
+            Imgproc.rectangle(frame, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(45, 180, 245), 2);
+        } else {
+            Imgproc.putText(frame, label, new Point(rect.x, rect.y - 10), Imgproc.FONT_HERSHEY_SIMPLEX, 0.9, new Scalar(240, 190, 55), 2);
+            Imgproc.rectangle(frame, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(240, 190, 55), 2);
+        }
     }
     public static Image matToJavaFXImage(Mat frame, double scalar) {
         int width = frame.width();
