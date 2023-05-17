@@ -343,7 +343,10 @@ public class LogInPage extends Application {
             for (Rect rect : faceDetection.toArray()) {
                 Imgproc.rectangle(frame, rect.tl(), rect.br(), new Scalar(240, 190, 55), 2);
                 if (logIn) logIn(rect, grayFrame, frame);
-                if (saveFace) saveFace(rect, grayFrame);
+                if (saveFace) {
+                    if (faceDetection.toArray().length == 1)
+                        saveFace(rect, grayFrame);
+                }
             }
 
             // Convert the frame to JavaFX Image for display
