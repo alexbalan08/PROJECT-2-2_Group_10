@@ -2,6 +2,7 @@ package UI;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -361,10 +362,12 @@ public class LogInPage extends Application {
                 Mat faceRegion = grayFrame.submat(rect);
                 signUpFaces.add(faceRegion);
                 saveFaceCount++;
-//                if (saveFaceCount < 10)
-//                    message.setText("Slowly move your face in all directions 0"); //     0" + saveFaceCount + "/" + numFacePictures
-//                else
-//                    message.setText("Slowly move your face in all directions ");
+                Platform.runLater(() -> {
+                    if (saveFaceCount < 10)
+                        message.setText("Slowly move your face in all directions         0" + saveFaceCount + "/" + numFacePictures);
+                    else
+                        message.setText("Slowly move your face in all directions         " + saveFaceCount + "/" + numFacePictures);
+                });
             }
 
             picTimeDelay++;
