@@ -29,8 +29,6 @@ import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,13 +47,12 @@ public class LogInPage extends Application {
     private VideoCapture capture;
     private ScheduledExecutorService executor;
     private boolean windowOpened = false;
-    private boolean faceRecognition = true;
+    private static boolean faceRecognition = true;
     private boolean recognizedFace = false;
     private boolean logIn = true;
     private boolean cameraVisible = true;
     private boolean saveFace = false;
-    private boolean savedImage = false; // only applied for cancel button
-    private int saveFaceImages = 10;
+    private int numFacePictures = 30;
     private int saveFaceCount = 0;
     private int picTimeDelay = 0;
     private String personNamePath = "";
@@ -77,6 +74,7 @@ public class LogInPage extends Application {
     private List<Mat> faceImages = new ArrayList<>();
     private List<Integer> faceLabels = new ArrayList<>();
     private List<Mat> signUpFaces = new ArrayList<>();
+    private static String nameLabel;
 
     public static void main(String[] args) {
         Loader.load(opencv_java.class);
@@ -279,7 +277,6 @@ public class LogInPage extends Application {
         message.setText("Approach your face to log in.");
 
         signUp.setStyle("-fx-background-color: rgba(55, 180, 220, 0.15); -fx-text-fill: white");
-        System.out.println(finishButton + " " + nameInfo.getText());
 
         if (finishButton) {
             File[] faceImagesFiles = (new File("src/main/resources/faceImages")).listFiles();
@@ -358,12 +355,16 @@ public class LogInPage extends Application {
     }
 
     public void saveFace(Rect rect, Mat grayFrame) {
-        if (saveFaceCount < 30) {
+        if (saveFaceCount < numFacePictures) {
             if (picTimeDelay % 10 == 0 && picTimeDelay != 0) {
                 // Save the face region as an image
                 Mat faceRegion = grayFrame.submat(rect);
                 signUpFaces.add(faceRegion);
                 saveFaceCount++;
+//                if (saveFaceCount < 10)
+//                    message.setText("Slowly move your face in all directions 0"); //     0" + saveFaceCount + "/" + numFacePictures
+//                else
+//                    message.setText("Slowly move your face in all directions ");
             }
 
             picTimeDelay++;
@@ -429,10 +430,12 @@ public class LogInPage extends Application {
         // Display the recognized label and confidence
 //        System.out.println(confidence);
         String label = "Unknown";
+        this.nameLabel = label;
         if (confidence < 75) {
             recognizedFace = true;
 
             label = personNameLabel.get(predictedLabel);
+            this.nameLabel = label;
         }
 
         if (label.equals("Unknown")) {
@@ -491,5 +494,10 @@ public class LogInPage extends Application {
 
         // Close the initial window
         primaryStage.close();
+    }
+
+    public static String getPersonName() {
+        if (faceRecognition) return nameLabel;
+        else return "DACStudent";
     }
 }
