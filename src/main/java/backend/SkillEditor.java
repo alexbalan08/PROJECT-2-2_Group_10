@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -249,7 +250,7 @@ public class SkillEditor implements ActionQuery {
                 return "Error with the BufferedWriter";
             }
         } catch (IOException io) {
-            return "Error with the FileWritter";
+            return "Error with the FileWriter";
         }
     }
 
@@ -261,6 +262,7 @@ public class SkillEditor implements ActionQuery {
                     String command = query.substring(0, query.indexOf("\n"));
                     boolean addMoreThanOneSkill = command.contains("skills");
                     query = query.replace(command, "");
+                    query = query.replace(" : ", " ").replace(": ", " ").replace(":", "");
                     countMinSkillsAdded++;
                     lastSkillsAdded = lastSkillsAdded.concat("\n" + query);
                     pw.print(file + query + "\n");
@@ -276,7 +278,7 @@ public class SkillEditor implements ActionQuery {
                 return "Error with the BufferedWriter";
             }
         } catch (IOException io) {
-            return "Error with the FileWritter";
+            return "Error with the FileWriter";
         }
     }
 
@@ -297,7 +299,11 @@ public class SkillEditor implements ActionQuery {
                 input += line + System.lineSeparator();
                 if(line.startsWith("Rule <ACTION>")) {
                     for(String typ : types) {
-                        input = input.replace(line, line+ " | " + "<" + typ + ">");
+                        typ = typ.substring(typ.indexOf(":") + 1).replace("?", "").trim();
+                        if(!typ.contains("<")) {
+                            typ = "<" + typ.toUpperCase() + ">";
+                        }
+                        input = input.replace(line, line + " | " + typ);
                     }
                 }
             }
@@ -311,7 +317,7 @@ public class SkillEditor implements ActionQuery {
         return "\nQuestion :  ?\nAction :  : \nAnswer : \nError : ";
     }
 
-    public String addCFGSkillTemplate() { return "\nType :  ?\nRule ? \nAction ? "; }
+    public String addCFGSkillTemplate() { return "\nType : \nRule : \nAction : "; }
 
     public String addActionToSkill() throws IOException {
         String action = query.substring(query.indexOf("\n"));

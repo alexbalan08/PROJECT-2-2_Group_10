@@ -3,11 +3,17 @@ package backend.CFG;
 import java.util.Objects;
 
 public class CFG {
-    private final Sentences sentences;
-    private final Actions actions;
+    private final String filePath;
+    private Sentences sentences;
+    private Actions actions;
 
     public CFG(String path) {
-        CFGReader reader = new CFGReader(path);
+        this.filePath = path;
+        this.readFile();
+    }
+
+    public void readFile() {
+        CFGReader reader = new CFGReader(this.filePath);
         this.sentences = new Sentences(reader.getRules());
         this.actions = new Actions(reader.getActions());
     }

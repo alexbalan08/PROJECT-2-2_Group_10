@@ -24,7 +24,9 @@ public class DA implements ActionQuery {
     private final LanguageModel languageModel;
     private List<SkillTemplate> skillTemplates;
     private final SkillEditor skillEditor;
-    private final CFG cfg;
+
+    private final String cfgFile;
+    private CFG cfg;
 
     public DA() throws Exception {
         this.skills = new HashMap<>();
@@ -42,7 +44,8 @@ public class DA implements ActionQuery {
         this.languageModel = new LanguageModel();
         this.skillEditor = new SkillEditor();
 
-        this.cfg = new CFG("./src/main/java/backend/CFG/CFG.txt");
+        this.cfgFile = "./src/main/java/backend/CFG/CFG.txt";
+        this.cfg = new CFG(this.cfgFile);
     }
 
     private void addSkill(SkillWrapper skill, SlotRecognition slotRecognition) {
@@ -57,6 +60,7 @@ public class DA implements ActionQuery {
             System.out.println("THE ANSWER IS: " + answer);
             this.skillTemplates = fileReader.getSkillTemplates();
             this.userSkillRecognition = new TemplateSkillRecognition(this.skillTemplates);
+            this.cfg.readFile();
             return answer;
         } else {
             query = query.replace("\n", "").trim();
