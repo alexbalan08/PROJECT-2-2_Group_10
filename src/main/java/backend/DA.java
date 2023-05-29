@@ -86,7 +86,7 @@ public class DA implements ActionQuery {
         StringBuilder output = new StringBuilder();
 
         try {
-            // CHECK IF IT'S A SKILL ADDED BY THE USER (in a file)
+            // CHECK IF THE CFG KNOW THE SKILL
             output.append(this.cfg.getAnswer(query.toLowerCase()));
 
             // THEN CHECK IF IT'S AN API SKILL WANTED
@@ -105,6 +105,7 @@ public class DA implements ActionQuery {
                 }
             }
 
+            /*
             if (output.isEmpty() || output.toString().equals("I don't know.") || output.toString().equals("I don't know...")) {
                 output = new StringBuilder();
                 String determinedSkill = languageModel.determineSkill(query);
@@ -122,6 +123,7 @@ public class DA implements ActionQuery {
                     }
                 }
             }
+             */
 
             if (!output.isEmpty()) {
                 return output.toString();
