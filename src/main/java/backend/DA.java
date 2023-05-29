@@ -86,7 +86,7 @@ public class DA implements ActionQuery {
         StringBuilder output = new StringBuilder();
 
         try {
-            // CHECK IF IT'S A SKILL ADDED BY THE USER (in a file)
+            // CHECK IF THE CFG KNOW THE SKILL
             output.append(this.cfg.getAnswer(query.toLowerCase()));
 
             // THEN CHECK IF IT'S AN API SKILL WANTED
@@ -105,28 +105,30 @@ public class DA implements ActionQuery {
                 }
             }
 
-//            if (output.isEmpty() || output.toString().equals("I don't know.") || output.toString().equals("I don't know...")) {
-//                output = new StringBuilder();
-//                String determinedSkill = languageModel.determineSkill(query);
-//                if (determinedSkill.equals("Random"))
-//                    return "Sorry, I'm not sure I understood ...";
-//                for (SkillWrapper skill : this.skills.keySet()) {
-//                    if (skill.getClass().getSimpleName().equals(determinedSkill)) {
-//                        List<String> slots = languageModel.findSlot(query);
-//                        output.append(languageModel.botResponse(slots));
-//                        if (slots != null && !slots.isEmpty() && !slots.get(0).equals("") && slots.get(0) != null) {
-//                            skill.start(slots);
-//                            output.append(skill.getResponse());
-//                        } else if (slots.isEmpty())
-//                        break;
-//                    }
-//                }
-//            }
+            /*
+            if (output.isEmpty() || output.toString().equals("I don't know.") || output.toString().equals("I don't know...")) {
+                output = new StringBuilder();
+                String determinedSkill = languageModel.determineSkill(query);
+                if (determinedSkill.equals("Random"))
+                    return "Sorry, I'm not sure I understood ...";
+                for (SkillWrapper skill : this.skills.keySet()) {
+                    if (skill.getClass().getSimpleName().equals(determinedSkill)) {
+                        List<String> slots = languageModel.findSlot(query);
+                        output.append(languageModel.botResponse(slots));
+                        if (slots != null && !slots.isEmpty() && !slots.get(0).equals("") && slots.get(0) != null) {
+                            skill.start(slots);
+                            output.append(skill.getResponse());
+                        } else if (slots.isEmpty())
+                        break;
+                    }
+                }
+            }
+             */
 
             if (!output.isEmpty()) {
                 return output.toString();
             } else {
-                return "Sorry, I didn't understand you ...";
+                return "Sorry, I don't know how can I answer to this ...";
             }
         } catch (Exception e) {
             e.printStackTrace();
