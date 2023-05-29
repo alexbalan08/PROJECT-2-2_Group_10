@@ -83,16 +83,15 @@ public class DA implements ActionQuery {
      *
      * */
     private String doSkill(String query) throws IOException {
-        return this.cfg.getAnswer(query.toLowerCase());
-        /*
         StringBuilder output = new StringBuilder();
 
         try {
             // CHECK IF IT'S A SKILL ADDED BY THE USER (in a file)
-            output.append(this.userSkillRecognition.determineSkill(query));
+            output.append(this.cfg.getAnswer(query.toLowerCase()));
 
             // THEN CHECK IF IT'S AN API SKILL WANTED
-            if (output.isEmpty()) {
+            if (output.isEmpty() || output.toString().equals("I don't know.") || output.toString().equals("I don't know...")) {
+                output = new StringBuilder();
                 String determinedSkill = this.apiSkillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
                 for (SkillWrapper skill : this.skills.keySet()) {
                     if (skill.getClass().getSimpleName().equals(determinedSkill)) {
@@ -106,7 +105,8 @@ public class DA implements ActionQuery {
                 }
             }
 
-            if (output.isEmpty()) {
+            if (output.isEmpty() || output.toString().equals("I don't know.") || output.toString().equals("I don't know...")) {
+                output = new StringBuilder();
                 String determinedSkill = languageModel.determineSkill(query);
                 if (determinedSkill.equals("Random"))
                     return "Sorry, I'm not sure I understood ...";
@@ -132,6 +132,5 @@ public class DA implements ActionQuery {
             e.printStackTrace();
             return "Sorry, that confused me ...";
         }
-        */
     }
 }
