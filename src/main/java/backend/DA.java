@@ -128,7 +128,7 @@ public class DA implements ActionQuery {
             if (!output.isEmpty()) {
                 return output.toString();
             } else {
-                return "Sorry, I didn't understand you ...";
+                return "Sorry, I don't know how can I answer to this ...";
             }
         } catch (Exception e) {
             e.printStackTrace();
