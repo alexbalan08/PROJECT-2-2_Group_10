@@ -2,7 +2,6 @@ package UI;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -437,7 +436,7 @@ public class LogInPage extends Application {
 //        System.out.println(confidence);
         String label = "Unknown";
         this.nameLabel = label;
-        if (confidence < 75) {
+        if (confidence < 70) {
             recognizedFace = true;
 
             label = personNameLabel.get(predictedLabel);
