@@ -1,0 +1,27 @@
+Rule <S> <ACTION>
+Rule <ACTION> <LOCATION> | <SCHEDULE> | <WEATHER>
+Rule <SCHEDULE> Which lectures are there <TIMEEXPRESSION> | <TIMEEXPRESSION> which lectures are there
+Rule <TIMEEXPRESSION> on <DAY> at <TIME> | at <TIME> on <DAY> | on <DAY> | at <DAY>
+Rule <TIME> 9 | 12 | Tomorrow | Today
+Rule <DAY> Monday | Tuesday | Wednesday | Thursday | Friday | Saturday | Sunday
+Rule <LOCATION> Where is <ROOM> | How do <PRO> get to <ROOM> | Where is <ROOM> located
+Rule <PRO> I | you | he | she | my mother
+Rule <ROOM> DeepSpace | SpaceBox | TestBox
+Rule <WEATHER> How is the weather <CITYLOCATION> | <PRO> <VERB> <CITYLOCATION>. What is the weather
+Rule <CITYLOCATION> in <CITY> <TIME> | in <CITY>
+Rule <VERB> am | is
+Rule <CITY> New York | Berlin
+
+Action <SCHEDULE> * <DAY> Saturday * There are no lectures on Saturday.
+Action <SCHEDULE> * <DAY> Monday <TIME> 9 * We start the week with math.
+Action <SCHEDULE> * <DAY> Monday <TIME> 12 * On Monday noon we have Theoretical Computer.
+Action <SCHEDULE> * <DAY> * I don't know which lecture are on this day.
+Action <SCHEDULE> * <TIME> * I can't answer because I don't know the day.
+Action <SCHEDULE> * <TIME> <DAY> * I don't know the lecture at this hour for this day.
+Action <SCHEDULE> *  * I have no idea, you didn't give me a day or a time.
+Action <LOCATION> * <ROOM> DeepSpace * DeepSpace is the first room after the entrance.
+Action <LOCATION> * <ROOM> * is in the first floor.
+Action <LOCATION> *  * I don't know this room.
+Action <WEATHER> * <CITY> New York <TIME> tomorrow * It will be sunny.
+Action <WEATHER> * <CITY> Berlin * It is rainy.
+Action <WEATHER> * <PRO> my mother <VERB> is <CITY> New York <TIME> today * It is stormy today.

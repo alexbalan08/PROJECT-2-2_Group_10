@@ -8,7 +8,9 @@ public class StringUtils {
      * It will remove the slots in the question and in the input, then check with the Levenshtein Distance if they are similar.
      *
      * */
-    public static boolean areSimilarSentences(String input, String question) {
+    public static boolean areSimilarSentences(String input, String question, double percentage) {
+        input = input.replace(" ", "");
+        question = question.replace(" ", "");
         int firstIndex = question.indexOf("<");
         while (firstIndex != -1) {
             int secondIndex = question.indexOf(">") + 1;
@@ -27,7 +29,7 @@ public class StringUtils {
             question = question.substring(0, firstIndex) + question.substring(secondIndex + 1);
             firstIndex = question.indexOf("<");
         }
-        return checkLevenshteinDistance(input, question);
+        return checkLevenshteinDistance(input, question, percentage);
     }
 
     /**
@@ -74,7 +76,7 @@ public class StringUtils {
      * Finally, the method computes the similarity between the two strings as (maxLength - distance) / maxLength, where maxLength is the length of the longer string, and returns true if the similarity is greater than or equal to 0.8, indicating that the two strings are similar enough.
      *
      * */
-    private static boolean checkLevenshteinDistance(String input, String question) {
+    private static boolean checkLevenshteinDistance(String input, String question, double percentage) {
         int n = input.length();
         int m = question.length();
         int[][] dp = new int[n + 1][m + 1];
@@ -101,7 +103,7 @@ public class StringUtils {
         int distance = dp[n][m];
         int maxLength = Math.max(n, m);
         double similarity = (double) (maxLength - distance) / maxLength;
-        return similarity >= 0.9;
+        return similarity >= percentage;
     }
 }
 

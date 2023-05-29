@@ -1,5 +1,7 @@
 package backend;
 
+import backend.CFG.CFG;
+import backend.CFG.CFGReader;
 import backend.Skills.*;
 import backend.recognition.LanguageModel;
 import backend.recognition.SkillRecognition;
@@ -23,6 +25,9 @@ public class DA implements ActionQuery {
     private List<SkillTemplate> skillTemplates;
     private final SkillEditor skillEditor;
 
+    private final String cfgFile;
+    private CFG cfg;
+
     public DA() throws Exception {
         this.skills = new HashMap<>();
         this.addSkill(new Weather(), new WeatherSlotRecognition(hardCoded));
@@ -38,6 +43,9 @@ public class DA implements ActionQuery {
 
         this.languageModel = new LanguageModel();
         this.skillEditor = new SkillEditor();
+
+        this.cfgFile = "./src/main/java/backend/CFG/CFG.txt";
+        this.cfg = new CFG(this.cfgFile);
     }
 
     private void addSkill(SkillWrapper skill, SlotRecognition slotRecognition) {
@@ -52,6 +60,7 @@ public class DA implements ActionQuery {
             System.out.println("THE ANSWER IS: " + answer);
             this.skillTemplates = fileReader.getSkillTemplates();
             this.userSkillRecognition = new TemplateSkillRecognition(this.skillTemplates);
+            this.cfg.readFile();
             return answer;
         } else {
             query = query.replace("\n", "").trim();
@@ -78,10 +87,11 @@ public class DA implements ActionQuery {
 
         try {
             // CHECK IF IT'S A SKILL ADDED BY THE USER (in a file)
-            output.append(this.userSkillRecognition.determineSkill(query));
+            output.append(this.cfg.getAnswer(query.toLowerCase()));
 
             // THEN CHECK IF IT'S AN API SKILL WANTED
-            if (output.isEmpty()) {
+            if (output.isEmpty() || output.toString().equals("I don't know.") || output.toString().equals("I don't know...")) {
+                output = new StringBuilder();
                 String determinedSkill = this.apiSkillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
                 for (SkillWrapper skill : this.skills.keySet()) {
                     if (skill.getClass().getSimpleName().equals(determinedSkill)) {
@@ -95,7 +105,8 @@ public class DA implements ActionQuery {
                 }
             }
 
-            if (output.isEmpty()) {
+            if (output.isEmpty() || output.toString().equals("I don't know.") || output.toString().equals("I don't know...")) {
+                output = new StringBuilder();
                 String determinedSkill = languageModel.determineSkill(query);
                 if (determinedSkill.equals("Random"))
                     return "Sorry, I'm not sure I understood ...";
@@ -121,6 +132,5 @@ public class DA implements ActionQuery {
             e.printStackTrace();
             return "Sorry, that confused me ...";
         }
-
     }
 }
