@@ -1,5 +1,5 @@
 Rule <S> <ACTION>
-Rule <ACTION> <LOCATION> | <SCHEDULE> | <WEATHER>
+Rule <ACTION> <LOCATION> | <SCHEDULE> | <WEATHER> | <TEST>
 Rule <SCHEDULE> Which lectures are there <TIMEEXPRESSION> | <TIMEEXPRESSION> which lectures are there
 Rule <TIMEEXPRESSION> on <DAY> at <TIME> | at <TIME> on <DAY> | on <DAY> | at <DAY>
 Rule <TIME> 9 | 12 | Tomorrow | Today
@@ -25,3 +25,6 @@ Action <LOCATION> *  * I don't know this room.
 Action <WEATHER> * <CITY> New York <TIME> tomorrow * It will be sunny.
 Action <WEATHER> * <CITY> Berlin * It is rainy.
 Action <WEATHER> * <PRO> my mother <VERB> is <CITY> New York <TIME> today * It is stormy today.
+
+Rule <TEST> How are you ?
+Action <TEST> *  * I m fine.

@@ -1,5 +1,7 @@
 package UI;
 
+//import UI.FaceRecog;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -21,7 +23,9 @@ import javafx.stage.Stage;
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.opencv.opencv_java;
 import org.opencv.core.*;
+import org.opencv.face.EigenFaceRecognizer;
 import org.opencv.face.FaceRecognizer;
+import org.opencv.face.FisherFaceRecognizer;
 import org.opencv.face.LBPHFaceRecognizer;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -74,7 +78,9 @@ public class LogInPage extends Application {
     private List<Mat> faceImages = new ArrayList<>();
     private List<Integer> faceLabels = new ArrayList<>();
     private List<Mat> signUpFaces = new ArrayList<>();
+    private Size smallestSize;
     private static String nameLabel;
+    private FaceRecog faceRecog = FaceRecog.LBPH;
 
     public static void main(String[] args) {
         Loader.load(opencv_java.class);
@@ -172,7 +178,11 @@ public class LogInPage extends Application {
 
         if (faceRecognition) {
             // Load the face recognizer model
-            faceRecognizer = LBPHFaceRecognizer.create();
+            switch (faceRecog) {
+                case LBPH -> faceRecognizer = LBPHFaceRecognizer.create();
+                case EIGEN -> faceRecognizer = EigenFaceRecognizer.create();
+                case FISHER -> faceRecognizer = FisherFaceRecognizer.create();
+            }
 
             File[] peopleDirectories = (new File("src/main/resources/faceImages")).listFiles();
 
@@ -337,7 +347,7 @@ public class LogInPage extends Application {
                 return;
             }
             //CascadeClassifier faceDetector = new CascadeClassifier("C:/opencv/sources/data/haarcascades/haarcascade_frontalface_alt.xml");
-            CascadeClassifier faceDetector = new CascadeClassifier(getPathForOpenCV());
+            CascadeClassifier faceDetector = new CascadeClassifier(path);
 
             MatOfRect faceDetection = new MatOfRect();
             faceDetector.detectMultiScale(grayFrame, faceDetection, 1.1, 3, 0, new Size(30, 30), new Size());
@@ -431,6 +441,33 @@ public class LogInPage extends Application {
     }
 
     private void trainFaceRecognizer() {
+        if (faceRecog == FaceRecog.EIGEN || faceRecog == FaceRecog.FISHER) {
+
+            List<Mat> resizedImages = new ArrayList<>();
+
+            smallestSize = faceImages.get(0).size();
+
+            // Iterate over the remaining images and update smallestSize if a smaller size is found
+            for (int i = 1; i < faceImages.size(); i++) {
+                Size imageSize = faceImages.get(i).size();
+
+                if (imageSize.width < smallestSize.width) {
+                    smallestSize = new Size(imageSize.width, smallestSize.height);
+                } else if (imageSize.height < smallestSize.height) {
+                    smallestSize = new Size(smallestSize.width, imageSize.height);
+                }
+            }
+
+            // Resize each image in the faceImages list
+            for (Mat image : faceImages) {
+                Mat resizedImage = new Mat();
+                Imgproc.resize(image, resizedImage, smallestSize);
+                resizedImages.add(resizedImage);
+            }
+
+            faceImages = resizedImages;
+        }
+
         MatOfInt labelsMat = new MatOfInt();
         labelsMat.fromList(faceLabels);
 
@@ -442,7 +479,9 @@ public class LogInPage extends Application {
 
         // Resize the face image to a fixed size
         Mat resizedFace = new Mat();
-        Imgproc.resize(face, resizedFace, new Size(100, 100));
+        if (faceRecog == FaceRecog.EIGEN || faceRecog == FaceRecog.FISHER)
+            Imgproc.resize(face, resizedFace, smallestSize);
+        else Imgproc.resize(face, resizedFace, new Size(100, 100));
 
         // Perform face recognition on the resized face image
         int[] labelBuffer = new int[1];
@@ -456,7 +495,14 @@ public class LogInPage extends Application {
 //        System.out.println(confidence);
         String label = "Unknown";
         this.nameLabel = label;
-        if (confidence < 70) {
+
+        int threshold = 100;
+        if (faceRecog == FaceRecog.EIGEN)
+            threshold = 1400;
+        else if (faceRecog == FaceRecog.FISHER)
+            threshold = 160;
+
+        if (confidence < threshold) {
             recognizedFace = true;
 
             label = personNameLabel.get(predictedLabel);
@@ -519,6 +565,8 @@ public class LogInPage extends Application {
 
         // Close the initial window
         primaryStage.close();
+
+        capture.release();
     }
 
     public static String getPersonName() {

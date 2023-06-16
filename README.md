@@ -8,6 +8,7 @@ Welcome to our assistant!
 How to run the code: <br />
 -Extract the files from the Zip folder<br />
 -Install Java FX library from: https://openjfx.io/ <br />
+-Install OpenCV version 4.7.0 and save it under C: />
 -Avoid using VSC for running JAVA FX files<br />
 -Run the code by running "LogInPage"<br />
 -You're done!<br />

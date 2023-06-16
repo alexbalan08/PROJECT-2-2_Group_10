@@ -28,7 +28,7 @@ import java.util.Objects;
 
 public class CanvasSlotRecognition implements SlotRecognition {
     boolean hardCoded;
-    String[] courses = {"calculus", "neuroscience", "data structures", "databases", "discrete math", "graph theory", "human computer interaction", "ict", "computer science 1", "computer science 2", "data science", "algebra", "logic", "machine learning", "mathematical modelling", "numerical math", "probability and statistic", "project 1-1", "project 1-2", "project 2-1", "project 2-2", "reasoning", "statistical analysis", "software", "theoretical"};
+    String[] courses = {"calculus", "neuroscience", "data structures", "databases", "discrete math", "graph theory", "human computer interaction", "ict", "computer science 1", "computer science 2", "data science", "algebra", "logic", "machine learning", "mathematical modelling", "numerical math", "probability and statistic", "project 1-1", "project 1-2", "project 2-1", "project 2-2", "reasoning", "statistical analysis", "software", "theoretical", "linear programming"};
 
     public CanvasSlotRecognition(boolean hardCoded) {
         this.hardCoded = hardCoded;

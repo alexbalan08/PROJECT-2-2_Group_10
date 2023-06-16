@@ -18,11 +18,14 @@ import java.util.regex.Pattern;
 public class SkillEditor implements ActionQuery {
     HashMap<ArrayList<String>, Method> mapFunctions = new HashMap<>();
     String skillsFilePath = "./src/main/java/backend/Skills/SkillsTemplate.txt";
+    String CFGSkillsFilePath = "./src/main/java/backend/CFG/CFG.txt";
     String query;
     String key;
     String lastSkillsAdded = "";
     String originalSkillsTemplate;
+    String originalCFGSkillsTemplate;
     int countMinSkillsAdded = 0;
+    int countMinCFGSkillsAdded = 0;
     boolean isQueryToEditSkill;
     public HashMap.Entry<ArrayList<String>, Method> entry;
     public ArrayList<String> addSkills = new ArrayList<>();
@@ -41,6 +44,7 @@ public class SkillEditor implements ActionQuery {
     public SkillEditor() throws NoSuchMethodException, IOException {
         addSkillsToHashMap();
         originalSkillsTemplate = Files.readString(Path.of(skillsFilePath));
+        originalCFGSkillsTemplate = Files.readString(Path.of(CFGSkillsFilePath));
     }
 
     public void addSkillsToHashMap() throws NoSuchMethodException {
@@ -379,8 +383,13 @@ public class SkillEditor implements ActionQuery {
     }
 
     public String deleteAllAddedSkills() throws IOException {
-        if(countMinSkillsAdded == 0) return "No skills have been recently added.";
-        writeToSkillsFile(originalSkillsTemplate);
+        if(countMinSkillsAdded == 0 & countMinCFGSkillsAdded == 0) return "No skills have been recently added.";
+        if(countMinSkillsAdded != 0) {
+            writeToSkillsFile(originalSkillsTemplate);
+        }
+        if(countMinCFGSkillsAdded != 0){
+            writeToCFGSkillsFile(originalCFGSkillsTemplate);
+        }
         countMinSkillsAdded = 0;
         lastSkillsAdded = "";
         return "All the added skills were deleted successfully.";
@@ -398,6 +407,12 @@ public class SkillEditor implements ActionQuery {
 
     public void writeToSkillsFile(String text) throws FileNotFoundException {
         PrintWriter pw = new PrintWriter(new File(skillsFilePath));
+        pw.append(text);
+        pw.flush();
+    }
+
+    public void writeToCFGSkillsFile(String text) throws FileNotFoundException {
+        PrintWriter pw = new PrintWriter(new File(CFGSkillsFilePath));
         pw.append(text);
         pw.flush();
     }
