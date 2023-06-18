@@ -26,4 +26,8 @@ public class CFG {
         }
         return answer;
     }
+
+    public String getExamplesOfQuestions() {
+        return this.sentences.getExamplesOfQuestions();
+    }
 }

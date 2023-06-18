@@ -10,6 +10,7 @@ import backend.recognition.api.*;
 import backend.recognition.user.SkillTemplate;
 import backend.recognition.user.SkillTemplateReader;
 import backend.recognition.user.TemplateSkillRecognition;
+import utils.StringUtils;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -86,8 +87,15 @@ public class DA implements ActionQuery {
         StringBuilder output = new StringBuilder();
 
         try {
+            // CHECK IF USER ASK SOME EXAMPLE OF QUESTIONS
+            if(StringUtils.areSimilarSentences(query, "Can you give me some examples of questions ?", 0.8)) {
+                output.append(this.cfg.getExamplesOfQuestions());
+            }
+
             // CHECK IF THE CFG KNOW THE SKILL
-            output.append(this.cfg.getAnswer(query.toLowerCase()));
+            if (output.isEmpty()) {
+                output.append(this.cfg.getAnswer(query.toLowerCase()));
+            }
 
             // THEN CHECK IF IT'S AN API SKILL WANTED
             if (output.isEmpty() || output.toString().equals("I don't know.") || output.toString().equals("I don't know...")) {
