@@ -342,12 +342,7 @@ public class LogInPage extends Application {
             Mat grayFrame = new Mat();
             Imgproc.cvtColor(frame, grayFrame, Imgproc.COLOR_BGR2GRAY);
 
-            String path = getPathForOpenCV();
-            if(path.equals("path")) {
-                return;
-            }
-            //CascadeClassifier faceDetector = new CascadeClassifier("C:/opencv/sources/data/haarcascades/haarcascade_frontalface_alt.xml");
-            CascadeClassifier faceDetector = new CascadeClassifier(path);
+            CascadeClassifier faceDetector = new CascadeClassifier(getPathForOpenCV());
 
             MatOfRect faceDetection = new MatOfRect();
             faceDetector.detectMultiScale(grayFrame, faceDetection, 1.1, 3, 0, new Size(30, 30), new Size());
@@ -364,7 +359,7 @@ public class LogInPage extends Application {
             }
 
             // Convert the frame to JavaFX Image for display
-            Image image = matToJavaFXImage(frame, 0.8);
+            Image image = matToJavaFXImage(frame, 0.3); // 0.8 before
 
             imageView.setVisible(cameraVisible);
 
@@ -380,10 +375,10 @@ public class LogInPage extends Application {
             } else if(os.contains("mac")) {
                 return System.getProperty("user.home") + File.separator + "Desktop" + File.separator + "opencv-4.7.0/data/haarcascades/haarcascade_frontalface_alt.xml";
             }
-            return "path";
+            return "Don't know this OS : " + os;
         } catch (Exception e) {
             e.printStackTrace();
-            return "path";
+            return "ERROR WITH THE OS";
         }
     }
 
