@@ -8,7 +8,7 @@ Rule <LOCATION> Where is <ROOM> | How do <PRO> get to <ROOM> | Where is <ROOM> l
 Rule <PRO> I | you | he | she | my mother
 Rule <ROOM> DeepSpace | SpaceBox | TestBox
 Rule <WEATHER> How is the weather <CITYLOCATION> | <PRO> <VERB> <CITYLOCATION>. What is the weather
-Rule <CITYLOCATION> in <CITY> <TIME> | in <CITY>
+Rule <CITYLOCATION> in <CITY> at <TIME> | in <CITY> | in <CITY> <TIME>
 Rule <VERB> am | is
 Rule <CITY> New York | Berlin
 

@@ -47,7 +47,7 @@ public class Sentences {
         for(var entry : this.sentences.entrySet()) {
             resume.append(entry.getKey().replace("<", "").replace(">", "")).append(" : \n");
             resume.append("- ").append(entry.getValue().get(0)).append(" \n");
-            resume.append("\n\n");
+            resume.append("\n");
         }
         return resume.toString();
     }

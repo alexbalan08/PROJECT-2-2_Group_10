@@ -28,6 +28,6 @@ public class CFG {
     }
 
     public String getExamplesOfQuestions() {
-        return this.sentences.getExamplesOfQuestions();
+        return "Here are the skills I know, with a sample question for each : \n\n" + this.sentences.getExamplesOfQuestions();
     }
 }
