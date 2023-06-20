@@ -18,6 +18,9 @@ public class CFG {
         CFGReader reader = new CFGReader(this.filePath);
         this.sentences = new Sentences(reader.getRules());
         this.actions = new Actions(reader.getActions());
+        if(this.bertModel != null) {
+            this.bertModel.getNewActions(this.actions.getAnswersForBERTModel());
+        }
     }
 
     public String getAnswer(String input) {

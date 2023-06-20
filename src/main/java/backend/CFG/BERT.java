@@ -13,12 +13,17 @@ public class BERT {
 
     public String getAnswer(String input) {
         try (Interpreter interpreter = new SharedInterpreter()) {
-            interpreter.set("text", actions);
+            interpreter.set("text", this.actions);
             interpreter.set("question", input);
             interpreter.runScript(this.scriptPath);
             return interpreter.getValue("answer").toString();
         } catch (JepException e) {
+            e.printStackTrace();
             return "Oh, I have a little problem here ...";
         }
+    }
+
+    public void getNewActions(String newAction) {
+        this.actions = newAction;
     }
 }

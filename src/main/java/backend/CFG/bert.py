@@ -47,10 +47,4 @@ def question_answer(question, text):
 
     return answer.capitalize()
 
-
-#text = input("Please enter your text: \n")
-#question = input("\nPlease enter your question: \n")
-
 answer = question_answer(question, text)
-#t = input(answer)
-# tr = input(test)
