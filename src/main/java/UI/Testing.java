@@ -14,7 +14,7 @@ public class Testing {
     }
 
     public static void main(String[] args) {
-        runScript("C:\\Users\\simon\\OneDrive\\Desktop\\PROJECT-2-2_Group_10-main\\src\\main\\java\\UI\\test.py");
-        }
+        runScript("src/main/java/UI/test.py");
     }
+}
 
