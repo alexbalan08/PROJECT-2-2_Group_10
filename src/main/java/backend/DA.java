@@ -92,6 +92,11 @@ public class DA implements ActionQuery {
                 output.append(this.cfg.getExamplesOfQuestions());
             }
 
+            // CHECH IF BERT CAN ANSWER
+            if(output.isEmpty()) {
+                output.append(this.cfg.getAnswerForBERTModel(query));
+            }
+
             // CHECK IF THE CFG KNOW THE SKILL
             if (output.isEmpty()) {
                 output.append(this.cfg.getAnswer(query.toLowerCase()));

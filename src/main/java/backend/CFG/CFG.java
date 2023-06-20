@@ -6,10 +6,12 @@ public class CFG {
     private final String filePath;
     private Sentences sentences;
     private Actions actions;
+    private final BERT bertModel;
 
     public CFG(String path) {
         this.filePath = path;
         this.readFile();
+        this.bertModel = new BERT(this.actions.getAnswersForBERTModel());
     }
 
     public void readFile() {
@@ -29,5 +31,13 @@ public class CFG {
 
     public String getExamplesOfQuestions() {
         return "Here are the skills I know, with a sample question for each : \n\n" + this.sentences.getExamplesOfQuestions();
+    }
+
+    public String getAnswerForBERTModel(String input) {
+        String answer = this.bertModel.getAnswer(input);
+        if(answer.equals("Unable to find the answer to your question.")) {
+            return "";
+        }
+        return answer;
     }
 }
