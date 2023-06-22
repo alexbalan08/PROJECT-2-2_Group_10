@@ -1,7 +1,5 @@
 package UI;
 
-//import UI.FaceRecog;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -56,7 +54,8 @@ public class LogInPage extends Application {
     private boolean logIn = true;
     private boolean cameraVisible = true;
     private boolean saveFace = false;
-    private int numFacePictures = 30;
+    private int numFacePictures = 20;
+    private int intervalPicTime = 30;
     private int saveFaceCount = 0;
     private int picTimeDelay = 0;
     private String personNamePath = "";
@@ -297,7 +296,7 @@ public class LogInPage extends Application {
             File personImages = new File("src/main/resources/faceImages/" + personNamePath);
             personImages.mkdir();
 
-            int count = 0;
+            int count = 101; // CHANGE TO 0
             for (Mat signUpFace : signUpFaces) {
                 String pathName = "src/main/resources/faceImages/" + personNamePath + "/Img" + count + ".jpg";
 
@@ -389,7 +388,7 @@ public class LogInPage extends Application {
 
     public void saveFace(Rect rect, Mat grayFrame) {
         if (saveFaceCount < numFacePictures) {
-            if (picTimeDelay % 10 == 0 && picTimeDelay != 0) {
+            if (picTimeDelay % intervalPicTime == 0 && picTimeDelay != 0) {
                 // Save the face region as an image
                 Mat faceRegion = grayFrame.submat(rect);
                 signUpFaces.add(faceRegion);
@@ -496,11 +495,11 @@ public class LogInPage extends Application {
         String label = "Unknown";
         this.nameLabel = label;
 
-        int threshold = 100;
+        double threshold = 79.07;
         if (faceRecog == FaceRecog.EIGEN)
-            threshold = 1400;
+            threshold = 726.91;
         else if (faceRecog == FaceRecog.FISHER)
-            threshold = 160;
+            threshold = 264.78;
 
         if (confidence < threshold) {
             recognizedFace = true;
