@@ -42,6 +42,16 @@ public class Sentences {
         }
     }
 
+    public String getExamplesOfQuestions() {
+        StringBuilder resume = new StringBuilder();
+        for(var entry : this.sentences.entrySet()) {
+            resume.append(entry.getKey().replace("<", "").replace(">", "")).append(" : \n");
+            resume.append("- ").append(entry.getValue().get(0)).append(" \n");
+            resume.append("\n");
+        }
+        return resume.toString();
+    }
+
     private void replace(String entry) {
         if(this.rules.containsKey(entry)) {
             for(String next : this.rules.get(entry)) {
@@ -86,7 +96,10 @@ public class Sentences {
     }
 
     private String clearSentence(String sentence) {
-        sentence = sentence.trim().replace("  ", " ").replace("  ", " ") + this.questionToken;
+        sentence = sentence.trim().replace("  ", " ").replace("  ", " ");
+        if(!sentence.endsWith(this.questionToken)) {
+            sentence = sentence + " " + this.questionToken;
+        }
         return sentence.toLowerCase();
     }
 }

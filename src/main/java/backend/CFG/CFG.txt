@@ -1,5 +1,5 @@
 Rule <S> <ACTION>
-Rule <ACTION> <LOCATION> | <SCHEDULE> | <WEATHER> | <TEST>
+Rule <ACTION> <LOCATION> | <SCHEDULE> | <WEATHER>
 Rule <SCHEDULE> Which lectures are there <TIMEEXPRESSION> | <TIMEEXPRESSION> which lectures are there
 Rule <TIMEEXPRESSION> on <DAY> at <TIME> | at <TIME> on <DAY> | on <DAY> | at <DAY>
 Rule <TIME> 9 | 12 | Tomorrow | Today
@@ -8,7 +8,7 @@ Rule <LOCATION> Where is <ROOM> | How do <PRO> get to <ROOM> | Where is <ROOM> l
 Rule <PRO> I | you | he | she | my mother
 Rule <ROOM> DeepSpace | SpaceBox | TestBox
 Rule <WEATHER> How is the weather <CITYLOCATION> | <PRO> <VERB> <CITYLOCATION>. What is the weather
-Rule <CITYLOCATION> in <CITY> <TIME> | in <CITY>
+Rule <CITYLOCATION> in <CITY> at <TIME> | in <CITY> | in <CITY> <TIME>
 Rule <VERB> am | is
 Rule <CITY> New York | Berlin
 
@@ -25,6 +25,3 @@ Action <LOCATION> *  * I don't know this room.
 Action <WEATHER> * <CITY> New York <TIME> tomorrow * It will be sunny.
 Action <WEATHER> * <CITY> Berlin * It is rainy.
 Action <WEATHER> * <PRO> my mother <VERB> is <CITY> New York <TIME> today * It is stormy today.
-
-Rule <TEST> How are you ?
-Action <TEST> *  * I m fine.

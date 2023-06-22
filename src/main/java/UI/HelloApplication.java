@@ -62,7 +62,7 @@ public class HelloApplication extends Application {
 
         StackPane paneCenter = createPaneCenter(eyeAndConversation);
 
-        outputBotMessage("Hello " + LogInPage.getPersonName() + ", how can I help you?");
+        outputBotMessage("Hello " + LogInPage.getPersonName() + ", how can I help you ? If you are looking for help, use this prompt : \"Can you give me some examples of questions ?\"");
 
         StackPane backgroundPane = new StackPane();
         backgroundPane.setBackground(new Background(images.background()));
