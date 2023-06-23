@@ -51,7 +51,7 @@ public class Sentences {
         }
         resume.append("SPOTIFY API").append("\n").append("- Can you play \"TITLE\" ?").append("\n\n");
         resume.append("WEATHER API").append("\n").append("- What is the temperature at \'CITY\' ?").append("\n\n");
-        resume.append("CANVAS API").append("\n").append("- For the course COURSER can you find 'TOPIC' ?").append("\n\n");
+        resume.append("CANVAS API").append("\n").append("- For the course COURSE can you find 'TOPIC' ?").append("\n\n");
         resume.append("WIKIPEDIA API").append("\n").append("- Can you explain to me what is SUBJECT ?").append("\n");
         return resume.toString();
     }
