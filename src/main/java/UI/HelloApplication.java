@@ -236,7 +236,7 @@ public class HelloApplication extends Application {
                     textArea.setText("Click on button to end the speech recognition");
                 } else {
                     System.out.println("END SPEECH");
-                    textArea.setText("");
+                    textArea.setText("Speech recognition text found");
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
