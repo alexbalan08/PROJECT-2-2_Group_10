@@ -30,4 +30,9 @@ public class CFG {
     public String getExamplesOfQuestions() {
         return "Here are the skills I know, with a sample question for each : \n\n" + this.sentences.getExamplesOfQuestions();
     }
+
+    public String getCFGSKillTemplate() {
+        return "You can add a skill with the command \"Add cfg skill:\". You will first encode your type of skill. " +
+                "Then, I will give you a template for rules and actions. For the actions lines, the key elements are between the two asterisks and the answer is after the second one.";
+    }
 }

@@ -92,6 +92,11 @@ public class DA implements ActionQuery {
                 output.append(this.cfg.getExamplesOfQuestions());
             }
 
+            // CHECK IF THE USER ASK FOR TEMPLATE TO ADD SKILL
+            if(StringUtils.areSimilarSentences(query, "Can you show me the template to add a skill ?", 0.8)) {
+                output.append(this.cfg.getCFGSKillTemplate());
+            }
+
             // CHECK IF THE CFG KNOW THE SKILL
             if (output.isEmpty()) {
                 output.append(this.cfg.getAnswer(query.toLowerCase()));
