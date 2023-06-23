@@ -1,4 +1,5 @@
 package UI;
+
 import backend.DA;
 import backend.SkillEditor;
 import javafx.application.Application;
@@ -77,7 +78,7 @@ public class HelloApplication extends Application {
     }
 
     public void outputBotMessage(String message) {
-        if(message != "") createMessage(message, false);
+        if (message != "") createMessage(message, false);
     }
 
     public void outputUserMessage(String message) {
@@ -98,7 +99,7 @@ public class HelloApplication extends Application {
             iconText.setAlignment(Pos.CENTER_RIGHT);
             iconPane = new StackPane(images.accountIconView(textHeight));
             iconText.getChildren().addAll(text, iconPane);
-            iconText.setMargin(text, new Insets(0, 5, 0 ,0));
+            iconText.setMargin(text, new Insets(0, 5, 0, 0));
         } else {
             iconPane = new StackPane(images.eyeIconView(textHeight));
             iconText.getChildren().addAll(iconPane, text);
@@ -106,7 +107,7 @@ public class HelloApplication extends Application {
 
         iconPane.setAlignment(Pos.TOP_CENTER);
         conversation.getChildren().add(iconText);
-        conversation.setMargin(iconText, new Insets(5, 0, 5 ,0));
+        conversation.setMargin(iconText, new Insets(5, 0, 5, 0));
     }
 
     public void sendMessageEventHandler() throws IOException, InvocationTargetException, IllegalAccessException {
@@ -174,26 +175,18 @@ public class HelloApplication extends Application {
             if (ke.getCode().equals(KeyCode.ENTER)) {
                 String text = textArea.getText().strip();
                 SkillEditor skillEditor;
-                try { skillEditor = new SkillEditor();
-                } catch (NoSuchMethodException | IOException e) { throw new RuntimeException(e); }
+                try {
+                    skillEditor = new SkillEditor();
+                } catch (NoSuchMethodException | IOException e) {
+                    throw new RuntimeException(e);
+                }
                 skillEditor.setQuery(text);
-                if(skillEditor.isQueryToEditSkill() && skillEditor.entry.getValue().getName().equals("addCFGSkill")) {
+                if (skillEditor.isQueryToEditSkill() && skillEditor.entry.getValue().getName().equals("addCFGSkill")) {
                     if (!text.contains("Type")) {
                         addToTextArea(text + skillEditor.addCFGSkillTemplateType());
-                    } else if (!text.contains("Rule")){
+                    } else if (!text.contains("Rule")) {
                         String type = text.substring(text.lastIndexOf(":") + 1).trim();
                         addToTextArea(text + "\n" + skillEditor.addCFGSkillTemplateRulesAndActions(type));
-                    }
-                }
-               else if (skillEditor.isQueryToEditSkill() && (skillEditor.entry.getValue().getName().equals("addSkill") || skillEditor.entry.getValue().getName().equals("addActionToSkill"))) {
-                    if (skillEditor.entry.getValue().getName().equals("addSkill") && !text.contains("Question"))
-                        addToTextArea(text + skillEditor.addSkillTemplate());
-                    else if (skillEditor.entry.getValue().getName().equals("addActionToSkill") && !text.contains("Question"))
-                        addToTextArea(text + skillEditor.addActionToSkillTemplate());
-                    else if (textArea.getMaxHeight() <= (textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3)) {
-                        textArea.setMaxHeight(textArea.getMaxHeight() + (textHeight + 3));
-                        textArea.setMinHeight(textArea.getMinHeight() + (textHeight + 3));
-                        setConversationPaneScrollHeight();
                     }
                 } else {
                     try {
@@ -242,13 +235,11 @@ public class HelloApplication extends Application {
     public void addToTextArea(String text) {
         textArea.setText(text);
         int numberOfLines = text.split("\\n").length;
-        System.out.println("Number of lines: " + numberOfLines);
         if (numberOfLines > maxNewLinesTextArea) {
             textArea.setMaxHeight((textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3));
             textArea.setMinHeight((textHeight + (textHeight * 1.5)) + maxNewLinesTextArea * (textHeight + 3));
             setConversationPaneScrollHeight();
-        }
-        else {
+        } else {
             textArea.setMaxHeight((textHeight + (textHeight * 1.5)) + (numberOfLines - 1) * (textHeight + 3));
             textArea.setMinHeight((textHeight + (textHeight * 1.5)) + (numberOfLines - 1) * (textHeight + 3));
             setConversationPaneScrollHeight();
@@ -289,7 +280,7 @@ public class HelloApplication extends Application {
         public ImageView eyeIconView(int eyeIconHeight) {
             double ratio = eyeIcon.getWidth() / eyeIcon.getHeight();
             ImageView eyeIconView = new ImageView(eyeIcon);
-            eyeIconView.setFitWidth(ratio*eyeIconHeight);
+            eyeIconView.setFitWidth(ratio * eyeIconHeight);
             eyeIconView.setFitHeight(eyeIconHeight);
             return eyeIconView;
         }

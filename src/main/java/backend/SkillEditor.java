@@ -1,7 +1,5 @@
 package backend;
 
-import UI.HelloApplication;
-
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,38 +8,22 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SkillEditor implements ActionQuery {
     HashMap<ArrayList<String>, Method> mapFunctions = new HashMap<>();
-    String skillsFilePath = "./src/main/java/backend/Skills/SkillsTemplate.txt";
     String CFGSkillsFilePath = "./src/main/java/backend/CFG/CFG.txt";
     String query;
     String key;
     String lastSkillsAdded = "";
-    String originalSkillsTemplate;
     String originalCFGSkillsTemplate;
-    int countMinSkillsAdded = 0;
-    int countMinCFGSkillsAdded = 0;
     boolean isQueryToEditSkill;
     public HashMap.Entry<ArrayList<String>, Method> entry;
     public ArrayList<String> addSkills = new ArrayList<>();
     public ArrayList<String> addCFGSkills = new ArrayList<>();
-    public ArrayList<String> addActionToSkill = new ArrayList<>();
-    public ArrayList<String> showSkills = new ArrayList<>();
-    public ArrayList<String> getLastSkill = new ArrayList<>();
-    public ArrayList<String> getLastSkillAdded = new ArrayList<>();
-    public ArrayList<String> getLastSkillsAdded = new ArrayList<>();
-    public ArrayList<String> deleteAllAddedSkills = new ArrayList<>();
-    public ArrayList<String> deleteLastAddedSkill = new ArrayList<>();
-    public ArrayList<String> deleteSkill = new ArrayList<>();
-    public ArrayList<String> editLastSkill = new ArrayList<>();
-    public ArrayList<String> editSkill = new ArrayList<>();
 
     public SkillEditor() throws NoSuchMethodException, IOException {
         addSkillsToHashMap();
-        originalSkillsTemplate = Files.readString(Path.of(skillsFilePath));
         originalCFGSkillsTemplate = Files.readString(Path.of(CFGSkillsFilePath));
     }
 
@@ -55,134 +37,13 @@ public class SkillEditor implements ActionQuery {
 
         String[] addCFGSkill = {"add cfg skill:", "add cfg skills:", "add this cfg skill:", "add the following cfg skill:", "add this following cfg skill:", "add the following cfg skills:", "add these following cfg skills:", "add the cfg skill:", "add the cfg skills:", "add these cfg skills:", "add cfg:", "add this other cfg skill:", "add these other cfg skills:", "add another cfg skill:", "add one more cfg skill:", "add this one more cfg skill:"};
         addCFGSkills.addAll(Arrays.asList(addCFGSkill));
-        for(String addCFGSkillOption : addCFGSkill) {
+        for (String addCFGSkillOption : addCFGSkill) {
             addCFGSkills.add(addCFGSkillOption);
             addCFGSkills.add("can you " + addCFGSkillOption);
         }
 
-        String[] getShow = {"get", "can you get", "get me", "can you get me", "show", "can you show", "show me", "can you show me"};
-        String[] remove = {"remove", "please remove", "can you remove", "delete", "can you delete", "please delete"};
-        String[] edit = {"edit", "can I edit", "may I edit", "let me edit", "please let me edit", "change", "can I change", "may I change", "let me change", "please let me change"};
-        String[] the = {" the", ""};
-        String[] added = {" added", " I added", " that I added", " you added", " that you added", " I told you to add", " that I told you to add"};
-        String[] addedSingular = {" that has been added", " that was added"};
-        String[] addedPlural = {" that have been added", " that were added"};
-        String[] skills = {" skills", " the skills", " all skills", " all the skills"};
-        String[] please = {"please ", ""};
-        String[] canYou = {"can you ", "could you ", ""};
-
-        for (String theOption : the) {
-            for (String pleaseOption : please) {
-                for (String canYouOption : canYou) {
-                    addActionToSkill.add(canYouOption + pleaseOption + "add" + theOption + " action to" + theOption + " skill \\d+:");
-                    addActionToSkill.add(canYouOption + pleaseOption + "add" + theOption + " following action to" + theOption + " skill \\d+:");
-                    addActionToSkill.add(canYouOption + pleaseOption + "add to" + theOption + " skill \\d+" + theOption + " action:");
-                    addActionToSkill.add(canYouOption + pleaseOption + "add to" + theOption + " skill \\d+" + theOption + " following action:");
-                }
-            }
-        }
-
-        for (String getShowOption : getShow) {
-            for (String skillsOption : skills) {
-                showSkills.add(getShowOption + skillsOption);
-            }
-        }
-
-        for (String removeOption : remove) {
-            for (String skillsOption : skills) {
-                deleteAllAddedSkills.add(removeOption + " the" + skillsOption);
-                deleteAllAddedSkills.add(removeOption + skillsOption);
-                deleteAllAddedSkills.add(removeOption + " added skills");
-                deleteAllAddedSkills.add(removeOption + " the added skills");
-                deleteAllAddedSkills.add(removeOption + " all added skills");
-                deleteAllAddedSkills.add(removeOption + " all the added skills");
-            }
-        }
-
-        for (String removeOption : remove) {
-            for (String theOption : the) {
-                for (String addedOption : added) {
-                    deleteLastAddedSkill.add(removeOption + theOption + " skill" + addedOption);
-                    deleteLastAddedSkill.add(removeOption + theOption + " last skill" + addedOption);
-                }
-                for (String addedOption : addedPlural) {
-                    deleteLastAddedSkill.add(removeOption + theOption + " skill" + addedOption);
-                    deleteLastAddedSkill.add(removeOption + theOption + " last skill" + addedOption);
-                }
-                deleteLastAddedSkill.add(removeOption + theOption + " added skill");
-                deleteLastAddedSkill.add(removeOption + theOption + " last added skill");
-            }
-        }
-
-        for (String editOption : edit) {
-            for (String theOption : the) {
-                editLastSkill.add(editOption + theOption + " last skill");
-                for (String addedOption : added) {
-                    editLastSkill.add(editOption + theOption + " last skill" + addedOption);
-                }
-            }
-        }
-
-        for (String editOption : edit) {
-            for (String theOption : the) {
-                editSkill.add(editOption + theOption + " skill \\d+");
-                editSkill.add(editOption + theOption + " skill \\d+ from the text file");
-                for (String addedOption : added) {
-                    editSkill.add(editOption + theOption + " skill \\d+" + addedOption);
-                }
-            }
-        }
-
-        for (String removeOption : remove) {
-            for (String theOption : the) {
-                deleteSkill.add(removeOption + theOption + " skill \\d+");
-                deleteSkill.add(removeOption + theOption + " skill \\d+ from the text file");
-                for (String addedOption : added) {
-                    deleteSkill.add(removeOption + theOption + " skill \\d+" + addedOption);
-                }
-            }
-        }
-
-        for (String getShowOption : getShow) {
-            for (String theOption : the) {
-                for (String add : added) {
-                    getLastSkill.add(getShowOption + theOption + " last skill");
-                    getLastSkillAdded.add(getShowOption + theOption + " last skill" + add);
-                    getLastSkillAdded.add(getShowOption + theOption + "skill" + add);
-                }
-                for (String add : addedSingular) {
-                    getLastSkill.add(getShowOption + theOption + " last skill");
-                    getLastSkillAdded.add(getShowOption + theOption + " last skill" + add);
-                }
-            }
-        }
-
-        for (String showSkill : showSkills) {
-            String show = showSkill.substring(0, showSkill.lastIndexOf(" ") + 1);
-            String skill = showSkill.substring(showSkill.lastIndexOf(" ") + 1);
-            for (String add : added) {
-                getLastSkillsAdded.add(showSkill.concat(add));
-                getLastSkillsAdded.add(show + "last " + skill + add);
-            }
-            for (String add : addedPlural) {
-                getLastSkillsAdded.add(showSkill.concat(add));
-                getLastSkillsAdded.add(show + "last " + skill + add);
-            }
-            getLastSkillsAdded.add(show + "last " + skill);
-        }
-
-        mapFunctions.put(addSkills, SkillEditor.class.getMethod("addSkill"));
+        mapFunctions.put(addSkills, SkillEditor.class.getMethod("addCFGSkill"));
         mapFunctions.put(addCFGSkills, SkillEditor.class.getMethod("addCFGSkill"));
-        mapFunctions.put(addActionToSkill, SkillEditor.class.getMethod("addActionToSkill"));
-        mapFunctions.put(showSkills, SkillEditor.class.getMethod("getSkills"));
-        mapFunctions.put(getLastSkill, SkillEditor.class.getMethod("getLastSkill"));
-        mapFunctions.put(getLastSkillsAdded, SkillEditor.class.getMethod("getLastSkillsAdded"));
-        mapFunctions.put(getLastSkillAdded, SkillEditor.class.getMethod("getLastSkillAdded"));
-        mapFunctions.put(deleteLastAddedSkill, SkillEditor.class.getMethod("deleteLastAddedSkill"));
-        mapFunctions.put(deleteAllAddedSkills, SkillEditor.class.getMethod("deleteAllAddedSkills"));
-        mapFunctions.put(deleteSkill, SkillEditor.class.getMethod("deleteSkill"));
-        mapFunctions.put(editLastSkill, SkillEditor.class.getMethod("editLastSkill"));
-        mapFunctions.put(editSkill, SkillEditor.class.getMethod("editSkill"));
     }
 
     public void setQuery(String query) {
@@ -229,33 +90,6 @@ public class SkillEditor implements ActionQuery {
         return (String) mapFunctions.get(entry.getKey()).invoke(this);
     }
 
-    // Adds the skill to the text file and returns a String saying if adding the skill to the SkillsTemplate was successful
-    public String addSkill() {
-        try (FileWriter fw = new FileWriter("./src/main/java/backend/Skills/SkillsTemplate.txt", true)) {
-            try (BufferedWriter bw = new BufferedWriter(fw)) {
-                try (PrintWriter pw = new PrintWriter(bw)) {
-                    String command = query.substring(0, query.indexOf("\n"));
-                    boolean addMoreThanOneSkill = command.contains("skills");
-                    query = query.replace(command, "");
-                    countMinSkillsAdded++;
-                    lastSkillsAdded = lastSkillsAdded.concat("\n" + query);
-                    pw.print(query + "\n");
-
-                    if (!addMoreThanOneSkill)
-                        return "The skill has been added";
-
-                    countMinSkillsAdded += 2;
-                    lastSkillsAdded = query;
-                    return "The skills have been added";
-                }
-            } catch (IOException io) {
-                return "Error with the BufferedWriter";
-            }
-        } catch (IOException io) {
-            return "Error with the FileWriter";
-        }
-    }
-
     public String addCFGSkill() {
         String file = rewriteFile();
         try (FileWriter fw = new FileWriter("./src/main/java/backend/CFG/CFG.txt", false)) {
@@ -265,14 +99,12 @@ public class SkillEditor implements ActionQuery {
                     boolean addMoreThanOneSkill = command.contains("skills");
                     query = query.replace(command, "");
                     query = query.replace(" : ", " ").replace(": ", " ").replace(":", "");
-                    countMinSkillsAdded++;
                     lastSkillsAdded = lastSkillsAdded.concat("\n" + query);
                     pw.print(file + query + "\n");
 
                     if (!addMoreThanOneSkill)
                         return "The skill has been added";
 
-                    countMinSkillsAdded += 2;
                     lastSkillsAdded = query;
                     return "The skills have been added";
                 }
@@ -297,12 +129,12 @@ public class SkillEditor implements ActionQuery {
             type = type.replace("\nType :  ", "");
             String[] types = type.split("\\|");
 
-            while((line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) {
                 input += line + System.lineSeparator();
-                if(line.startsWith("Rule <ACTION>")) {
-                    for(String typ : types) {
+                if (line.startsWith("Rule <ACTION>")) {
+                    for (String typ : types) {
                         typ = typ.substring(typ.indexOf(":") + 1).replace("?", "").trim();
-                        if(!typ.contains("<")) {
+                        if (!typ.contains("<")) {
                             typ = "<" + typ.toUpperCase() + ">";
                         }
                         input = input.replace(line, line + " | " + typ);
@@ -315,141 +147,12 @@ public class SkillEditor implements ActionQuery {
         return input;
     }
 
-    public String addSkillTemplate() {
-        return "\nQuestion :  ?\nAction :  : \nAnswer : \nError : ";
+    public String addCFGSkillTemplateType() {
+        return "\nType : ";
     }
 
-    public String addCFGSkillTemplateType() { return "\nType : "; }
-
-    public String addCFGSkillTemplateRulesAndActions(String type) { return "Rule : <" + type + ">\nAction : <" + type + "> *  * "; }
-
-    public String addActionToSkill() throws IOException {
-        String action = query.substring(query.indexOf("\n"));
-        if (!action.contains("Action :") || action.indexOf(":") == action.lastIndexOf(":"))
-            return "Please write the action(s) with te right template";
-        Matcher matcher = Pattern.compile("\\d+").matcher(query);
-        int skillNumber = 0;
-        if (matcher.find()) {
-            skillNumber = Integer.parseInt(matcher.group());
-        }
-        String[] skills = getSkills().split("\\r?\\n\\r?\\n");
-        String skill = skills[skillNumber - 1].strip();
-        int lastIndexOfAction = skill.lastIndexOf("Action");
-        int newLineAfterActionIndex = skill.substring(lastIndexOfAction).indexOf("\n");
-        int indexToPrintAction = lastIndexOfAction + newLineAfterActionIndex + 1;
-        String command = query.substring(0, query.indexOf("\n"));
-        query = query.replace(command, "");
-
-        skills[skillNumber - 1] = skill.substring(0, indexToPrintAction - 1) + query + "\n" + skill.substring(indexToPrintAction);
-
-        String output = "";
-        for (String skillPart : skills) {
-            output += skillPart + "\r\n\r\n";
-        }
-        output = output.substring(0, output.length() - 1);
-
-        writeToSkillsFile(output.strip() + "\n");
-        return "The action has been added";
+    public String addCFGSkillTemplateRulesAndActions(String type) {
+        return "Rule : <" + type + ">\nAction : <" + type + "> *  * ";
     }
 
-    public String addActionToSkillTemplate() {
-        return "\nAction :  : ";
-    }
-
-    public String getSkills() throws IOException {
-        return Files.readString(Path.of("./src/main/java/backend/Skills/SkillsTemplate.txt"));
-    }
-
-    public String getLastSkill() throws IOException {
-        String skillsTemplateText = getSkills();
-        String lastSkill;
-        if (skillsTemplateText.strip().contains("\n")) lastSkill = skillsTemplateText.strip().substring(skillsTemplateText.strip().lastIndexOf("\n\n") + 2);
-        else lastSkill = skillsTemplateText;
-        return lastSkill;
-    }
-
-    public String getLastSkillAdded() throws IOException {
-        String lastSkill = getLastSkill();
-        if (lastSkillsAdded.contains(lastSkill)) return lastSkill;
-        return "No skills have been recently added.";
-    }
-
-    public String getLastSkillsAdded() {
-        if(countMinSkillsAdded == 0) return "No skills have been recently added.";
-        else if (countMinSkillsAdded == 1) {
-            return "One skill has been added:\n".concat(lastSkillsAdded.strip());
-        }
-        return lastSkillsAdded.strip();
-    }
-
-    public String deleteAllAddedSkills() throws IOException {
-        if(countMinSkillsAdded == 0 & countMinCFGSkillsAdded == 0) return "No skills have been recently added.";
-        if(countMinSkillsAdded != 0) {
-            writeToSkillsFile(originalSkillsTemplate);
-        }
-        if(countMinCFGSkillsAdded != 0){
-            writeToCFGSkillsFile(originalCFGSkillsTemplate);
-        }
-        countMinSkillsAdded = 0;
-        lastSkillsAdded = "";
-        return "All the added skills were deleted successfully.";
-    }
-
-    public String deleteLastAddedSkill() throws IOException {
-        if(countMinSkillsAdded == 0) return "No skills have been recently added.";
-        String lastSkillAdded = getLastSkillAdded().strip();
-        String textWithDeletedSkill = getSkills().substring(0, getSkills().indexOf(lastSkillAdded));
-        writeToSkillsFile(textWithDeletedSkill.strip().concat("\n"));
-        countMinSkillsAdded--;
-        lastSkillsAdded = lastSkillsAdded.replaceAll(lastSkillAdded, "");
-        return "The last added skill was deleted successfully.";
-    }
-
-    public void writeToSkillsFile(String text) throws FileNotFoundException {
-        PrintWriter pw = new PrintWriter(new File(skillsFilePath));
-        pw.append(text);
-        pw.flush();
-    }
-
-    public void writeToCFGSkillsFile(String text) throws FileNotFoundException {
-        PrintWriter pw = new PrintWriter(new File(CFGSkillsFilePath));
-        pw.append(text);
-        pw.flush();
-    }
-
-   public String editSkill() throws IOException {
-        return modifySkill(true);
-   }
-
-    public String deleteSkill() throws IOException {
-        return modifySkill(false);
-    }
-
-   public String modifySkill(boolean addToTextArea) throws IOException {
-       Matcher matcher = Pattern.compile("\\d+").matcher(query);
-       int skillNumber = 0;
-       if (matcher.find()) {
-           skillNumber = Integer.parseInt(matcher.group());
-       }
-       String[] skills = getSkills().split("\\r?\\n\\r?\\n");
-       if (skillNumber > skills.length)
-           return "Skill " + skillNumber + " does not exist.";
-       String skill = skills[skillNumber - 1].strip();
-       //if (!lastSkillsAdded.contains(skill)) return "Sorry, you can not edit a skill you have not added yourself.";
-       String newFileContent = getSkills().replace("\r\n\r\n" + skill, "");
-       writeToSkillsFile(newFileContent);
-       if (addToTextArea) {
-           HelloApplication.getInstance().addToTextArea("add the skill:\n" + skill);
-           return "You can now edit the skill.";
-       }
-       return "The skill was deleted successfully";
-    }
-
-   public String editLastSkill() throws IOException {
-       //if(countMinSkillsAdded == 0) return "Sorry, you can not edit a skill you have not added yourself.";
-       String[] skills = getSkills().split("\\r?\\n\\r?\\n");
-       int lastSkill = skills.length;
-       this.query = "edit the skill " + lastSkill;
-       return modifySkill(true);
-   }
 }
