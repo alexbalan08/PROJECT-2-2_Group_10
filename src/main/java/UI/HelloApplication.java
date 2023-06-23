@@ -225,7 +225,6 @@ public class HelloApplication extends Application {
             }
         });
 
-        int counter = 0;
         ImageView speechIconView = images.speechIconView();
         speechIconView.setOnMouseClicked(me -> {
             try {
