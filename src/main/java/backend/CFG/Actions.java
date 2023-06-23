@@ -34,4 +34,14 @@ public class Actions {
         }
         return counter == split.length;
     }
+
+    public String getAnswersForBERTModel() {
+        String result = "";
+        for(var firstEntry : this.actions.entrySet()) {
+            for(var secondEntry : firstEntry.getValue().entrySet()) {
+                result += secondEntry.getKey() + " : " + secondEntry.getValue() + "\n";
+            }
+        }
+        return result;
+    }
 }

@@ -13,6 +13,7 @@ module UI {
     requires org.apache.pdfbox;
     requires org.json;
     requires org.bytedeco.opencv;
+    requires jep;
     //requires opencv;
 
 
