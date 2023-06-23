@@ -1,6 +1,5 @@
 *.secret
 src/main/resources/courses/*
-src/main/resources/faceImages/*
 
 .gradle
 build/
