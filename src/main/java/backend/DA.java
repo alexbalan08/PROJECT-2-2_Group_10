@@ -83,7 +83,7 @@ public class DA implements ActionQuery {
             }
 
             // CHECK IF THE USER WANT TO USE BERT
-            if (StringUtils.areSimilarSentences(query, "Activate BERT model", 0.8) || StringUtils.areSimilarSentences(query, "Deactivate BERT model", 0.8)) {
+            if (StringUtils.areSimilarSentences(query, "Activate BERT", 0.8) || StringUtils.areSimilarSentences(query, "Deactivate BERT", 0.8)) {
                 useBert = !useBert;
                 if(useBert) {
                     output.append("BERT model is now activated");
@@ -102,7 +102,7 @@ public class DA implements ActionQuery {
                 output.append(this.cfg.getAnswer(query.toLowerCase()));
             }
 
-            // THEN CHECK IF IT'S AN API SKILL WANTED
+            // CHECK IF IT'S AN API SKILL WANTED
             if (output.isEmpty() || output.toString().equals("I don't know.") || output.toString().equals("I don't know...")) {
                 output = new StringBuilder();
                 String determinedSkill = this.apiSkillRecognition.determineSkill(query.toLowerCase(Locale.ROOT));
@@ -118,6 +118,7 @@ public class DA implements ActionQuery {
                 }
             }
 
+            // THEN, CHECK IF CLIP MODEL CAN FIND THE SKILL
             if (output.isEmpty() || output.toString().equals("I don't know.") || output.toString().equals("I don't know...")) {
                 output = new StringBuilder();
                 String determinedSkill = languageModel.determineSkill(query);

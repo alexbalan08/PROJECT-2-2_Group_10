@@ -64,7 +64,7 @@ public class HelloApplication extends Application {
         StackPane paneCenter = createPaneCenter(eyeAndConversation);
 
         outputBotMessage("Hello " + LogInPage.getPersonName() + ", how can I help you ? If you are looking for help, use one of these prompt : \"Can you give me some examples of questions ?\" " +
-                "or \"Can you show me the template to add a skill ?\". You can activate or deactivate BERT model with \"Activate BERT model\" or \"Deactivate BERT model\"");
+                "or \"Can you show me the template to add a skill ?\". You can activate or deactivate BERT model with \"Activate BERT\" or \"Deactivate BERT\"");
 
         StackPane backgroundPane = new StackPane();
         backgroundPane.setBackground(new Background(images.background()));
