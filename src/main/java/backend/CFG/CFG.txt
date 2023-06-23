@@ -1,5 +1,5 @@
 Rule <S> <ACTION>
-Rule <ACTION> <LOCATION> | <SCHEDULE> | <WEATHER>
+Rule <ACTION> <LOCATION> | <SCHEDULE> | <WEATHER> | <TEST>
 Rule <SCHEDULE> Which lectures are there <TIMEEXPRESSION> | <TIMEEXPRESSION> which lectures are there
 Rule <TIMEEXPRESSION> on <DAY> at <TIME> | at <TIME> on <DAY> | on <DAY> | at <DAY>
 Rule <TIME> 9 | 12 | Tomorrow | Today

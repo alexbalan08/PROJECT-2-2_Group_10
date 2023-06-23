@@ -179,7 +179,10 @@ public class HelloApplication extends Application {
                 skillEditor.setQuery(text);
                 if(skillEditor.isQueryToEditSkill() && skillEditor.entry.getValue().getName().equals("addCFGSkill")) {
                     if (!text.contains("Type")) {
-                        addToTextArea(text + skillEditor.addCFGSkillTemplate());
+                        addToTextArea(text + skillEditor.addCFGSkillTemplateType());
+                    } else if (!text.contains("Rule")){
+                        String type = text.substring(text.lastIndexOf(":") + 1).trim();
+                        addToTextArea(text + "\n" + skillEditor.addCFGSkillTemplateRulesAndActions(type));
                     }
                 }
                else if (skillEditor.isQueryToEditSkill() && (skillEditor.entry.getValue().getName().equals("addSkill") || skillEditor.entry.getValue().getName().equals("addActionToSkill"))) {

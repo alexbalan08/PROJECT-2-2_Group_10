@@ -1,7 +1,6 @@
 package backend;
 
 import UI.HelloApplication;
-import javafx.scene.control.TextArea;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -11,7 +10,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -321,7 +319,9 @@ public class SkillEditor implements ActionQuery {
         return "\nQuestion :  ?\nAction :  : \nAnswer : \nError : ";
     }
 
-    public String addCFGSkillTemplate() { return "\nType : \nRule : \nAction : "; }
+    public String addCFGSkillTemplateType() { return "\nType : "; }
+
+    public String addCFGSkillTemplateRulesAndActions(String type) { return "Rule : <" + type + ">\nAction : <" + type + "> *  * "; }
 
     public String addActionToSkill() throws IOException {
         String action = query.substring(query.indexOf("\n"));
