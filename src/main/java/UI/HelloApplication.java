@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class HelloApplication extends Application {
     private static HelloApplication instance;
@@ -224,8 +225,26 @@ public class HelloApplication extends Application {
             }
         });
 
+        int counter = 0;
+        ImageView speechIconView = images.speechIconView();
+        speechIconView.setOnMouseClicked(me -> {
+            try {
+                textArea.setMaxHeight((textHeight + (textHeight * 1.5)));
+                textArea.setMinHeight((textHeight + (textHeight * 1.5)));
+                if(textArea.getText().equals("")) {
+                    System.out.println("SPEECH");
+                    textArea.setText("Click on button to end the speech recognition");
+                } else {
+                    System.out.println("END SPEECH");
+                    textArea.setText("");
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
         HBox textAreaSend = new HBox(10);
-        textAreaSend.getChildren().addAll(textArea, sendIconView);
+        textAreaSend.getChildren().addAll(textArea, sendIconView, speechIconView);
         textAreaSend.setAlignment(Pos.BOTTOM_CENTER);
 
         textAreaSend.setMaxHeight(textArea.getMaxHeight());
@@ -269,12 +288,14 @@ public class HelloApplication extends Application {
         private Image eyeIcon;
         private Image backgroundImage;
         private Image sendIcon;
+        private Image speechIcon;
         private Image accountIcon;
 
         public BuildImages() {
             eyeIcon = new Image("file:src/main/resources/UI/blue-eye-original-icon.png");
             backgroundImage = new Image("file:src/main/resources/UI/dark-fog-background.png");
             sendIcon = new Image("file:src/main/resources/UI/send-icon.png");
+            speechIcon = new Image("file:src/main/resources/UI/SpeechRecognition.png");
             accountIcon = new Image("file:src/main/resources/UI/account-icon.png");
         }
 
@@ -295,6 +316,13 @@ public class HelloApplication extends Application {
             sendIconView.setFitWidth(sendIcon.getWidth() * 0.6);
             sendIconView.setFitHeight(sendIcon.getHeight() * 0.6);
             return sendIconView;
+        }
+
+        public ImageView speechIconView() {
+            ImageView speechIconView = new ImageView(speechIcon);
+            speechIconView.setFitWidth(speechIcon.getWidth() * 0.15);
+            speechIconView.setFitHeight(speechIcon.getHeight() * 0.15);
+            return speechIconView;
         }
 
         public ImageView accountIconView(int accountIconHeight) {
