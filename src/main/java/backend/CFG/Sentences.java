@@ -46,13 +46,14 @@ public class Sentences {
         StringBuilder resume = new StringBuilder();
         for(var entry : this.sentences.entrySet()) {
             resume.append(entry.getKey().replace("<", "").replace(">", "")).append(" : \n");
-            resume.append("- ").append(entry.getValue().get(0)).append(" \n");
+            String value = entry.getValue().get(0).substring(0, 1).toUpperCase() + entry.getValue().get(0).substring(1);
+            resume.append("- ").append(value).append(" \n");
             resume.append("\n");
         }
-        resume.append("SPOTIFY API").append("\n").append("- Can you play \"TITLE\" ?").append("\n\n");
-        resume.append("WEATHER API").append("\n").append("- What is the temperature at \'CITY\' ?").append("\n\n");
-        resume.append("CANVAS API").append("\n").append("- For the course COURSE can you find 'TOPIC' ?").append("\n\n");
-        resume.append("WIKIPEDIA API").append("\n").append("- Can you explain to me what is SUBJECT ?").append("\n");
+        resume.append("SPOTIFY API").append("\n").append("- Can you play \"What is love\" ?").append("\n\n");
+        resume.append("WEATHER API").append("\n").append("- What is the temperature at 'Dubai' ?").append("\n\n");
+        resume.append("CANVAS API").append("\n").append("- For the course Natural Language Processing can you find 'BERT' ?").append("\n\n");
+        resume.append("WIKIPEDIA API").append("\n").append("- Can you explain to me what is train ?").append("\n");
         return resume.toString();
     }
 
