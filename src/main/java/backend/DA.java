@@ -25,6 +25,8 @@ public class DA implements ActionQuery {
     private List<SkillTemplate> skillTemplates;
     private final SkillEditor skillEditor;
 
+    private boolean useBert;
+
     private final CFG cfg;
 
     public DA() throws Exception {
@@ -44,6 +46,7 @@ public class DA implements ActionQuery {
 
         String cfgFile = "./src/main/java/backend/CFG/CFG.txt";
         this.cfg = new CFG(cfgFile);
+        this.useBert = true;
     }
 
     private void addSkill(SkillWrapper skill, SlotRecognition slotRecognition) {
@@ -79,8 +82,18 @@ public class DA implements ActionQuery {
                 output.append(this.cfg.getCFGSKillTemplate());
             }
 
+            // CHECK IF THE USER WANT TO USE BERT
+            if (StringUtils.areSimilarSentences(query, "Activate BERT model", 0.8) || StringUtils.areSimilarSentences(query, "Deactivate BERT model", 0.8)) {
+                useBert = !useBert;
+                if(useBert) {
+                    output.append("BERT model is now activated");
+                } else {
+                    output.append("BERT model is now deactivated");
+                }
+            }
+
             // CHECH IF BERT CAN ANSWER
-            if(output.isEmpty()) {
+            if(useBert && output.isEmpty()) {
                 output.append(this.cfg.getAnswerForBERTModel(query));
             }
 
