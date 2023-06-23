@@ -18,7 +18,8 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
     private String skill;
     private static final double confidence = 0.7;
     private static String accessToken = "70752a229df0f14eacfde52a678b32b9";
-    private static String clip_API_URL = "https://api.clip.jina.ai:8443/post";
+    //private static String clip_API_URL = "https://api.clip.jina.ai:8443/post";
+    private static String clip_API_URL = "https://c00c-35-192-97-247.ngrok.io/post";
     static String[] canvasSkill = {"In which lecture slides of Theoretical Computer Science can you find about regular expressions", "For the course Calculus where can you find about 'multivariate'", "Where can I find 'matrix multiplication' in Linear Algebra", "Can you find the topic MRI in the course Computational and Cognitive Neuroscience", "Where could multithreading be in Databases", "For Numerical Mathematics I want to find 'Euler method'", "Are there slides for 'recursion' in Computer Science 1", "Where does Software Engineering have slides for 'design patterns'", "Where to find 'best first search' in the Reasoning Techniques course", "What the heck is universal constant for Logic course"};
     static String[] spotifyPlaySkill = {"Can you play the song 'Mad World'", "I would like you to play Bohemian Rhapsody", "Can I listen to 'Dancing Queen'", "I want to listen to The Logical Song", "I want to listen to the song 'Shame on You'", "Can 'Breakfast in America' be played", "Play 'Love Tonight'", "Please put 'Dancing Queen'", "Put 'Zombie' on", "Put Waka Waka by Shakira", "Could you play 'Something Just Like This' by Coldplay", "Play the song 'Thank You'"};
     static String[] spotifyStopSkill = {"Can you stop Mad World", "Stop 'Bohemian Rhapsody'", "Can you pause 'Dancing Queen'", "Pause 'Love Tonight'", "Stop the music", "Stop the song", "Pause what's sounding", "Could you pause the song", "Stop playing the song", "Can you shut up the music"};
@@ -28,7 +29,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
     static String[] weatherPlaceTimeSkill = {"What will the weather be like in Liege at 9am", "What weather will Maastricht have at 2pm", "What will be the weather in Amsterdam at 3pm", "Can you tell me the forecast for Paris at 5pm", "How cold will it be in Madrid at 10am today", "Can you give me the weather condition for Rome at 11am", "Can you tell me the temperature in Vienna at 5am", "At 10pm, what will the temperature be like in Athens", "What will be the weather like in Stockholm at 7pm tonight", "How hot will it be at 12pm in Brussels"};
     static String[] wikipediaSkill = {"Can you explain to me what are genetically modified organism", "What is the definition of human genome", "What does Wikipedia say about 'the Renaissance'", "Can you explain to me what 'Artificial Intelligence' is", "Can you look up in Wikipedia what is gravitational force", "What are the characteristics for parabolas", "What can Wikipedia tell me about the topic 'evolution'", "Give me some info about 'fungi'", "I want to know what the heck is impressionism according to Wikipedia", "Tell me about 'simile'"};
     static String[] randomSkill = {"yoyoyo", "what's up", "am I pretty", "you are boring", "fretwe cv4 5rv", "erfhgbhew", "erigbwr45tgryv", "are you human", "I like you", "I'm in the mood for going crazy", "I love playing tennis", "how are you doing", "I feel I need to go to the bathroom", "what if I'm hungry", "I want to travel somewhere", "what's the best place to drink", "am I older than you", "Mary went down to the farm", "what is wrong with people"};
-    static String[] cities = {"maastricht", "liege", "amsterdam", "brussels", "madrid", "paris", "milan", "athens", "rome", "london", "lisboa", "berlin", "prague", "stockholm", "vienna"};
+    static String[] cities = {"maastricht", "liege", "amsterdam", "brussels", "madrid", "paris", "milan", "athens", "rome", "london", "lisboa", "berlin", "prague", "stockholm", "vienna", "dubai"};
 
 
     public List<List<Double>> encode(List<String> sentences) throws IOException {
@@ -280,7 +281,7 @@ public class LanguageModel implements SkillRecognition, SlotRecognition {
                         Double doubleElement = Double.parseDouble(vectorElement);
                         vectorExample.add(doubleElement);
                     }
-                    System.out.println("DIMENSIONS: " + vectorExample.size());
+//                    System.out.println("DIMENSIONS: " + vectorExample.size());
                     vectorizedSkillExamples.add(vectorExample);
                 }
 

@@ -113,7 +113,6 @@ public class DA implements ActionQuery {
                 }
             }
 
-            /*
             if (output.isEmpty() || output.toString().equals("I don't know.") || output.toString().equals("I don't know...")) {
                 output = new StringBuilder();
                 String determinedSkill = languageModel.determineSkill(query);
@@ -131,12 +130,11 @@ public class DA implements ActionQuery {
                     }
                 }
             }
-             */
 
             if (!output.isEmpty()) {
                 return output.toString();
             } else {
-                return "Sorry, I don't know how can I answer to this ...";
+                return "Sorry, I don't know how I can answer to this ...";
             }
         } catch (Exception e) {
             e.printStackTrace();
