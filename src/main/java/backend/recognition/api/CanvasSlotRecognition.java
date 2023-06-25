@@ -55,7 +55,7 @@ public class CanvasSlotRecognition implements SlotRecognition {
         if (input.contains("\'"))
             topic = input.substring(input.indexOf("\'") + 1);
         if (topic.contains("\'"))
-            topic = topic.substring(0, topic.indexOf("\'"));
+            topic = topic.substring(0, topic.indexOf("\'")).toLowerCase();
         else
             topic = "";
 
@@ -67,7 +67,7 @@ public class CanvasSlotRecognition implements SlotRecognition {
 
     private String findCourse(String input) {
         for (String course : courses) {
-            if (input.contains(course))
+            if (input.toLowerCase().contains(course))
                 return course;
         }
         return "";
