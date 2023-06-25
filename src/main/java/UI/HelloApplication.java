@@ -21,6 +21,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -40,6 +44,8 @@ public class HelloApplication extends Application {
     public int borderMargin = 25;
     int maxNewLinesTextArea = 4;
     DA assistant = new DA();
+    WhisperAI whisper;
+    public int counter = 0;
 
     public HelloApplication() throws Exception {
         instance = this;
@@ -225,17 +231,22 @@ public class HelloApplication extends Application {
             }
         });
 
+        ExecutorService executor = Executors.newCachedThreadPool();
         ImageView speechIconView = images.speechIconView();
         speechIconView.setOnMouseClicked(me -> {
+            counter++;
             try {
                 textArea.setMaxHeight((textHeight + (textHeight * 1.5)));
                 textArea.setMinHeight((textHeight + (textHeight * 1.5)));
-                if(textArea.getText().equals("")) {
-                    System.out.println("SPEECH");
+                if(counter == 1) {
+                    whisper = new WhisperAI();
                     textArea.setText("Click on button to end the speech recognition");
-                } else {
-                    System.out.println("END SPEECH");
-                    textArea.setText("Speech recognition text found");
+                    executor.execute(() -> whisper.record());
+                } else if (counter == 2){
+                    textArea.setText(whisper.startASR());
+                    setConversationPaneScrollHeight();
+                    sendMessageEventHandler();
+                    counter = 0;
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
