@@ -14,6 +14,7 @@ module UI {
     requires org.json;
     requires org.bytedeco.opencv;
     requires jep;
+    requires org.bytedeco.ffmpeg;
     //requires opencv;
 
 
