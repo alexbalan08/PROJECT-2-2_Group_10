@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class SkillEditor implements ActionQuery {
@@ -16,15 +17,14 @@ public class SkillEditor implements ActionQuery {
     String query;
     String key;
     String lastSkillsAdded = "";
-    String originalCFGSkillsTemplate;
     boolean isQueryToEditSkill;
     public HashMap.Entry<ArrayList<String>, Method> entry;
     public ArrayList<String> addSkills = new ArrayList<>();
     public ArrayList<String> addCFGSkills = new ArrayList<>();
+    public ArrayList<String> deleteCFGSkills = new ArrayList<>();
 
     public SkillEditor() throws NoSuchMethodException, IOException {
         addSkillsToHashMap();
-        originalCFGSkillsTemplate = Files.readString(Path.of(CFGSkillsFilePath));
     }
 
     public void addSkillsToHashMap() throws NoSuchMethodException {
@@ -42,8 +42,16 @@ public class SkillEditor implements ActionQuery {
             addCFGSkills.add("can you " + addCFGSkillOption);
         }
 
+        String[] deleteCFGSkill = {"remove cfg skill:", "remove cfg skills:", "delete cfg skill:", "delete cfg skills:", "remove skill:", "remove skills:", "delete skill:", "delete skills:"};
+        deleteCFGSkills.addAll(Arrays.asList(deleteCFGSkill));
+        for (String deleteCFGSkillOption : deleteCFGSkill) {
+            deleteCFGSkills.add(deleteCFGSkillOption);
+            deleteCFGSkills.add("can you " + deleteCFGSkillOption);
+        }
+
         mapFunctions.put(addSkills, SkillEditor.class.getMethod("addCFGSkill"));
         mapFunctions.put(addCFGSkills, SkillEditor.class.getMethod("addCFGSkill"));
+        mapFunctions.put(deleteCFGSkills, SkillEditor.class.getMethod("deleteCFGSkill"));
     }
 
     public void setQuery(String query) {
@@ -92,7 +100,7 @@ public class SkillEditor implements ActionQuery {
 
     public String addCFGSkill() {
         String file = rewriteFile();
-        try (FileWriter fw = new FileWriter("./src/main/java/backend/CFG/CFG.txt", false)) {
+        try (FileWriter fw = new FileWriter(this.CFGSkillsFilePath, false)) {
             try (BufferedWriter bw = new BufferedWriter(fw)) {
                 try (PrintWriter pw = new PrintWriter(bw)) {
                     String command = query.substring(0, query.indexOf("\n"));
@@ -137,7 +145,7 @@ public class SkillEditor implements ActionQuery {
                         if (!typ.contains("<")) {
                             typ = "<" + typ.toUpperCase() + ">";
                         }
-                        input = input.replace(line, line + " | " + typ);
+                        input = input.replace(line, line.trim() + " | " + typ);
                     }
                 }
             }
@@ -145,6 +153,14 @@ public class SkillEditor implements ActionQuery {
             throw new RuntimeException(e);
         }
         return input;
+    }
+
+    public String deleteCFGSkill() {
+        String command = query.substring(query.lastIndexOf(":") + 1).trim();
+        List<String> toDelete = this.getElementsToDelete(command, getAllSkills());
+        String newFile = this.deleteSkillInFile(toDelete);
+        this.rewriteFile(newFile);
+        return "Skills " + toDelete + " are now deleted.";
     }
 
     public String addCFGSkillTemplateType() {
@@ -155,4 +171,80 @@ public class SkillEditor implements ActionQuery {
         return "Rule : <" + type + ">\nAction : <" + type + "> *  * ";
     }
 
+    public String addAllSkillsToDelete() {
+        return "Remove the skill that you want to delete :\n" + this.getAllSkills();
+    }
+
+    private String getAllSkills() {
+        String result = "";
+        try (BufferedReader br = new BufferedReader(new FileReader(this.CFGSkillsFilePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if(line.startsWith("Rule <ACTION>")) {
+                    line = line.substring(line.indexOf(">") + 1).trim();
+                    return line;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error while trying to get all skills : " + this.CFGSkillsFilePath);
+        }
+        return result;
+    }
+
+    private List<String> getElementsToDelete(String input, String skill) {
+        String[] skillSplit = skill.split("\\|");
+        List<String> result = new ArrayList<>();
+        for(String next : skillSplit) {
+            if(!input.contains(next.trim())) {
+                result.add(next.trim());
+            }
+        }
+        return result;
+    }
+
+    private String deleteSkillInFile(List<String> toDelete) {
+        try (BufferedReader br = new BufferedReader(new FileReader(this.CFGSkillsFilePath))) {
+            String input = "";
+            String line;
+            boolean toContinue = false;
+            while ((line = br.readLine()) != null) {
+                if(!toContinue && line.startsWith("Rule <ACTION>")) {
+                    for (String next : toDelete) {
+                        line = line.replace(next, "").trim();
+                        if (line.endsWith("|")) {
+                            line = line.substring(0, line.length() - 1);
+                        }
+                        line = line.replace("|  |", " | ").replace("| |", " | ").replace("||", " | ");
+                    }
+                    toContinue = true;
+                }
+                for (String next : toDelete) {
+                    if(line.contains(next)) {
+                        line = "";
+                        break;
+                    }
+                }
+
+                if(!line.equals("")) {
+                    input += line + "\n";
+                }
+            }
+            return input;
+        } catch (IOException e) {
+            System.out.println("Error while trying to delete skills : " + this.CFGSkillsFilePath);
+            return "";
+        }
+    }
+
+    private void rewriteFile(String newFile) {
+        try (FileWriter fw = new FileWriter(this.CFGSkillsFilePath, false)) {
+            try (BufferedWriter bw = new BufferedWriter(fw)) {
+                try (PrintWriter pw = new PrintWriter(bw)) {
+                    pw.println(newFile);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error while trying to delete skills in the file " + this.CFGSkillsFilePath);
+        }
+    }
 }

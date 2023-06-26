@@ -196,6 +196,10 @@ public class HelloApplication extends Application {
                         String type = text.substring(text.lastIndexOf(":") + 1).trim();
                         addToTextArea(text + "\n" + skillEditor.addCFGSkillTemplateRulesAndActions(type));
                     }
+                } else if (skillEditor.isQueryToEditSkill() && skillEditor.entry.getValue().getName().equals("deleteCFGSkill")) {
+                    if(!text.contains("<")) {
+                        addToTextArea(text + "\n" + skillEditor.addAllSkillsToDelete());
+                    }
                 } else {
                     try {
                         textArea.setMaxHeight((textHeight + (textHeight * 1.5)));
