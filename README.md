@@ -104,7 +104,7 @@ When clicking on the second button after the text area, you can direclty speech 
 
 **Technologies:** JavaFX, OpenCV
 
-**External API:** Spotify, Canvas (Maastricht University), Open Weather Map and Wikipedia
+**External API:** Spotify, Canvas (Maastricht University), Open Weather Map, Wikipedia and Whispers
 
 
 ## Authors
