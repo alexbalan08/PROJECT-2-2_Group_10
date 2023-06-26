@@ -40,21 +40,35 @@ In both case, you need to follow the next steps :
 - download the library OpenCV (https://opencv.org/releases/, source) and place either in the C:/ folder for Windows, or on the Desktop on Mac
 - open the folder with an IDE like IntelliJ, Eclipse, ...
 - install specifics dependances :
-    - in your terminal, use the command 
-        ```bash
-        pip install jep
-        ```
-    - create a virtual environment in project directory :
-        ```bash
-        python3 -m venv virtualPy
-        source virtualPy/bin/activate 
-        pip install numpy panda torch transformer
-        ```
-    - go to edit configuration > advanced options > add VM options :
-        ```bash
-        -Djava.library.path=<path to jep folder>
-        You can have the path with the command : pip show jep
-        ```
+    - Jep
+        - in your terminal, use the command 
+            ```bash
+            pip install jep
+            ```
+        - create a virtual environment in project directory :
+            ```bash
+            python3 -m venv virtualPy
+            source virtualPy/bin/activate 
+            pip install numpy panda torch transformer
+            ```
+        - go to edit configuration > advanced options > add VM options :
+            ```bash
+            -Djava.library.path=<path to jep folder>
+            You can have the path with the command : pip show jep
+            ```
+    - Whisper :
+        - in your terminal, use the command 
+            ```bash
+            pip3 install torch torchvision torchaudio --index-url 
+            ```
+        - in windows powershell, open as admin :
+            ```bash
+            Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))”)
+            ```
+        - close PowerShell and open it again : 
+            ```bash
+            choco install ffmpeg
+            ```
 - run the Gradle script to download all the remainings dependances (normally done automatically)
 - launch the app and enjoy !
 
